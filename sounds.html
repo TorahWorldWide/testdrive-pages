@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sound Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="sounds.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <nav class="tabs" aria-label="Pages">
+        <a href="index.html">Waves</a>
+        <a href="sounds.html" aria-current="page">Sounds</a>
+      </nav>
+      <p class="file" id="file-path">Loading…</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost" id="undo" title="Undo (Ctrl+Z)">Undo</button>
+      <button type="button" class="ghost" id="redo" title="Redo (Ctrl+Y)">Redo</button>
+      <div class="save-box">
+        <button type="button" class="save" id="save" title="Save (Ctrl+S)">Save to game</button>
+        <p class="save-status" id="save-status" aria-live="polite"></p>
+      </div>
+    </div>
+  </header>
+
+  <p class="problem" id="problem" hidden></p>
+
+  <main class="hall">
+    <aside class="library" id="library" aria-label="Sound library">
+      <div class="library-head">
+        <h2 class="library-title">Sound library</h2>
+        <button type="button" class="ghost sheet-toggle" id="sheet-toggle" aria-expanded="true">Hide</button>
+      </div>
+      <div class="sources" role="tablist" aria-label="Where the sounds come from">
+        <button type="button" role="tab" data-source="freesound">Freesound</button>
+        <button type="button" role="tab" data-source="kenney">Kenney</button>
+        <button type="button" role="tab" data-source="game">In the game</button>
+        <button type="button" role="tab" data-source="picks">&#9733; Picks</button>
+      </div>
+      <input type="search" class="text-input lib-search" id="lib-search" autocomplete="off" aria-label="Search">
+      <div class="chips" id="lib-chips"></div>
+      <div class="lib-filters" id="lib-filters"></div>
+      <p class="lib-count" id="lib-count" aria-live="polite"></p>
+      <ul class="results" id="lib-results" role="listbox" aria-label="Sounds"></ul>
+      <div class="lib-preview" id="lib-preview" hidden>
+        <div class="wave-box"><canvas id="lib-wave"></canvas><span class="playhead" id="lib-playhead" hidden></span></div>
+        <p class="preview-name" id="lib-preview-name"></p>
+        <p class="preview-meta" id="lib-preview-meta"></p>
+        <button type="button" class="use" id="lib-use"></button>
+      </div>
+    </aside>
+    <div class="middle">
+      <p class="intro">Press <span class="intro-play" aria-hidden="true"></span> on any part to hear the sound it makes in the game.
+        Dashed circles are places that have no sound yet. To change a sound, drag one from the library onto its play button.</p>
+      <div class="board" id="board"></div>
+    </div>
+    <aside class="mixer" id="mixer" aria-live="polite"></aside>
+  </main>
+
+  <script src="store.js"></script>
+  <script src="sounds.js"></script>
+</body>
+</html>

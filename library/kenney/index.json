@@ -1,0 +1,4968 @@
+{
+ "license": "CC0 (Kenney, www.kenney.nl)",
+ "sounds": [
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_carpet_000.ogg",
+   "name": "footstep carpet 000",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_carpet_001.ogg",
+   "name": "footstep carpet 001",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_carpet_002.ogg",
+   "name": "footstep carpet 002",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_carpet_003.ogg",
+   "name": "footstep carpet 003",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_carpet_004.ogg",
+   "name": "footstep carpet 004",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_concrete_000.ogg",
+   "name": "footstep concrete 000",
+   "seconds": 0.11
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_concrete_001.ogg",
+   "name": "footstep concrete 001",
+   "seconds": 0.11
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_concrete_002.ogg",
+   "name": "footstep concrete 002",
+   "seconds": 0.11
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_concrete_003.ogg",
+   "name": "footstep concrete 003",
+   "seconds": 0.11
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_concrete_004.ogg",
+   "name": "footstep concrete 004",
+   "seconds": 0.11
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_grass_000.ogg",
+   "name": "footstep grass 000",
+   "seconds": 0.78
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_grass_001.ogg",
+   "name": "footstep grass 001",
+   "seconds": 0.67
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_grass_002.ogg",
+   "name": "footstep grass 002",
+   "seconds": 0.69
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_grass_003.ogg",
+   "name": "footstep grass 003",
+   "seconds": 0.67
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_grass_004.ogg",
+   "name": "footstep grass 004",
+   "seconds": 0.59
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_snow_000.ogg",
+   "name": "footstep snow 000",
+   "seconds": 0.37
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_snow_001.ogg",
+   "name": "footstep snow 001",
+   "seconds": 0.37
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_snow_002.ogg",
+   "name": "footstep snow 002",
+   "seconds": 0.37
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_snow_003.ogg",
+   "name": "footstep snow 003",
+   "seconds": 0.37
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_snow_004.ogg",
+   "name": "footstep snow 004",
+   "seconds": 0.37
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_wood_000.ogg",
+   "name": "footstep wood 000",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_wood_001.ogg",
+   "name": "footstep wood 001",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_wood_002.ogg",
+   "name": "footstep wood 002",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_wood_003.ogg",
+   "name": "footstep wood 003",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "footstep_wood_004.ogg",
+   "name": "footstep wood 004",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactBell_heavy_000.ogg",
+   "name": "impactBell heavy 000",
+   "seconds": 1.48
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactBell_heavy_001.ogg",
+   "name": "impactBell heavy 001",
+   "seconds": 1.74
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactBell_heavy_002.ogg",
+   "name": "impactBell heavy 002",
+   "seconds": 0.7
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactBell_heavy_003.ogg",
+   "name": "impactBell heavy 003",
+   "seconds": 0.65
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactBell_heavy_004.ogg",
+   "name": "impactBell heavy 004",
+   "seconds": 0.3
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGeneric_light_000.ogg",
+   "name": "impactGeneric light 000",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGeneric_light_001.ogg",
+   "name": "impactGeneric light 001",
+   "seconds": 0.12
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGeneric_light_002.ogg",
+   "name": "impactGeneric light 002",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGeneric_light_003.ogg",
+   "name": "impactGeneric light 003",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGeneric_light_004.ogg",
+   "name": "impactGeneric light 004",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_heavy_000.ogg",
+   "name": "impactGlass heavy 000",
+   "seconds": 0.24
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_heavy_001.ogg",
+   "name": "impactGlass heavy 001",
+   "seconds": 0.43
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_heavy_002.ogg",
+   "name": "impactGlass heavy 002",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_heavy_003.ogg",
+   "name": "impactGlass heavy 003",
+   "seconds": 0.17
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_heavy_004.ogg",
+   "name": "impactGlass heavy 004",
+   "seconds": 0.4
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_light_000.ogg",
+   "name": "impactGlass light 000",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_light_001.ogg",
+   "name": "impactGlass light 001",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_light_002.ogg",
+   "name": "impactGlass light 002",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_light_003.ogg",
+   "name": "impactGlass light 003",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_light_004.ogg",
+   "name": "impactGlass light 004",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_medium_000.ogg",
+   "name": "impactGlass medium 000",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_medium_001.ogg",
+   "name": "impactGlass medium 001",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_medium_002.ogg",
+   "name": "impactGlass medium 002",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_medium_003.ogg",
+   "name": "impactGlass medium 003",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactGlass_medium_004.ogg",
+   "name": "impactGlass medium 004",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_heavy_000.ogg",
+   "name": "impactMetal heavy 000",
+   "seconds": 0.17
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_heavy_001.ogg",
+   "name": "impactMetal heavy 001",
+   "seconds": 0.36
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_heavy_002.ogg",
+   "name": "impactMetal heavy 002",
+   "seconds": 0.12
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_heavy_003.ogg",
+   "name": "impactMetal heavy 003",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_heavy_004.ogg",
+   "name": "impactMetal heavy 004",
+   "seconds": 0.13
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_light_000.ogg",
+   "name": "impactMetal light 000",
+   "seconds": 0.35
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_light_001.ogg",
+   "name": "impactMetal light 001",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_light_002.ogg",
+   "name": "impactMetal light 002",
+   "seconds": 0.24
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_light_003.ogg",
+   "name": "impactMetal light 003",
+   "seconds": 0.48
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_light_004.ogg",
+   "name": "impactMetal light 004",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_medium_000.ogg",
+   "name": "impactMetal medium 000",
+   "seconds": 0.27
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_medium_001.ogg",
+   "name": "impactMetal medium 001",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_medium_002.ogg",
+   "name": "impactMetal medium 002",
+   "seconds": 0.12
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_medium_003.ogg",
+   "name": "impactMetal medium 003",
+   "seconds": 0.25
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMetal_medium_004.ogg",
+   "name": "impactMetal medium 004",
+   "seconds": 0.11
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMining_000.ogg",
+   "name": "impactMining 000",
+   "seconds": 0.94
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMining_001.ogg",
+   "name": "impactMining 001",
+   "seconds": 0.87
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMining_002.ogg",
+   "name": "impactMining 002",
+   "seconds": 0.8
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMining_003.ogg",
+   "name": "impactMining 003",
+   "seconds": 0.99
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactMining_004.ogg",
+   "name": "impactMining 004",
+   "seconds": 0.83
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlank_medium_000.ogg",
+   "name": "impactPlank medium 000",
+   "seconds": 0.78
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlank_medium_001.ogg",
+   "name": "impactPlank medium 001",
+   "seconds": 0.78
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlank_medium_002.ogg",
+   "name": "impactPlank medium 002",
+   "seconds": 0.78
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlank_medium_003.ogg",
+   "name": "impactPlank medium 003",
+   "seconds": 0.78
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlank_medium_004.ogg",
+   "name": "impactPlank medium 004",
+   "seconds": 0.78
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_heavy_000.ogg",
+   "name": "impactPlate heavy 000",
+   "seconds": 0.49
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_heavy_001.ogg",
+   "name": "impactPlate heavy 001",
+   "seconds": 0.35
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_heavy_002.ogg",
+   "name": "impactPlate heavy 002",
+   "seconds": 0.49
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_heavy_003.ogg",
+   "name": "impactPlate heavy 003",
+   "seconds": 0.35
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_heavy_004.ogg",
+   "name": "impactPlate heavy 004",
+   "seconds": 0.56
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_light_000.ogg",
+   "name": "impactPlate light 000",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_light_001.ogg",
+   "name": "impactPlate light 001",
+   "seconds": 0.65
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_light_002.ogg",
+   "name": "impactPlate light 002",
+   "seconds": 0.49
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_light_003.ogg",
+   "name": "impactPlate light 003",
+   "seconds": 0.53
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_light_004.ogg",
+   "name": "impactPlate light 004",
+   "seconds": 0.66
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_medium_000.ogg",
+   "name": "impactPlate medium 000",
+   "seconds": 0.61
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_medium_001.ogg",
+   "name": "impactPlate medium 001",
+   "seconds": 0.62
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_medium_002.ogg",
+   "name": "impactPlate medium 002",
+   "seconds": 0.52
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_medium_003.ogg",
+   "name": "impactPlate medium 003",
+   "seconds": 0.65
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPlate_medium_004.ogg",
+   "name": "impactPlate medium 004",
+   "seconds": 0.53
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_heavy_000.ogg",
+   "name": "impactPunch heavy 000",
+   "seconds": 0.65
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_heavy_001.ogg",
+   "name": "impactPunch heavy 001",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_heavy_002.ogg",
+   "name": "impactPunch heavy 002",
+   "seconds": 0.46
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_heavy_003.ogg",
+   "name": "impactPunch heavy 003",
+   "seconds": 0.47
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_heavy_004.ogg",
+   "name": "impactPunch heavy 004",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_medium_000.ogg",
+   "name": "impactPunch medium 000",
+   "seconds": 0.43
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_medium_001.ogg",
+   "name": "impactPunch medium 001",
+   "seconds": 0.4
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_medium_002.ogg",
+   "name": "impactPunch medium 002",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_medium_003.ogg",
+   "name": "impactPunch medium 003",
+   "seconds": 0.46
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactPunch_medium_004.ogg",
+   "name": "impactPunch medium 004",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_heavy_000.ogg",
+   "name": "impactSoft heavy 000",
+   "seconds": 0.51
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_heavy_001.ogg",
+   "name": "impactSoft heavy 001",
+   "seconds": 0.57
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_heavy_002.ogg",
+   "name": "impactSoft heavy 002",
+   "seconds": 0.57
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_heavy_003.ogg",
+   "name": "impactSoft heavy 003",
+   "seconds": 0.54
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_heavy_004.ogg",
+   "name": "impactSoft heavy 004",
+   "seconds": 0.5
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_medium_000.ogg",
+   "name": "impactSoft medium 000",
+   "seconds": 0.12
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_medium_001.ogg",
+   "name": "impactSoft medium 001",
+   "seconds": 0.18
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_medium_002.ogg",
+   "name": "impactSoft medium 002",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_medium_003.ogg",
+   "name": "impactSoft medium 003",
+   "seconds": 0.14
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactSoft_medium_004.ogg",
+   "name": "impactSoft medium 004",
+   "seconds": 0.15
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactTin_medium_000.ogg",
+   "name": "impactTin medium 000",
+   "seconds": 0.16
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactTin_medium_001.ogg",
+   "name": "impactTin medium 001",
+   "seconds": 0.17
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactTin_medium_002.ogg",
+   "name": "impactTin medium 002",
+   "seconds": 0.13
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactTin_medium_003.ogg",
+   "name": "impactTin medium 003",
+   "seconds": 0.21
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactTin_medium_004.ogg",
+   "name": "impactTin medium 004",
+   "seconds": 0.18
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_heavy_000.ogg",
+   "name": "impactWood heavy 000",
+   "seconds": 0.31
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_heavy_001.ogg",
+   "name": "impactWood heavy 001",
+   "seconds": 0.31
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_heavy_002.ogg",
+   "name": "impactWood heavy 002",
+   "seconds": 0.31
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_heavy_003.ogg",
+   "name": "impactWood heavy 003",
+   "seconds": 0.31
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_heavy_004.ogg",
+   "name": "impactWood heavy 004",
+   "seconds": 0.31
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_light_000.ogg",
+   "name": "impactWood light 000",
+   "seconds": 0.27
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_light_001.ogg",
+   "name": "impactWood light 001",
+   "seconds": 0.27
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_light_002.ogg",
+   "name": "impactWood light 002",
+   "seconds": 0.27
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_light_003.ogg",
+   "name": "impactWood light 003",
+   "seconds": 0.27
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_light_004.ogg",
+   "name": "impactWood light 004",
+   "seconds": 0.27
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_medium_000.ogg",
+   "name": "impactWood medium 000",
+   "seconds": 0.33
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_medium_001.ogg",
+   "name": "impactWood medium 001",
+   "seconds": 0.33
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_medium_002.ogg",
+   "name": "impactWood medium 002",
+   "seconds": 0.33
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_medium_003.ogg",
+   "name": "impactWood medium 003",
+   "seconds": 0.33
+  },
+  {
+   "pack": "impact-sounds",
+   "packName": "Impact sounds",
+   "file": "impactWood_medium_004.ogg",
+   "name": "impactWood medium 004",
+   "seconds": 0.33
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "Preview.ogg",
+   "name": "Preview",
+   "seconds": 26.13
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "beltHandle1.ogg",
+   "name": "beltHandle1",
+   "seconds": 0.28
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "beltHandle2.ogg",
+   "name": "beltHandle2",
+   "seconds": 0.48
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookClose.ogg",
+   "name": "bookClose",
+   "seconds": 0.23
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookFlip1.ogg",
+   "name": "bookFlip1",
+   "seconds": 0.77
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookFlip2.ogg",
+   "name": "bookFlip2",
+   "seconds": 0.43
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookFlip3.ogg",
+   "name": "bookFlip3",
+   "seconds": 0.23
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookOpen.ogg",
+   "name": "bookOpen",
+   "seconds": 0.15
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookPlace1.ogg",
+   "name": "bookPlace1",
+   "seconds": 0.28
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookPlace2.ogg",
+   "name": "bookPlace2",
+   "seconds": 0.35
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "bookPlace3.ogg",
+   "name": "bookPlace3",
+   "seconds": 0.26
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "chop.ogg",
+   "name": "chop",
+   "seconds": 0.24
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "cloth1.ogg",
+   "name": "cloth1",
+   "seconds": 0.66
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "cloth2.ogg",
+   "name": "cloth2",
+   "seconds": 0.42
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "cloth3.ogg",
+   "name": "cloth3",
+   "seconds": 0.48
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "cloth4.ogg",
+   "name": "cloth4",
+   "seconds": 0.38
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "clothBelt.ogg",
+   "name": "clothBelt",
+   "seconds": 0.72
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "clothBelt2.ogg",
+   "name": "clothBelt2",
+   "seconds": 0.75
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "creak1.ogg",
+   "name": "creak1",
+   "seconds": 0.66
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "creak2.ogg",
+   "name": "creak2",
+   "seconds": 0.83
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "creak3.ogg",
+   "name": "creak3",
+   "seconds": 0.34
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "doorClose_1.ogg",
+   "name": "doorClose 1",
+   "seconds": 0.68
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "doorClose_2.ogg",
+   "name": "doorClose 2",
+   "seconds": 0.61
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "doorClose_3.ogg",
+   "name": "doorClose 3",
+   "seconds": 0.71
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "doorClose_4.ogg",
+   "name": "doorClose 4",
+   "seconds": 0.6
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "doorOpen_1.ogg",
+   "name": "doorOpen 1",
+   "seconds": 0.92
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "doorOpen_2.ogg",
+   "name": "doorOpen 2",
+   "seconds": 1.41
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "drawKnife1.ogg",
+   "name": "drawKnife1",
+   "seconds": 0.4
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "drawKnife2.ogg",
+   "name": "drawKnife2",
+   "seconds": 0.45
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "drawKnife3.ogg",
+   "name": "drawKnife3",
+   "seconds": 0.48
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "dropLeather.ogg",
+   "name": "dropLeather",
+   "seconds": 0.42
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep00.ogg",
+   "name": "footstep00",
+   "seconds": 0.25
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep01.ogg",
+   "name": "footstep01",
+   "seconds": 0.28
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep02.ogg",
+   "name": "footstep02",
+   "seconds": 0.24
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep03.ogg",
+   "name": "footstep03",
+   "seconds": 0.27
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep04.ogg",
+   "name": "footstep04",
+   "seconds": 0.32
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep05.ogg",
+   "name": "footstep05",
+   "seconds": 0.28
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep06.ogg",
+   "name": "footstep06",
+   "seconds": 0.24
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep07.ogg",
+   "name": "footstep07",
+   "seconds": 0.26
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep08.ogg",
+   "name": "footstep08",
+   "seconds": 0.26
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "footstep09.ogg",
+   "name": "footstep09",
+   "seconds": 0.22
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "handleCoins.ogg",
+   "name": "handleCoins",
+   "seconds": 0.85
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "handleCoins2.ogg",
+   "name": "handleCoins2",
+   "seconds": 0.34
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "handleSmallLeather.ogg",
+   "name": "handleSmallLeather",
+   "seconds": 0.34
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "handleSmallLeather2.ogg",
+   "name": "handleSmallLeather2",
+   "seconds": 0.31
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "knifeSlice.ogg",
+   "name": "knifeSlice",
+   "seconds": 0.6
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "knifeSlice2.ogg",
+   "name": "knifeSlice2",
+   "seconds": 0.57
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "metalClick.ogg",
+   "name": "metalClick",
+   "seconds": 0.45
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "metalLatch.ogg",
+   "name": "metalLatch",
+   "seconds": 0.26
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "metalPot1.ogg",
+   "name": "metalPot1",
+   "seconds": 1.46
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "metalPot2.ogg",
+   "name": "metalPot2",
+   "seconds": 0.94
+  },
+  {
+   "pack": "rpg-audio",
+   "packName": "RPG audio",
+   "file": "metalPot3.ogg",
+   "name": "metalPot3",
+   "seconds": 0.91
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "back_001.ogg",
+   "name": "back 001",
+   "seconds": 0.06
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "back_002.ogg",
+   "name": "back 002",
+   "seconds": 0.07
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "back_003.ogg",
+   "name": "back 003",
+   "seconds": 0.09
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "back_004.ogg",
+   "name": "back 004",
+   "seconds": 0.07
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "bong_001.ogg",
+   "name": "bong 001",
+   "seconds": 0.12
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "click_001.ogg",
+   "name": "click 001",
+   "seconds": 0.1
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "click_002.ogg",
+   "name": "click 002",
+   "seconds": 0.01
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "click_003.ogg",
+   "name": "click 003",
+   "seconds": 0.01
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "click_004.ogg",
+   "name": "click 004",
+   "seconds": 0.01
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "click_005.ogg",
+   "name": "click 005",
+   "seconds": 0.01
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "close_001.ogg",
+   "name": "close 001",
+   "seconds": 0.15
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "close_002.ogg",
+   "name": "close 002",
+   "seconds": 0.31
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "close_003.ogg",
+   "name": "close 003",
+   "seconds": 0.31
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "close_004.ogg",
+   "name": "close 004",
+   "seconds": 0.32
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "confirmation_001.ogg",
+   "name": "confirmation 001",
+   "seconds": 0.29
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "confirmation_002.ogg",
+   "name": "confirmation 002",
+   "seconds": 0.54
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "confirmation_003.ogg",
+   "name": "confirmation 003",
+   "seconds": 0.32
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "confirmation_004.ogg",
+   "name": "confirmation 004",
+   "seconds": 0.49
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "drop_001.ogg",
+   "name": "drop 001",
+   "seconds": 0.11
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "drop_002.ogg",
+   "name": "drop 002",
+   "seconds": 0.19
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "drop_003.ogg",
+   "name": "drop 003",
+   "seconds": 0.19
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "drop_004.ogg",
+   "name": "drop 004",
+   "seconds": 0.29
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_001.ogg",
+   "name": "error 001",
+   "seconds": 0.16
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_002.ogg",
+   "name": "error 002",
+   "seconds": 0.16
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_003.ogg",
+   "name": "error 003",
+   "seconds": 0.53
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_004.ogg",
+   "name": "error 004",
+   "seconds": 0.1
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_005.ogg",
+   "name": "error 005",
+   "seconds": 0.5
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_006.ogg",
+   "name": "error 006",
+   "seconds": 0.5
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_007.ogg",
+   "name": "error 007",
+   "seconds": 0.19
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "error_008.ogg",
+   "name": "error 008",
+   "seconds": 0.14
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glass_001.ogg",
+   "name": "glass 001",
+   "seconds": 0.28
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glass_002.ogg",
+   "name": "glass 002",
+   "seconds": 0.13
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glass_003.ogg",
+   "name": "glass 003",
+   "seconds": 0.12
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glass_004.ogg",
+   "name": "glass 004",
+   "seconds": 0.69
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glass_005.ogg",
+   "name": "glass 005",
+   "seconds": 0.11
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glass_006.ogg",
+   "name": "glass 006",
+   "seconds": 0.11
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glitch_001.ogg",
+   "name": "glitch 001",
+   "seconds": 0.02
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glitch_002.ogg",
+   "name": "glitch 002",
+   "seconds": 0.03
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glitch_003.ogg",
+   "name": "glitch 003",
+   "seconds": 0.01
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "glitch_004.ogg",
+   "name": "glitch 004",
+   "seconds": 0.02
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_001.ogg",
+   "name": "maximize 001",
+   "seconds": 0.26
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_002.ogg",
+   "name": "maximize 002",
+   "seconds": 0.26
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_003.ogg",
+   "name": "maximize 003",
+   "seconds": 0.21
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_004.ogg",
+   "name": "maximize 004",
+   "seconds": 0.42
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_005.ogg",
+   "name": "maximize 005",
+   "seconds": 0.53
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_006.ogg",
+   "name": "maximize 006",
+   "seconds": 0.38
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_007.ogg",
+   "name": "maximize 007",
+   "seconds": 0.19
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_008.ogg",
+   "name": "maximize 008",
+   "seconds": 0.23
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "maximize_009.ogg",
+   "name": "maximize 009",
+   "seconds": 0.22
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_001.ogg",
+   "name": "minimize 001",
+   "seconds": 0.26
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_002.ogg",
+   "name": "minimize 002",
+   "seconds": 0.26
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_003.ogg",
+   "name": "minimize 003",
+   "seconds": 0.21
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_004.ogg",
+   "name": "minimize 004",
+   "seconds": 0.42
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_005.ogg",
+   "name": "minimize 005",
+   "seconds": 0.53
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_006.ogg",
+   "name": "minimize 006",
+   "seconds": 0.38
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_007.ogg",
+   "name": "minimize 007",
+   "seconds": 0.19
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_008.ogg",
+   "name": "minimize 008",
+   "seconds": 0.23
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "minimize_009.ogg",
+   "name": "minimize 009",
+   "seconds": 0.22
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "open_001.ogg",
+   "name": "open 001",
+   "seconds": 0.15
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "open_002.ogg",
+   "name": "open 002",
+   "seconds": 0.31
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "open_003.ogg",
+   "name": "open 003",
+   "seconds": 0.31
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "open_004.ogg",
+   "name": "open 004",
+   "seconds": 0.32
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "pluck_001.ogg",
+   "name": "pluck 001",
+   "seconds": 0.1
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "pluck_002.ogg",
+   "name": "pluck 002",
+   "seconds": 0.16
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "question_001.ogg",
+   "name": "question 001",
+   "seconds": 0.49
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "question_002.ogg",
+   "name": "question 002",
+   "seconds": 0.33
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "question_003.ogg",
+   "name": "question 003",
+   "seconds": 0.33
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "question_004.ogg",
+   "name": "question 004",
+   "seconds": 0.33
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scratch_001.ogg",
+   "name": "scratch 001",
+   "seconds": 0.14
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scratch_002.ogg",
+   "name": "scratch 002",
+   "seconds": 0.14
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scratch_003.ogg",
+   "name": "scratch 003",
+   "seconds": 0.12
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scratch_004.ogg",
+   "name": "scratch 004",
+   "seconds": 0.33
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scratch_005.ogg",
+   "name": "scratch 005",
+   "seconds": 0.33
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scroll_001.ogg",
+   "name": "scroll 001",
+   "seconds": 1.0
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scroll_002.ogg",
+   "name": "scroll 002",
+   "seconds": 1.0
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scroll_003.ogg",
+   "name": "scroll 003",
+   "seconds": 1.0
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scroll_004.ogg",
+   "name": "scroll 004",
+   "seconds": 1.0
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "scroll_005.ogg",
+   "name": "scroll 005",
+   "seconds": 1.0
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_001.ogg",
+   "name": "select 001",
+   "seconds": 0.04
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_002.ogg",
+   "name": "select 002",
+   "seconds": 0.04
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_003.ogg",
+   "name": "select 003",
+   "seconds": 0.38
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_004.ogg",
+   "name": "select 004",
+   "seconds": 0.38
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_005.ogg",
+   "name": "select 005",
+   "seconds": 0.38
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_006.ogg",
+   "name": "select 006",
+   "seconds": 1.94
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_007.ogg",
+   "name": "select 007",
+   "seconds": 0.05
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "select_008.ogg",
+   "name": "select 008",
+   "seconds": 0.05
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "switch_001.ogg",
+   "name": "switch 001",
+   "seconds": 0.62
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "switch_002.ogg",
+   "name": "switch 002",
+   "seconds": 0.61
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "switch_003.ogg",
+   "name": "switch 003",
+   "seconds": 0.5
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "switch_004.ogg",
+   "name": "switch 004",
+   "seconds": 0.5
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "switch_005.ogg",
+   "name": "switch 005",
+   "seconds": 0.61
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "switch_006.ogg",
+   "name": "switch 006",
+   "seconds": 0.61
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "switch_007.ogg",
+   "name": "switch 007",
+   "seconds": 0.61
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "tick_001.ogg",
+   "name": "tick 001",
+   "seconds": 0.02
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "tick_002.ogg",
+   "name": "tick 002",
+   "seconds": 0.02
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "tick_004.ogg",
+   "name": "tick 004",
+   "seconds": 0.05
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "toggle_001.ogg",
+   "name": "toggle 001",
+   "seconds": 0.14
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "toggle_002.ogg",
+   "name": "toggle 002",
+   "seconds": 0.14
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "toggle_003.ogg",
+   "name": "toggle 003",
+   "seconds": 0.14
+  },
+  {
+   "pack": "interface-sounds",
+   "packName": "Interface sounds",
+   "file": "toggle_004.ogg",
+   "name": "toggle 004",
+   "seconds": 0.07
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "Preview.ogg",
+   "name": "Preview",
+   "seconds": 14.14
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "click1.ogg",
+   "name": "click1",
+   "seconds": 0.09
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "click2.ogg",
+   "name": "click2",
+   "seconds": 0.06
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "click3.ogg",
+   "name": "click3",
+   "seconds": 0.09
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "click4.ogg",
+   "name": "click4",
+   "seconds": 0.04
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "click5.ogg",
+   "name": "click5",
+   "seconds": 0.03
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "mouseclick1.ogg",
+   "name": "mouseclick1",
+   "seconds": 0.06
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "mouserelease1.ogg",
+   "name": "mouserelease1",
+   "seconds": 0.07
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "rollover1.ogg",
+   "name": "rollover1",
+   "seconds": 0.23
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "rollover2.ogg",
+   "name": "rollover2",
+   "seconds": 0.06
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "rollover3.ogg",
+   "name": "rollover3",
+   "seconds": 0.07
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "rollover4.ogg",
+   "name": "rollover4",
+   "seconds": 0.11
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "rollover5.ogg",
+   "name": "rollover5",
+   "seconds": 0.11
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "rollover6.ogg",
+   "name": "rollover6",
+   "seconds": 0.17
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch1.ogg",
+   "name": "switch1",
+   "seconds": 0.31
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch10.ogg",
+   "name": "switch10",
+   "seconds": 0.37
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch11.ogg",
+   "name": "switch11",
+   "seconds": 0.3
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch12.ogg",
+   "name": "switch12",
+   "seconds": 0.05
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch13.ogg",
+   "name": "switch13",
+   "seconds": 0.03
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch14.ogg",
+   "name": "switch14",
+   "seconds": 0.03
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch15.ogg",
+   "name": "switch15",
+   "seconds": 0.26
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch16.ogg",
+   "name": "switch16",
+   "seconds": 0.36
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch17.ogg",
+   "name": "switch17",
+   "seconds": 0.33
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch18.ogg",
+   "name": "switch18",
+   "seconds": 0.44
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch19.ogg",
+   "name": "switch19",
+   "seconds": 0.38
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch2.ogg",
+   "name": "switch2",
+   "seconds": 0.3
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch20.ogg",
+   "name": "switch20",
+   "seconds": 0.36
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch21.ogg",
+   "name": "switch21",
+   "seconds": 0.41
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch22.ogg",
+   "name": "switch22",
+   "seconds": 0.36
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch23.ogg",
+   "name": "switch23",
+   "seconds": 0.38
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch24.ogg",
+   "name": "switch24",
+   "seconds": 0.28
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch25.ogg",
+   "name": "switch25",
+   "seconds": 0.38
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch26.ogg",
+   "name": "switch26",
+   "seconds": 0.23
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch27.ogg",
+   "name": "switch27",
+   "seconds": 0.28
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch28.ogg",
+   "name": "switch28",
+   "seconds": 0.2
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch29.ogg",
+   "name": "switch29",
+   "seconds": 0.31
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch3.ogg",
+   "name": "switch3",
+   "seconds": 0.37
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch30.ogg",
+   "name": "switch30",
+   "seconds": 0.36
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch31.ogg",
+   "name": "switch31",
+   "seconds": 0.44
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch32.ogg",
+   "name": "switch32",
+   "seconds": 0.44
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch33.ogg",
+   "name": "switch33",
+   "seconds": 0.51
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch34.ogg",
+   "name": "switch34",
+   "seconds": 0.46
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch35.ogg",
+   "name": "switch35",
+   "seconds": 0.33
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch36.ogg",
+   "name": "switch36",
+   "seconds": 0.31
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch37.ogg",
+   "name": "switch37",
+   "seconds": 0.31
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch38.ogg",
+   "name": "switch38",
+   "seconds": 0.42
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch4.ogg",
+   "name": "switch4",
+   "seconds": 0.42
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch5.ogg",
+   "name": "switch5",
+   "seconds": 0.31
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch6.ogg",
+   "name": "switch6",
+   "seconds": 0.35
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch7.ogg",
+   "name": "switch7",
+   "seconds": 0.19
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch8.ogg",
+   "name": "switch8",
+   "seconds": 0.33
+  },
+  {
+   "pack": "ui-audio",
+   "packName": "UI audio",
+   "file": "switch9.ogg",
+   "name": "switch9",
+   "seconds": 0.26
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "computerNoise_000.ogg",
+   "name": "computerNoise 000",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "computerNoise_001.ogg",
+   "name": "computerNoise 001",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "computerNoise_002.ogg",
+   "name": "computerNoise 002",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "computerNoise_003.ogg",
+   "name": "computerNoise 003",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "doorClose_000.ogg",
+   "name": "doorClose 000",
+   "seconds": 0.53
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "doorClose_001.ogg",
+   "name": "doorClose 001",
+   "seconds": 0.53
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "doorClose_002.ogg",
+   "name": "doorClose 002",
+   "seconds": 0.53
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "doorOpen_000.ogg",
+   "name": "doorOpen 000",
+   "seconds": 0.53
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "doorOpen_001.ogg",
+   "name": "doorOpen 001",
+   "seconds": 0.53
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "doorOpen_002.ogg",
+   "name": "doorOpen 002",
+   "seconds": 0.53
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "engineCircular_000.ogg",
+   "name": "engineCircular 000",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "engineCircular_001.ogg",
+   "name": "engineCircular 001",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "engineCircular_002.ogg",
+   "name": "engineCircular 002",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "engineCircular_003.ogg",
+   "name": "engineCircular 003",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "engineCircular_004.ogg",
+   "name": "engineCircular 004",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "explosionCrunch_000.ogg",
+   "name": "explosionCrunch 000",
+   "seconds": 0.78
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "explosionCrunch_001.ogg",
+   "name": "explosionCrunch 001",
+   "seconds": 1.36
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "explosionCrunch_002.ogg",
+   "name": "explosionCrunch 002",
+   "seconds": 1.26
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "explosionCrunch_003.ogg",
+   "name": "explosionCrunch 003",
+   "seconds": 1.55
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "explosionCrunch_004.ogg",
+   "name": "explosionCrunch 004",
+   "seconds": 1.98
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "forceField_000.ogg",
+   "name": "forceField 000",
+   "seconds": 0.95
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "forceField_001.ogg",
+   "name": "forceField 001",
+   "seconds": 0.95
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "forceField_002.ogg",
+   "name": "forceField 002",
+   "seconds": 0.96
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "forceField_003.ogg",
+   "name": "forceField 003",
+   "seconds": 0.96
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "forceField_004.ogg",
+   "name": "forceField 004",
+   "seconds": 0.95
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "impactMetal_000.ogg",
+   "name": "impactMetal 000",
+   "seconds": 0.63
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "impactMetal_001.ogg",
+   "name": "impactMetal 001",
+   "seconds": 0.69
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "impactMetal_002.ogg",
+   "name": "impactMetal 002",
+   "seconds": 0.47
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "impactMetal_003.ogg",
+   "name": "impactMetal 003",
+   "seconds": 0.78
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "impactMetal_004.ogg",
+   "name": "impactMetal 004",
+   "seconds": 0.39
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserLarge_000.ogg",
+   "name": "laserLarge 000",
+   "seconds": 0.68
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserLarge_001.ogg",
+   "name": "laserLarge 001",
+   "seconds": 0.72
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserLarge_002.ogg",
+   "name": "laserLarge 002",
+   "seconds": 0.74
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserLarge_003.ogg",
+   "name": "laserLarge 003",
+   "seconds": 0.72
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserLarge_004.ogg",
+   "name": "laserLarge 004",
+   "seconds": 0.69
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserRetro_000.ogg",
+   "name": "laserRetro 000",
+   "seconds": 0.24
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserRetro_001.ogg",
+   "name": "laserRetro 001",
+   "seconds": 0.24
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserRetro_002.ogg",
+   "name": "laserRetro 002",
+   "seconds": 0.26
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserRetro_003.ogg",
+   "name": "laserRetro 003",
+   "seconds": 0.25
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserRetro_004.ogg",
+   "name": "laserRetro 004",
+   "seconds": 0.28
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserSmall_000.ogg",
+   "name": "laserSmall 000",
+   "seconds": 0.24
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserSmall_001.ogg",
+   "name": "laserSmall 001",
+   "seconds": 0.25
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserSmall_002.ogg",
+   "name": "laserSmall 002",
+   "seconds": 0.34
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserSmall_003.ogg",
+   "name": "laserSmall 003",
+   "seconds": 0.3
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "laserSmall_004.ogg",
+   "name": "laserSmall 004",
+   "seconds": 0.41
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "lowFrequency_explosion_000.ogg",
+   "name": "lowFrequency explosion 000",
+   "seconds": 2.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "lowFrequency_explosion_001.ogg",
+   "name": "lowFrequency explosion 001",
+   "seconds": 1.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "slime_000.ogg",
+   "name": "slime 000",
+   "seconds": 0.5
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "slime_001.ogg",
+   "name": "slime 001",
+   "seconds": 4.71
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLarge_000.ogg",
+   "name": "spaceEngineLarge 000",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLarge_001.ogg",
+   "name": "spaceEngineLarge 001",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLarge_002.ogg",
+   "name": "spaceEngineLarge 002",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLarge_003.ogg",
+   "name": "spaceEngineLarge 003",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLarge_004.ogg",
+   "name": "spaceEngineLarge 004",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLow_000.ogg",
+   "name": "spaceEngineLow 000",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLow_001.ogg",
+   "name": "spaceEngineLow 001",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLow_002.ogg",
+   "name": "spaceEngineLow 002",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLow_003.ogg",
+   "name": "spaceEngineLow 003",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineLow_004.ogg",
+   "name": "spaceEngineLow 004",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineSmall_000.ogg",
+   "name": "spaceEngineSmall 000",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineSmall_001.ogg",
+   "name": "spaceEngineSmall 001",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineSmall_002.ogg",
+   "name": "spaceEngineSmall 002",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineSmall_003.ogg",
+   "name": "spaceEngineSmall 003",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngineSmall_004.ogg",
+   "name": "spaceEngineSmall 004",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngine_000.ogg",
+   "name": "spaceEngine 000",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngine_001.ogg",
+   "name": "spaceEngine 001",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngine_002.ogg",
+   "name": "spaceEngine 002",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "spaceEngine_003.ogg",
+   "name": "spaceEngine 003",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "thrusterFire_000.ogg",
+   "name": "thrusterFire 000",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "thrusterFire_001.ogg",
+   "name": "thrusterFire 001",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "thrusterFire_002.ogg",
+   "name": "thrusterFire 002",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "thrusterFire_003.ogg",
+   "name": "thrusterFire 003",
+   "seconds": 5.0
+  },
+  {
+   "pack": "sci-fi-sounds",
+   "packName": "Sci-fi sounds",
+   "file": "thrusterFire_004.ogg",
+   "name": "thrusterFire 004",
+   "seconds": 5.0
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "Preview.ogg",
+   "name": "Preview",
+   "seconds": 49.22
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "highDown.ogg",
+   "name": "highDown",
+   "seconds": 0.52
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "highUp.ogg",
+   "name": "highUp",
+   "seconds": 0.55
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser1.ogg",
+   "name": "laser1",
+   "seconds": 1.1
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser2.ogg",
+   "name": "laser2",
+   "seconds": 1.09
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser3.ogg",
+   "name": "laser3",
+   "seconds": 0.98
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser4.ogg",
+   "name": "laser4",
+   "seconds": 1.13
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser5.ogg",
+   "name": "laser5",
+   "seconds": 1.01
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser6.ogg",
+   "name": "laser6",
+   "seconds": 0.97
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser7.ogg",
+   "name": "laser7",
+   "seconds": 0.93
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser8.ogg",
+   "name": "laser8",
+   "seconds": 0.99
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "laser9.ogg",
+   "name": "laser9",
+   "seconds": 1.01
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "lowDown.ogg",
+   "name": "lowDown",
+   "seconds": 0.78
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "lowRandom.ogg",
+   "name": "lowRandom",
+   "seconds": 0.55
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "lowThreeTone.ogg",
+   "name": "lowThreeTone",
+   "seconds": 1.02
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "pepSound1.ogg",
+   "name": "pepSound1",
+   "seconds": 0.52
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "pepSound2.ogg",
+   "name": "pepSound2",
+   "seconds": 0.55
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "pepSound3.ogg",
+   "name": "pepSound3",
+   "seconds": 0.44
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "pepSound4.ogg",
+   "name": "pepSound4",
+   "seconds": 0.63
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "pepSound5.ogg",
+   "name": "pepSound5",
+   "seconds": 0.63
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaseJump1.ogg",
+   "name": "phaseJump1",
+   "seconds": 0.47
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaseJump2.ogg",
+   "name": "phaseJump2",
+   "seconds": 0.39
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaseJump3.ogg",
+   "name": "phaseJump3",
+   "seconds": 0.44
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaseJump4.ogg",
+   "name": "phaseJump4",
+   "seconds": 0.47
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaseJump5.ogg",
+   "name": "phaseJump5",
+   "seconds": 0.42
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserDown1.ogg",
+   "name": "phaserDown1",
+   "seconds": 0.47
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserDown2.ogg",
+   "name": "phaserDown2",
+   "seconds": 0.31
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserDown3.ogg",
+   "name": "phaserDown3",
+   "seconds": 0.5
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserUp1.ogg",
+   "name": "phaserUp1",
+   "seconds": 0.5
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserUp2.ogg",
+   "name": "phaserUp2",
+   "seconds": 0.42
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserUp3.ogg",
+   "name": "phaserUp3",
+   "seconds": 0.52
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserUp4.ogg",
+   "name": "phaserUp4",
+   "seconds": 0.37
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserUp5.ogg",
+   "name": "phaserUp5",
+   "seconds": 0.31
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserUp6.ogg",
+   "name": "phaserUp6",
+   "seconds": 0.34
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "phaserUp7.ogg",
+   "name": "phaserUp7",
+   "seconds": 0.37
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp1.ogg",
+   "name": "powerUp1",
+   "seconds": 1.2
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp10.ogg",
+   "name": "powerUp10",
+   "seconds": 0.65
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp11.ogg",
+   "name": "powerUp11",
+   "seconds": 0.68
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp12.ogg",
+   "name": "powerUp12",
+   "seconds": 0.86
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp2.ogg",
+   "name": "powerUp2",
+   "seconds": 0.47
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp3.ogg",
+   "name": "powerUp3",
+   "seconds": 1.15
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp4.ogg",
+   "name": "powerUp4",
+   "seconds": 0.55
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp5.ogg",
+   "name": "powerUp5",
+   "seconds": 0.44
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp6.ogg",
+   "name": "powerUp6",
+   "seconds": 0.44
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp7.ogg",
+   "name": "powerUp7",
+   "seconds": 0.52
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp8.ogg",
+   "name": "powerUp8",
+   "seconds": 0.57
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "powerUp9.ogg",
+   "name": "powerUp9",
+   "seconds": 0.55
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "spaceTrash1.ogg",
+   "name": "spaceTrash1",
+   "seconds": 1.45
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "spaceTrash2.ogg",
+   "name": "spaceTrash2",
+   "seconds": 1.47
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "spaceTrash3.ogg",
+   "name": "spaceTrash3",
+   "seconds": 1.54
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "spaceTrash4.ogg",
+   "name": "spaceTrash4",
+   "seconds": 1.48
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "spaceTrash5.ogg",
+   "name": "spaceTrash5",
+   "seconds": 1.43
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "threeTone1.ogg",
+   "name": "threeTone1",
+   "seconds": 0.83
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "threeTone2.ogg",
+   "name": "threeTone2",
+   "seconds": 0.87
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "tone1.ogg",
+   "name": "tone1",
+   "seconds": 0.66
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "twoTone1.ogg",
+   "name": "twoTone1",
+   "seconds": 0.72
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "twoTone2.ogg",
+   "name": "twoTone2",
+   "seconds": 0.73
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "zap1.ogg",
+   "name": "zap1",
+   "seconds": 1.02
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "zap2.ogg",
+   "name": "zap2",
+   "seconds": 1.23
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "zapThreeToneDown.ogg",
+   "name": "zapThreeToneDown",
+   "seconds": 1.33
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "zapThreeToneUp.ogg",
+   "name": "zapThreeToneUp",
+   "seconds": 1.2
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "zapTwoTone.ogg",
+   "name": "zapTwoTone",
+   "seconds": 1.31
+  },
+  {
+   "pack": "digital-audio",
+   "packName": "Digital audio",
+   "file": "zapTwoTone2.ogg",
+   "name": "zapTwoTone2",
+   "seconds": 1.2
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "Preview.ogg",
+   "name": "Preview",
+   "seconds": 35.11
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-fan-1.ogg",
+   "name": "card-fan-1",
+   "seconds": 0.72
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-fan-2.ogg",
+   "name": "card-fan-2",
+   "seconds": 1.31
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-place-1.ogg",
+   "name": "card-place-1",
+   "seconds": 0.69
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-place-2.ogg",
+   "name": "card-place-2",
+   "seconds": 0.46
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-place-3.ogg",
+   "name": "card-place-3",
+   "seconds": 0.88
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-place-4.ogg",
+   "name": "card-place-4",
+   "seconds": 0.6
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-shove-1.ogg",
+   "name": "card-shove-1",
+   "seconds": 0.77
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-shove-2.ogg",
+   "name": "card-shove-2",
+   "seconds": 0.77
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-shove-3.ogg",
+   "name": "card-shove-3",
+   "seconds": 0.69
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-shove-4.ogg",
+   "name": "card-shove-4",
+   "seconds": 0.81
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-shuffle.ogg",
+   "name": "card-shuffle",
+   "seconds": 3.06
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-1.ogg",
+   "name": "card-slide-1",
+   "seconds": 0.6
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-2.ogg",
+   "name": "card-slide-2",
+   "seconds": 0.58
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-3.ogg",
+   "name": "card-slide-3",
+   "seconds": 0.6
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-4.ogg",
+   "name": "card-slide-4",
+   "seconds": 0.46
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-5.ogg",
+   "name": "card-slide-5",
+   "seconds": 0.6
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-6.ogg",
+   "name": "card-slide-6",
+   "seconds": 0.6
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-7.ogg",
+   "name": "card-slide-7",
+   "seconds": 0.64
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "card-slide-8.ogg",
+   "name": "card-slide-8",
+   "seconds": 0.67
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "cards-pack-open-1.ogg",
+   "name": "cards-pack-open-1",
+   "seconds": 0.94
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "cards-pack-open-2.ogg",
+   "name": "cards-pack-open-2",
+   "seconds": 0.73
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "cards-pack-take-out-1.ogg",
+   "name": "cards-pack-take-out-1",
+   "seconds": 0.5
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "cards-pack-take-out-2.ogg",
+   "name": "cards-pack-take-out-2",
+   "seconds": 0.63
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chip-lay-1.ogg",
+   "name": "chip-lay-1",
+   "seconds": 0.17
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chip-lay-2.ogg",
+   "name": "chip-lay-2",
+   "seconds": 0.23
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chip-lay-3.ogg",
+   "name": "chip-lay-3",
+   "seconds": 0.24
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-collide-1.ogg",
+   "name": "chips-collide-1",
+   "seconds": 0.26
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-collide-2.ogg",
+   "name": "chips-collide-2",
+   "seconds": 0.23
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-collide-3.ogg",
+   "name": "chips-collide-3",
+   "seconds": 0.26
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-collide-4.ogg",
+   "name": "chips-collide-4",
+   "seconds": 0.22
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-handle-1.ogg",
+   "name": "chips-handle-1",
+   "seconds": 0.62
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-handle-2.ogg",
+   "name": "chips-handle-2",
+   "seconds": 0.55
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-handle-3.ogg",
+   "name": "chips-handle-3",
+   "seconds": 0.23
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-handle-4.ogg",
+   "name": "chips-handle-4",
+   "seconds": 0.36
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-handle-5.ogg",
+   "name": "chips-handle-5",
+   "seconds": 0.83
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-handle-6.ogg",
+   "name": "chips-handle-6",
+   "seconds": 0.46
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-stack-1.ogg",
+   "name": "chips-stack-1",
+   "seconds": 0.29
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-stack-2.ogg",
+   "name": "chips-stack-2",
+   "seconds": 0.17
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-stack-3.ogg",
+   "name": "chips-stack-3",
+   "seconds": 0.37
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-stack-4.ogg",
+   "name": "chips-stack-4",
+   "seconds": 0.23
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-stack-5.ogg",
+   "name": "chips-stack-5",
+   "seconds": 0.19
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "chips-stack-6.ogg",
+   "name": "chips-stack-6",
+   "seconds": 0.19
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-grab-1.ogg",
+   "name": "dice-grab-1",
+   "seconds": 0.7
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-grab-2.ogg",
+   "name": "dice-grab-2",
+   "seconds": 0.83
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-shake-1.ogg",
+   "name": "dice-shake-1",
+   "seconds": 1.48
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-shake-2.ogg",
+   "name": "dice-shake-2",
+   "seconds": 1.38
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-shake-3.ogg",
+   "name": "dice-shake-3",
+   "seconds": 1.52
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-throw-1.ogg",
+   "name": "dice-throw-1",
+   "seconds": 0.63
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-throw-2.ogg",
+   "name": "dice-throw-2",
+   "seconds": 0.4
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "dice-throw-3.ogg",
+   "name": "dice-throw-3",
+   "seconds": 0.57
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "die-throw-1.ogg",
+   "name": "die-throw-1",
+   "seconds": 0.53
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "die-throw-2.ogg",
+   "name": "die-throw-2",
+   "seconds": 0.65
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "die-throw-3.ogg",
+   "name": "die-throw-3",
+   "seconds": 0.73
+  },
+  {
+   "pack": "casino-audio",
+   "packName": "Casino audio",
+   "file": "die-throw-4.ogg",
+   "name": "die-throw-4",
+   "seconds": 0.47
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "1.ogg",
+   "name": "1",
+   "seconds": 0.66
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "10.ogg",
+   "name": "10",
+   "seconds": 0.67
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "2.ogg",
+   "name": "2",
+   "seconds": 0.63
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "3.ogg",
+   "name": "3",
+   "seconds": 0.77
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "4.ogg",
+   "name": "4",
+   "seconds": 0.75
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "5.ogg",
+   "name": "5",
+   "seconds": 0.76
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "6.ogg",
+   "name": "6",
+   "seconds": 0.77
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "7.ogg",
+   "name": "7",
+   "seconds": 0.85
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "8.ogg",
+   "name": "8",
+   "seconds": 0.57
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "9.ogg",
+   "name": "9",
+   "seconds": 0.62
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "Preview (Female).ogg",
+   "name": "Preview (Female)",
+   "seconds": 38.18
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "Preview (Male).ogg",
+   "name": "Preview (Male)",
+   "seconds": 41.68
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "Preview.ogg",
+   "name": "Preview",
+   "seconds": 6.54
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "congratulations.ogg",
+   "name": "congratulations",
+   "seconds": 1.53
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "correct.ogg",
+   "name": "correct",
+   "seconds": 0.66
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "final_round.ogg",
+   "name": "final round",
+   "seconds": 1.08
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "game_over.ogg",
+   "name": "game over",
+   "seconds": 1.38
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "go.ogg",
+   "name": "go",
+   "seconds": 0.65
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "hold.ogg",
+   "name": "hold",
+   "seconds": 0.7
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "hurry_up.ogg",
+   "name": "hurry up",
+   "seconds": 0.68
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "its_a_tie.ogg",
+   "name": "its a tie",
+   "seconds": 1.05
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "level.ogg",
+   "name": "level",
+   "seconds": 0.75
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "level_up.ogg",
+   "name": "level up",
+   "seconds": 0.81
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "mission_completed.ogg",
+   "name": "mission completed",
+   "seconds": 1.26
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "mission_failed.ogg",
+   "name": "mission failed",
+   "seconds": 1.11
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "new_highscore.ogg",
+   "name": "new highscore",
+   "seconds": 1.23
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "objective_achieved.ogg",
+   "name": "objective achieved",
+   "seconds": 1.42
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "power_up.ogg",
+   "name": "power up",
+   "seconds": 0.8
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "ready.ogg",
+   "name": "ready",
+   "seconds": 0.69
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "round.ogg",
+   "name": "round",
+   "seconds": 0.74
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "set.ogg",
+   "name": "set",
+   "seconds": 0.55
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "time_over.ogg",
+   "name": "time over",
+   "seconds": 0.95
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_call_for_backup.ogg",
+   "name": "war call for backup",
+   "seconds": 1.03
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_cover_me.ogg",
+   "name": "war cover me",
+   "seconds": 0.61
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_fire_in_the_hole.ogg",
+   "name": "war fire in the hole",
+   "seconds": 1.38
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_get_down.ogg",
+   "name": "war get down",
+   "seconds": 0.85
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_go_go_go.ogg",
+   "name": "war go go go",
+   "seconds": 0.98
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_hold.ogg",
+   "name": "war hold",
+   "seconds": 0.5
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_look_out.ogg",
+   "name": "war look out",
+   "seconds": 0.61
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_medic.ogg",
+   "name": "war medic",
+   "seconds": 0.67
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_reloading.ogg",
+   "name": "war reloading",
+   "seconds": 0.92
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_rpg.ogg",
+   "name": "war rpg",
+   "seconds": 0.97
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_sniper.ogg",
+   "name": "war sniper",
+   "seconds": 0.82
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_suppressing_fire.ogg",
+   "name": "war suppressing fire",
+   "seconds": 1.24
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_supressing_fire.ogg",
+   "name": "war supressing fire",
+   "seconds": 1.25
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_target_destroyed.ogg",
+   "name": "war target destroyed",
+   "seconds": 1.34
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_target_engaged.ogg",
+   "name": "war target engaged",
+   "seconds": 1.12
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "war_watch_my_back.ogg",
+   "name": "war watch my back",
+   "seconds": 0.96
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "wrong.ogg",
+   "name": "wrong",
+   "seconds": 0.71
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "you_lose.ogg",
+   "name": "you lose",
+   "seconds": 1.37
+  },
+  {
+   "pack": "voiceover-pack",
+   "packName": "Voiceover",
+   "file": "you_win.ogg",
+   "name": "you win",
+   "seconds": 1.01
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "1.ogg",
+   "name": "1",
+   "seconds": 0.96
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "10.ogg",
+   "name": "10",
+   "seconds": 1.03
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "2.ogg",
+   "name": "2",
+   "seconds": 0.92
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "3.ogg",
+   "name": "3",
+   "seconds": 1.0
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "4.ogg",
+   "name": "4",
+   "seconds": 1.07
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "5.ogg",
+   "name": "5",
+   "seconds": 1.12
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "6.ogg",
+   "name": "6",
+   "seconds": 1.09
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "7.ogg",
+   "name": "7",
+   "seconds": 1.17
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "8.ogg",
+   "name": "8",
+   "seconds": 0.77
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "9.ogg",
+   "name": "9",
+   "seconds": 1.03
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "Preview.ogg",
+   "name": "Preview",
+   "seconds": 33.27
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "arcade_mode.ogg",
+   "name": "arcade mode",
+   "seconds": 1.63
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "battle_mode.ogg",
+   "name": "battle mode",
+   "seconds": 1.51
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "begin.ogg",
+   "name": "begin",
+   "seconds": 1.22
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "championship_mode.ogg",
+   "name": "championship mode",
+   "seconds": 1.65
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "choose_your_character.ogg",
+   "name": "choose your character",
+   "seconds": 2.08
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "combo.ogg",
+   "name": "combo",
+   "seconds": 1.17
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "combo_breaker.ogg",
+   "name": "combo breaker",
+   "seconds": 1.59
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "deathmatch.ogg",
+   "name": "deathmatch",
+   "seconds": 1.15
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "fight.ogg",
+   "name": "fight",
+   "seconds": 0.93
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "final_round.ogg",
+   "name": "final round",
+   "seconds": 1.69
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "flawless_victory.ogg",
+   "name": "flawless victory",
+   "seconds": 1.87
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "game_over.ogg",
+   "name": "game over",
+   "seconds": 1.77
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "it's_a_tie.ogg",
+   "name": "it's a tie",
+   "seconds": 1.35
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "kill_her.ogg",
+   "name": "kill her",
+   "seconds": 1.18
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "kill_him.ogg",
+   "name": "kill him",
+   "seconds": 1.13
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "kill_it.ogg",
+   "name": "kill it",
+   "seconds": 0.96
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "loser.ogg",
+   "name": "loser",
+   "seconds": 1.45
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "multi_kill.ogg",
+   "name": "multi kill",
+   "seconds": 1.42
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "player_1.ogg",
+   "name": "player 1",
+   "seconds": 1.34
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "player_2.ogg",
+   "name": "player 2",
+   "seconds": 1.21
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "prepare_yourself.ogg",
+   "name": "prepare yourself",
+   "seconds": 1.69
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "ready.ogg",
+   "name": "ready",
+   "seconds": 1.03
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "round_1.ogg",
+   "name": "round 1",
+   "seconds": 1.35
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "round_2.ogg",
+   "name": "round 2",
+   "seconds": 1.45
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "round_3.ogg",
+   "name": "round 3",
+   "seconds": 1.52
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "round_4.ogg",
+   "name": "round 4",
+   "seconds": 1.71
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "round_5.ogg",
+   "name": "round 5",
+   "seconds": 1.64
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "story_mode.ogg",
+   "name": "story mode",
+   "seconds": 1.73
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "sudden_death.ogg",
+   "name": "sudden death",
+   "seconds": 1.44
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "survival_mode.ogg",
+   "name": "survival mode",
+   "seconds": 1.89
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "tie.ogg",
+   "name": "tie",
+   "seconds": 1.11
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "tie_breaker.ogg",
+   "name": "tie breaker",
+   "seconds": 1.35
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "time.ogg",
+   "name": "time",
+   "seconds": 1.16
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "winner.ogg",
+   "name": "winner",
+   "seconds": 1.42
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "you_lose.ogg",
+   "name": "you lose",
+   "seconds": 1.38
+  },
+  {
+   "pack": "voiceover-pack-fighter",
+   "packName": "Voiceover (fighter)",
+   "file": "you_win.ogg",
+   "name": "you win",
+   "seconds": 1.25
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "Preview.ogg",
+   "name": "Preview",
+   "seconds": 13.02
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT00.ogg",
+   "name": "jingles HIT00",
+   "seconds": 0.28
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT01.ogg",
+   "name": "jingles HIT01",
+   "seconds": 0.51
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT02.ogg",
+   "name": "jingles HIT02",
+   "seconds": 0.52
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT03.ogg",
+   "name": "jingles HIT03",
+   "seconds": 0.75
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT04.ogg",
+   "name": "jingles HIT04",
+   "seconds": 0.64
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT05.ogg",
+   "name": "jingles HIT05",
+   "seconds": 0.61
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT06.ogg",
+   "name": "jingles HIT06",
+   "seconds": 0.51
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT07.ogg",
+   "name": "jingles HIT07",
+   "seconds": 0.28
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT08.ogg",
+   "name": "jingles HIT08",
+   "seconds": 0.28
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT09.ogg",
+   "name": "jingles HIT09",
+   "seconds": 0.75
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT10.ogg",
+   "name": "jingles HIT10",
+   "seconds": 0.75
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT11.ogg",
+   "name": "jingles HIT11",
+   "seconds": 0.96
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT12.ogg",
+   "name": "jingles HIT12",
+   "seconds": 0.28
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT13.ogg",
+   "name": "jingles HIT13",
+   "seconds": 0.29
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT14.ogg",
+   "name": "jingles HIT14",
+   "seconds": 0.42
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT15.ogg",
+   "name": "jingles HIT15",
+   "seconds": 1.16
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_HIT16.ogg",
+   "name": "jingles HIT16",
+   "seconds": 0.29
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES00.ogg",
+   "name": "jingles NES00",
+   "seconds": 1.76
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES01.ogg",
+   "name": "jingles NES01",
+   "seconds": 0.41
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES02.ogg",
+   "name": "jingles NES02",
+   "seconds": 0.39
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES03.ogg",
+   "name": "jingles NES03",
+   "seconds": 0.6
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES04.ogg",
+   "name": "jingles NES04",
+   "seconds": 0.6
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES05.ogg",
+   "name": "jingles NES05",
+   "seconds": 0.91
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES06.ogg",
+   "name": "jingles NES06",
+   "seconds": 0.8
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES07.ogg",
+   "name": "jingles NES07",
+   "seconds": 0.75
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES08.ogg",
+   "name": "jingles NES08",
+   "seconds": 0.62
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES09.ogg",
+   "name": "jingles NES09",
+   "seconds": 0.44
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES10.ogg",
+   "name": "jingles NES10",
+   "seconds": 0.41
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES11.ogg",
+   "name": "jingles NES11",
+   "seconds": 0.83
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES12.ogg",
+   "name": "jingles NES12",
+   "seconds": 0.85
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES13.ogg",
+   "name": "jingles NES13",
+   "seconds": 1.05
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES14.ogg",
+   "name": "jingles NES14",
+   "seconds": 0.37
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES15.ogg",
+   "name": "jingles NES15",
+   "seconds": 0.43
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_NES16.ogg",
+   "name": "jingles NES16",
+   "seconds": 0.51
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI00.ogg",
+   "name": "jingles PIZZI00",
+   "seconds": 0.49
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI01.ogg",
+   "name": "jingles PIZZI01",
+   "seconds": 1.0
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI02.ogg",
+   "name": "jingles PIZZI02",
+   "seconds": 0.96
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI03.ogg",
+   "name": "jingles PIZZI03",
+   "seconds": 1.15
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI04.ogg",
+   "name": "jingles PIZZI04",
+   "seconds": 0.56
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI05.ogg",
+   "name": "jingles PIZZI05",
+   "seconds": 0.54
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI06.ogg",
+   "name": "jingles PIZZI06",
+   "seconds": 0.69
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI07.ogg",
+   "name": "jingles PIZZI07",
+   "seconds": 1.32
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI08.ogg",
+   "name": "jingles PIZZI08",
+   "seconds": 0.57
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI09.ogg",
+   "name": "jingles PIZZI09",
+   "seconds": 0.57
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI10.ogg",
+   "name": "jingles PIZZI10",
+   "seconds": 0.8
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI11.ogg",
+   "name": "jingles PIZZI11",
+   "seconds": 0.79
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI12.ogg",
+   "name": "jingles PIZZI12",
+   "seconds": 0.99
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI13.ogg",
+   "name": "jingles PIZZI13",
+   "seconds": 0.88
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI14.ogg",
+   "name": "jingles PIZZI14",
+   "seconds": 0.92
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI15.ogg",
+   "name": "jingles PIZZI15",
+   "seconds": 0.81
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_PIZZI16.ogg",
+   "name": "jingles PIZZI16",
+   "seconds": 0.46
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX00.ogg",
+   "name": "jingles SAX00",
+   "seconds": 0.39
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX01.ogg",
+   "name": "jingles SAX01",
+   "seconds": 0.89
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX02.ogg",
+   "name": "jingles SAX02",
+   "seconds": 0.87
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX03.ogg",
+   "name": "jingles SAX03",
+   "seconds": 1.12
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX04.ogg",
+   "name": "jingles SAX04",
+   "seconds": 0.39
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX05.ogg",
+   "name": "jingles SAX05",
+   "seconds": 0.46
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX06.ogg",
+   "name": "jingles SAX06",
+   "seconds": 0.51
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX07.ogg",
+   "name": "jingles SAX07",
+   "seconds": 1.74
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX08.ogg",
+   "name": "jingles SAX08",
+   "seconds": 0.39
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX09.ogg",
+   "name": "jingles SAX09",
+   "seconds": 0.37
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX10.ogg",
+   "name": "jingles SAX10",
+   "seconds": 0.64
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX11.ogg",
+   "name": "jingles SAX11",
+   "seconds": 0.62
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX12.ogg",
+   "name": "jingles SAX12",
+   "seconds": 0.85
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX13.ogg",
+   "name": "jingles SAX13",
+   "seconds": 0.78
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX14.ogg",
+   "name": "jingles SAX14",
+   "seconds": 0.75
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX15.ogg",
+   "name": "jingles SAX15",
+   "seconds": 0.6
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_SAX16.ogg",
+   "name": "jingles SAX16",
+   "seconds": 0.41
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL00.ogg",
+   "name": "jingles STEEL00",
+   "seconds": 0.93
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL01.ogg",
+   "name": "jingles STEEL01",
+   "seconds": 1.38
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL02.ogg",
+   "name": "jingles STEEL02",
+   "seconds": 1.39
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL03.ogg",
+   "name": "jingles STEEL03",
+   "seconds": 1.39
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL04.ogg",
+   "name": "jingles STEEL04",
+   "seconds": 0.91
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL05.ogg",
+   "name": "jingles STEEL05",
+   "seconds": 0.94
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL06.ogg",
+   "name": "jingles STEEL06",
+   "seconds": 1.38
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL07.ogg",
+   "name": "jingles STEEL07",
+   "seconds": 1.55
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL08.ogg",
+   "name": "jingles STEEL08",
+   "seconds": 0.8
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL09.ogg",
+   "name": "jingles STEEL09",
+   "seconds": 0.59
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL10.ogg",
+   "name": "jingles STEEL10",
+   "seconds": 0.91
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL11.ogg",
+   "name": "jingles STEEL11",
+   "seconds": 0.83
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL12.ogg",
+   "name": "jingles STEEL12",
+   "seconds": 1.26
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL13.ogg",
+   "name": "jingles STEEL13",
+   "seconds": 1.05
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL14.ogg",
+   "name": "jingles STEEL14",
+   "seconds": 1.38
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL15.ogg",
+   "name": "jingles STEEL15",
+   "seconds": 0.94
+  },
+  {
+   "pack": "music-jingles",
+   "packName": "Music jingles",
+   "file": "jingles_STEEL16.ogg",
+   "name": "jingles STEEL16",
+   "seconds": 0.91
+  }
+ ]
+}

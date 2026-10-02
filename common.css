@@ -1,0 +1,176 @@
+/* TestDrive game pages (Waves and Sounds): a war table. Walnut board, chalk text, enemies as
+   painted pieces, gold for elites, the game's red X for spawn spots. Shared by both pages. */
+
+/* The web fonts have no shekel sign: always draw it from a system font that does. */
+@font-face { font-family: "Shekel"; src: local("Segoe UI"), local("Arial"); unicode-range: U+20AA; }
+
+:root {
+  --table: #241C17;    /* page */
+  --felt: #2F2620;     /* panels and the chart surface */
+  --raise: #3A2F27;    /* rows, inputs */
+  --line: #54453A;     /* borders */
+  --chalk: #F3EBDD;    /* main text */
+  --chalk-2: #CDBFAB;  /* secondary text */
+  --chalk-3: #A69884;  /* quiet text */
+  --gold: #F2C14E;     /* elites, save, focus */
+  --gold-ink: #2A1E08;
+  --x-red: #FF5A47;    /* spawn markers, like the red X in the game */
+  --danger: #FF7A6B;
+
+  --display: "Shekel", "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --body: "Shekel", "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+
+  --step--1: 0.95rem;
+  --step-0: 1.15rem;
+  --step-1: 1.4rem;
+  --step-2: 2rem;
+  --step-3: 3rem;
+  --step-4: 5.2rem;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+/* Elements with their own display style still hide when told to. */
+[hidden] { display: none !important; }
+
+html { font-size: 17px; }
+
+body {
+  margin: 0;
+  background: var(--table);
+  color: var(--chalk);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.45;
+}
+
+button, input, select { font: inherit; color: inherit; }
+
+button { cursor: pointer; }
+
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+/* ---------- header ---------- */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  flex-wrap: wrap;
+  padding: 0.8rem 2rem;
+  background: var(--table);
+  border-bottom: 1px solid var(--line);
+}
+
+/* The two pages, as tabs: the current one bright, the other one dim. */
+.tabs { display: flex; gap: 1.4rem; align-items: baseline; }
+.tabs a {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--step-2);
+  line-height: 1;
+  color: var(--chalk-3);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  padding-bottom: 0.15rem;
+}
+.tabs a:hover { color: var(--chalk-2); }
+.tabs a[aria-current="page"] { color: var(--chalk); border-bottom-color: var(--gold); }
+
+.file {
+  margin: 0.2rem 0 0;
+  color: var(--chalk-3);
+  font-size: var(--step--1);
+  overflow-wrap: anywhere;
+}
+
+.actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+.ghost {
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--chalk-2);
+}
+.ghost:hover:not(:disabled) { color: var(--chalk); border-color: var(--chalk-3); }
+.ghost:disabled { opacity: 0.4; cursor: default; }
+
+.save-box { display: flex; align-items: center; gap: 0.8rem; }
+
+.save {
+  padding: 0.65rem 1.4rem;
+  border: 0;
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--gold-ink);
+  font-weight: 700;
+  font-size: var(--step-1);
+}
+.save:disabled { background: var(--raise); color: var(--chalk-3); cursor: default; }
+
+.save-status { margin: 0; min-width: 12ch; color: var(--chalk-2); font-size: var(--step--1); }
+.save-status.unsaved { color: var(--gold); }
+
+.problem {
+  margin: 1rem 2rem 0;
+  padding: 0.9rem 1.2rem;
+  border-left: 4px solid var(--danger);
+  background: #3B201C;
+  color: var(--chalk);
+}
+
+/* ---------- shared bits ---------- */
+.swatch { display: inline-block; width: 0.9rem; height: 0.9rem; border-radius: 3px; flex: none; }
+.field { display: grid; gap: 0.35rem; }
+.field-label { color: var(--chalk-2); font-size: var(--step--1); }
+.text-input, .select {
+  min-height: 3rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--raise);
+}
+.select { padding-right: 2rem; }
+.section-title {
+  margin: 2.6rem 0 0.8rem;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--step-2);
+  line-height: 1;
+}
+.section-title small { margin-left: 0.6rem; font-family: var(--body); font-weight: 400; font-size: var(--step--1); color: var(--chalk-3); }
+kbd { padding: 0 0.35em; border: 1px solid var(--line); border-radius: 4px; font-family: inherit; font-size: 0.9em; }
+
+@media (max-width: 700px) {
+  html { font-size: 16px; }
+  .top { padding-inline: 1rem; }
+  .problem { margin-inline: 1rem; }
+}
+
+/* ---------- connecting a new device (online pages only) ---------- */
+.setup {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(20, 15, 12, 0.85);
+}
+.setup-card {
+  display: grid;
+  gap: 0.8rem;
+  width: min(100%, 30rem);
+  padding: 1.6rem;
+  border-radius: 14px;
+  background: var(--felt);
+}
+.setup-card h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: var(--step-2); }
+.setup-card p { margin: 0; color: var(--chalk-2); }
+.setup-card .text-input { width: 100%; }
+.setup-error { min-height: 1.2em; color: var(--danger) !important; }

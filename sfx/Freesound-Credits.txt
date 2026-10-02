@@ -1,0 +1,8 @@
+Bow and arrow sounds: Creative Commons 0 (public domain) recordings from freesound.org,
+trimmed and converted for this game. Credit is not required; listed for reference.
+
+bowDraw.ogg          "38 Tensar Arco.wav" by checholio        https://freesound.org/people/checholio/sounds/443818/
+bowRelease.ogg       "Arrow Loose.wav" by saturdaysoundguy    https://freesound.org/people/saturdaysoundguy/sounds/394185/
+arrowFlyBy1/2.ogg    "Arrows Fly By.mp3" by DigPro120         https://freesound.org/people/DigPro120/sounds/394004/
+arrowHitBody.ogg     "Arrow Impact" by omerbhatti34           https://freesound.org/people/omerbhatti34/sounds/521552/
+arrowHitGround.ogg   "ARROW_WOOD_IMPACT_SINGLE_ARCHERY_01.wav" by JoeDinesSound  https://freesound.org/people/JoeDinesSound/sounds/534956/

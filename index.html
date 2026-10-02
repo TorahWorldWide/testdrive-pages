@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wave Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="waves.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <nav class="tabs" aria-label="Pages">
+        <a href="index.html" aria-current="page">Waves</a>
+        <a href="sounds.html">Sounds</a>
+      </nav>
+      <p class="file" id="file-path">Loading…</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost" id="undo" title="Undo (Ctrl+Z)">Undo</button>
+      <button type="button" class="ghost" id="redo" title="Redo (Ctrl+Y)">Redo</button>
+      <button type="button" class="ghost" id="copy-text" title="Copy every wave in plain words, to paste to Claude">Copy as text</button>
+      <div class="save-box">
+        <button type="button" class="save" id="save" title="Save (Ctrl+S)">Save to game</button>
+        <p class="save-status" id="save-status" aria-live="polite"></p>
+      </div>
+    </div>
+  </header>
+
+  <p class="problem" id="problem" hidden></p>
+
+  <section class="overview" aria-label="All waves">
+    <div class="skyline-wrap">
+      <div class="skyline" id="skyline" role="listbox" aria-label="Waves: click one to edit it"></div>
+      <div class="tooltip" id="tooltip" role="tooltip" hidden></div>
+    </div>
+    <ul class="legend" id="legend"></ul>
+  </section>
+
+  <main class="desk">
+    <section class="wave" id="wave" aria-live="off"></section>
+    <aside class="words" id="words"></aside>
+  </main>
+
+  <template id="token-fallback"><span class="token-letter"></span></template>
+  <script src="store.js"></script>
+  <script src="waves.js"></script>
+</body>
+</html>
