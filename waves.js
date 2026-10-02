@@ -4,6 +4,7 @@
 //
 // The plan (what gets saved):
 //   waves[]: { wave, seconds, tag ("", "HORDE", "ELITE", "FINAL"), note,
+//              scene (a scenes.json id; "" = the same scene as the wave before),
 //              enemies[]: { type, count, packSize (1 = one by one), armor (% for helmet and shield) | plates (worms) },
 //              elites[]:  { type ("Giant", "Worm", "Archer"), atSecond, reward } }
 
@@ -20,7 +21,7 @@ const ICON_ONE = `<svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 3l4 4M
 const ICON_PACK = `<svg viewBox="0 0 30 22" aria-hidden="true"><path d="M8 7l4 4M12 7l-4 4M15 5l4 4M19 5l-4 4M13 12l4 4M17 12l-4 4M18 10l4 4M22 10l-4 4"/></svg>`;
 
 const state = {
-  plan: null, info: null, file: "",
+  plan: null, info: null, scenes: [], file: "",
   selected: 0,
   saved: "",        // the plan as last saved, to know if there are unsaved changes
   undo: [], redo: [],
@@ -55,16 +56,32 @@ function waveMoney(w) {
     + w.elites.reduce((s, e) => s + (e.reward || 0), 0);
 }
 
+// ---------- scenes (scenes.json): the arena's look, set on a wave and kept until the next one ----------
+
+const sceneInfo = id => state.scenes.find(s => s.id === id)
+  || { id, num: "?", name: id, color: "#555555", about: "The game doesn't know this scene." };
+
+// The scene wave i is played in, and the wave it was set on (-1 = no scene yet: the plain look).
+function sceneAt(i) {
+  for (let n = i; n >= 0; n--) {
+    const id = state.plan.waves[n].scene;
+    if (id) return { id, from: n };
+  }
+  return { id: "", from: -1 };
+}
+
 // ---------- loading and saving ----------
 
 async function load() {
   try {
-    const [body, info] = await Promise.all([
+    const [body, info, scenes] = await Promise.all([
       Store.load("waves"),
       fetch("enemies.json").then(r => r.json()),
+      fetch("scenes.json").then(r => r.json()).catch(() => []),
     ]);
     state.file = body.file;
     state.info = info;
+    state.scenes = scenes;
     state.plan = body.plan;
     tidy();
     state.saved = snapshot();
@@ -118,6 +135,7 @@ function tidy() {
     w.wave = i + 1;
     w.tag = w.tag || "";
     w.note = w.note || "";
+    w.scene = w.scene || "";
     w.enemies = w.enemies || [];
     w.elites = w.elites || [];
     w.enemies = w.enemies.map(e => {
@@ -213,14 +231,21 @@ function renderSkyline() {
     const stars = w.elites.length ? `<span class="mark elite" aria-hidden="true">${"★".repeat(w.elites.length)}</span>` : "";
     const tag = w.tag ? `<span class="mark">${TAG_WORD[w.tag] || esc(w.tag)}</span>` : "";
     const selected = i === state.selected;
+    const at = sceneAt(i);
+    const scene = at.id ? sceneInfo(at.id) : null;
+    const strip = scene
+      ? `<span class="scene-strip${at.from === i ? " starts" : ""}" style="--scene:${scene.color}"></span>`
+      : `<span class="scene-strip none"></span>`;
     return `<button type="button" class="col" role="option" aria-selected="${selected}" data-act="pick" data-wave="${i}" data-k="col-${i}"
-        aria-label="Wave ${i + 1}, ${w.seconds} seconds, ${totalEnemies(w)} enemies${w.elites.length ? `, ${w.elites.length} elite` : ""}">
+        aria-label="Wave ${i + 1}, ${w.seconds} seconds, ${totalEnemies(w)} enemies${w.elites.length ? `, ${w.elites.length} elite` : ""}${scene ? `, scene: ${esc(scene.name)}` : ""}">
       <span class="bar-area">${tag}${stars}<span class="stack">${segs}</span></span>
+      ${strip}
       <span class="col-label"><span class="col-num">${i + 1}</span><span class="col-secs">${w.seconds}s</span></span>
     </button>`;
   }).join("");
   const add = `<button type="button" class="col add" data-act="add-wave" data-k="col-add" title="Add a wave at the end">
       <span class="bar-area" aria-hidden="true">+</span>
+      <span class="scene-strip none"></span>
       <span class="col-label"><span class="col-secs">Add wave</span></span>
     </button>`;
   const focused = document.activeElement?.dataset?.k;
@@ -230,7 +255,8 @@ function renderSkyline() {
   $("legend").innerHTML = [...state.info.enemies].reverse().map(e =>
     `<li><span class="swatch" style="background:${e.color}"></span>${esc(cap(e.plural))}</li>`).join("")
     + `<li><span class="swatch star" aria-hidden="true">★</span>Elite</li>`
-    + `<li>Column height = number of enemies</li>`;
+    + `<li>Column height = number of enemies</li>`
+    + `<li><span class="swatch scene-key" aria-hidden="true"></span>Strip under a wave = its scene (bright where the scene starts)</li>`;
 }
 
 function renderWave() {
@@ -278,6 +304,8 @@ function renderWave() {
       </label>
     </div>
 
+    ${sceneSection(w, i)}
+
     <h3 class="section-title">Enemies <small>${totalEnemies(w)} in this wave</small></h3>
     <div class="rows">${rows || `<p class="empty">No enemies in this wave yet. Add some below.</p>`}</div>
     ${adders}
@@ -294,6 +322,34 @@ function renderWave() {
     </div>`;
 
   if (focused) document.querySelector(`#wave [data-k="${focused}"]`)?.focus();
+}
+
+function sceneSection(w, i) {
+  const at = sceneAt(i);
+  const now = at.id ? sceneInfo(at.id) : null;
+  const where = !now ? "No scene yet: the game's plain look. Pick one below."
+    : at.from === i ? "Starts on this wave and stays until a wave with another scene."
+    : `Continues from wave ${at.from + 1}. Pick another scene to change it from here.`;
+  const pics = state.scenes.map(s => {
+    const on = at.id === s.id;
+    return `<button type="button" class="scene${on ? (at.from === i ? " set" : " kept") : ""}" data-act="scene" data-scene="${s.id}" data-k="scene-${s.id}"
+        aria-pressed="${on && at.from === i}" title="${esc(s.about)}">
+        <img src="images/scenes/${s.id}.jpg" alt="" loading="lazy">
+        <span class="scene-name"><b>${s.num}</b> ${esc(s.name)}</span>
+      </button>`;
+  }).join("");
+  return `
+    <h3 class="section-title">Scene <small>the arena's light and colours from this wave on</small></h3>
+    <div class="scene-now">
+      ${now ? `<img src="images/scenes/${now.id}.jpg" alt="">` : `<span class="scene-blank" aria-hidden="true"></span>`}
+      <div>
+        <strong>${now ? `${now.num} ${esc(now.name)}` : "Plain look"}</strong>
+        ${now ? `<p>${esc(now.about)}</p>` : ""}
+        <p class="scene-where">${where}</p>
+        ${w.scene ? `<button type="button" class="ghost" data-act="scene-clear" data-k="scene-clear">${i === 0 ? "Remove the scene" : `Same as wave ${i}`}</button>` : ""}
+      </div>
+    </div>
+    <div class="scenes">${pics}</div>`;
 }
 
 function enemyRow(e, r) {
@@ -391,6 +447,9 @@ function describe(w, i) {
   const packed = rows.filter(e => e.packSize > 1);
 
   out.push(`Wave ${i + 1} lasts ${w.seconds} seconds${w.tag ? ` and is called ${TAG_WORD[w.tag] || w.tag.toLowerCase()} in the game` : ""}.`);
+  const at = sceneAt(i);
+  if (at.id && at.from === i) out.push(`The arena turns into the ${sceneInfo(at.id).name} scene.`);
+  else if (at.id) out.push(`Still the ${sceneInfo(at.id).name} scene (since wave ${at.from + 1}).`);
   if (!rows.length) out.push("No enemies yet.");
   for (const e of packed) out.push(e.packSize >= e.count
     ? `${e.count} ${noun(e.type, e.count)} arrive${e.count === 1 ? "s" : ""} together, in one pack.`
@@ -441,7 +500,7 @@ function renderWords() {
 function planAsText() {
   const lines = [`Wave plan: ${state.plan.waves.length} waves. Change anything in words and give it to Claude.`, ""];
   state.plan.waves.forEach((w, i) => {
-    const head = `Wave ${i + 1}, ${w.seconds} s${w.tag ? ", " + w.tag : ""}`;
+    const head = `Wave ${i + 1}, ${w.seconds} s${w.tag ? ", " + w.tag : ""}${w.scene ? ", scene " + sceneInfo(w.scene).name : ""}`;
     const rows = w.enemies.filter(e => e.count > 0);
     const parts = [];
     const packed = rows.filter(e => e.packSize > 1).map(e => `${e.count} ${noun(e.type, e.count)} ${e.packSize >= e.count ? "in one pack" : "in packs of " + e.packSize}`);
@@ -509,15 +568,19 @@ function onAction(btn, ev) {
       w.elites.push({ type, atSecond: 5, reward: 150 });
     });
     case "remove-elite": return change(() => { w.elites.splice(+btn.dataset.elite, 1); });
+    case "scene": return change(() => { w.scene = btn.dataset.scene; });
+    case "scene-clear": return change(() => { w.scene = ""; });
     case "add-wave": return change(() => {
       const copy = JSON.parse(JSON.stringify(state.plan.waves[state.plan.waves.length - 1]));
       if (copy.tag === "FINAL") copy.tag = "";
+      copy.scene = ""; // a new wave keeps the scene before it
       state.plan.waves.push(copy);
       state.selected = state.plan.waves.length - 1;
     });
     case "duplicate": return change(() => {
       const copy = JSON.parse(JSON.stringify(w));
       if (copy.tag === "FINAL") copy.tag = "";
+      copy.scene = "";
       state.plan.waves.splice(state.selected + 1, 0, copy);
       state.selected += 1;
     });
@@ -620,7 +683,9 @@ function showTip(col) {
     return `<li><span class="swatch" style="background:${enemyInfo(type).color}"></span>${n} ${esc(noun(type, n))}${packs.length ? `, packs of ${packs.join("/")}` : ""}</li>`;
   }).join("");
   const elites = w.elites.map(e => `<li><span class="swatch star">★</span>Elite ${esc(enemyInfo(e.type).name)} at ${e.atSecond} s</li>`).join("");
-  tip.innerHTML = `<strong>Wave ${i + 1}</strong> ${w.seconds} seconds${w.tag ? ", " + TAG_WORD[w.tag] : ""}<ul>${items || "<li>No enemies</li>"}${elites}</ul>`;
+  const at = sceneAt(i);
+  const scene = at.id ? `<li><span class="swatch" style="background:${sceneInfo(at.id).color}"></span>Scene: ${esc(sceneInfo(at.id).name)}</li>` : "";
+  tip.innerHTML = `<strong>Wave ${i + 1}</strong> ${w.seconds} seconds${w.tag ? ", " + TAG_WORD[w.tag] : ""}<ul>${items || "<li>No enemies</li>"}${elites}${scene}</ul>`;
   tip.hidden = false;
   const wrap = col.closest(".skyline-wrap").getBoundingClientRect();
   const r = col.getBoundingClientRect();

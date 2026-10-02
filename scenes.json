@@ -1,0 +1,12 @@
+[
+  {"id": "foundry", "num": 1, "name": "Foundry", "color": "#e8742a", "about": "Molten metal around the arena, orange light from below, sparks."},
+  {"id": "coldrain", "num": 2, "name": "Cold rain", "color": "#5b84c4", "about": "Night, blue moonlight on wet steel; red eyes pop."},
+  {"id": "scrapyard", "num": 3, "name": "Scrapyard", "color": "#8f887b", "about": "Robots made of junk, grey daylight, scrap piles."},
+  {"id": "military", "num": 4, "name": "Military", "color": "#80834f", "about": "Olive armour, sandbags, dust and searchlights."},
+  {"id": "hazard", "num": 5, "name": "Heavy machinery", "color": "#e3b62e", "about": "Worn black and yellow machines under sodium lamps."},
+  {"id": "bunker", "num": 6, "name": "Red alert", "color": "#cf2f26", "about": "Almost dark, lit only by red emergency lights."},
+  {"id": "gothic", "num": 7, "name": "Gothic iron", "color": "#a3713f", "about": "Black iron and bronze, chains, fire in braziers."},
+  {"id": "toxic", "num": 8, "name": "Toxic", "color": "#62cc3c", "about": "Corroded metal, glowing green vats, green gas."},
+  {"id": "spotlight", "num": 9, "name": "Gladiator show", "color": "#e9e7e0", "about": "Hard white floodlights from above, a crowd in the dark."},
+  {"id": "diesel", "num": 10, "name": "Dieselpunk", "color": "#a8865a", "about": "Pistons, exhaust smoke, sepia light."}
+]

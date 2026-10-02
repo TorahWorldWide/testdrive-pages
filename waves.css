@@ -20,7 +20,7 @@
 
 .col {
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr auto auto;
   height: 100%;
   min-width: 0;
   padding: 0 2px;
@@ -73,6 +73,19 @@
   line-height: 1;
 }
 .col-secs { display: block; font-size: 0.78rem; color: var(--text-3); }
+
+/* the scene strip under each column: dim where a scene continues, bright where it starts */
+.scene-strip {
+  display: block;
+  height: 7px;
+  margin-top: 5px;
+  border-radius: 2px;
+  background: var(--scene, transparent);
+  opacity: 0.5;
+}
+.scene-strip.starts { opacity: 1; }
+.scene-strip.none { background: transparent; }
+.swatch.scene-key { background: linear-gradient(90deg, var(--text) 0 35%, var(--text-3) 35%); }
 
 .col.add .bar-area { justify-content: center; color: var(--text-3); font-size: var(--step-2); }
 
@@ -308,6 +321,56 @@
 .adder .token-letter { font-size: 1.1rem; }
 .adder.gold { border-color: rgba(242, 193, 78, 0.6); color: var(--gold); }
 
+/* ---------- scene picker ---------- */
+.scene-now {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background: var(--surface);
+}
+.scene-now img, .scene-blank {
+  display: block;
+  width: 15rem;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  background: var(--raise);
+}
+.scene-now > div { flex: 1 1 14rem; min-width: 0; display: grid; gap: 0.3rem; align-content: start; }
+.scene-now strong { font-family: var(--display); font-weight: 800; font-size: var(--step-1); line-height: 1.1; }
+.scene-now p { margin: 0; color: var(--text-2); }
+.scene-now .scene-where { color: var(--text-3); font-size: var(--step--1); }
+.scene-now .ghost { justify-self: start; margin-top: 0.4rem; }
+
+.scenes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+.scene {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.3rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--raise);
+  color: var(--text-2);
+  text-align: left;
+  cursor: pointer;
+}
+.scene img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 5px; }
+.scene-name { padding: 0 0.2rem 0.15rem; font-size: var(--step--1); line-height: 1.2; }
+.scene-name b { color: var(--text); }
+.scene:hover { background: var(--hover); color: var(--text); }
+.scene:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scene.set { border-color: var(--accent); color: var(--text); }
+.scene.kept { border-color: var(--text-3); border-style: dashed; }
+
 .empty { margin: 0; padding: 1rem 1.2rem; border-radius: 8px; background: var(--surface); color: var(--text-3); }
 
 .wave-tools {
@@ -351,6 +414,7 @@
   .row { grid-template-columns: 3.6rem 1fr; grid-template-areas: "token who" "count count" "how how"; }
   .token { width: 3.6rem; height: 3.6rem; }
   .skyline { height: 220px; }
+  .scenes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
