@@ -1,31 +1,34 @@
-/* TestDrive game pages (Waves and Sounds): a war table. Walnut board, chalk text, enemies as
-   painted pieces, gold for elites, the game's red X for spawn spots. Shared by both pages. */
+/* TestDrive game pages (Waves and Sounds), shared by both. The look follows a music player:
+   near-black background, dark grey surfaces, white text, one bright green for the main actions
+   (Save, Play, what's selected), gold only for elites, and the game's own enemy colours. */
 
-/* The web fonts have no shekel sign: always draw it from a system font that does. */
+/* The web font has no shekel sign: always draw it from a system font that does. */
 @font-face { font-family: "Shekel"; src: local("Segoe UI"), local("Arial"); unicode-range: U+20AA; }
 
 :root {
-  --table: #241C17;    /* page */
-  --felt: #2F2620;     /* panels and the chart surface */
-  --raise: #3A2F27;    /* rows, inputs */
-  --line: #54453A;     /* borders */
-  --chalk: #F3EBDD;    /* main text */
-  --chalk-2: #CDBFAB;  /* secondary text */
-  --chalk-3: #A69884;  /* quiet text */
-  --gold: #F2C14E;     /* elites, save, focus */
-  --gold-ink: #2A1E08;
-  --x-red: #FF5A47;    /* spawn markers, like the red X in the game */
-  --danger: #FF7A6B;
+  --bg: #121212;        /* the page */
+  --surface: #181818;   /* cards and panels */
+  --raise: #242424;     /* inputs, rows, chips */
+  --hover: #2c2c2c;     /* something under the mouse */
+  --line: #333333;      /* borders and dividers */
+  --text: #ffffff;      /* main text */
+  --text-2: #b3b3b3;    /* secondary text */
+  --text-3: #8a8a8a;    /* quiet text */
+  --accent: #1ed760;    /* Save, Play, selection */
+  --accent-ink: #000000;/* text on the accent */
+  --gold: #f2c14e;      /* elites */
+  --x-red: #ff5a47;     /* spawn markers, like the red X in the game */
+  --danger: #f3727f;
 
-  --display: "Shekel", "Big Shoulders Display", "Arial Narrow", sans-serif;
-  --body: "Shekel", "Atkinson Hyperlegible", "Segoe UI", sans-serif;
+  --display: "Shekel", "Figtree", "Segoe UI", sans-serif;
+  --body: "Shekel", "Figtree", "Segoe UI", sans-serif;
 
-  --step--1: 0.95rem;
-  --step-0: 1.15rem;
-  --step-1: 1.4rem;
-  --step-2: 2rem;
-  --step-3: 3rem;
-  --step-4: 5.2rem;
+  --step--1: 0.9rem;
+  --step-0: 1rem;
+  --step-1: 1.3rem;
+  --step-2: 1.8rem;
+  --step-3: 2.6rem;
+  --step-4: 4.4rem;
   color-scheme: dark;
 }
 
@@ -38,8 +41,8 @@ html { font-size: 17px; }
 
 body {
   margin: 0;
-  background: var(--table);
-  color: var(--chalk);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--body);
   font-size: var(--step-0);
   line-height: 1.45;
@@ -49,7 +52,7 @@ button, input, select { font: inherit; color: inherit; }
 
 button { cursor: pointer; }
 
-:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
 
 /* ---------- header ---------- */
 .top {
@@ -59,104 +62,108 @@ button { cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem 2rem;
+  gap: 0.8rem 2rem;
   flex-wrap: wrap;
-  padding: 0.8rem 2rem;
-  background: var(--table);
-  border-bottom: 1px solid var(--line);
+  padding: 0.7rem 1.6rem;
+  background: #000;
 }
 
-/* The two pages, as tabs: the current one bright, the other one dim. */
-.tabs { display: flex; gap: 1.4rem; align-items: baseline; }
+/* The two pages, as pills: the current one white. */
+.tabs { display: flex; gap: 0.5rem; align-items: center; }
 .tabs a {
-  font-family: var(--display);
-  font-weight: 800;
-  font-size: var(--step-2);
-  line-height: 1;
-  color: var(--chalk-3);
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: var(--raise);
+  color: var(--text);
+  font-weight: 600;
+  font-size: var(--step-0);
   text-decoration: none;
-  border-bottom: 3px solid transparent;
-  padding-bottom: 0.15rem;
 }
-.tabs a:hover { color: var(--chalk-2); }
-.tabs a[aria-current="page"] { color: var(--chalk); border-bottom-color: var(--gold); }
+.tabs a:hover { background: var(--hover); }
+.tabs a[aria-current="page"] { background: var(--text); color: #000; }
 
 .file {
-  margin: 0.2rem 0 0;
-  color: var(--chalk-3);
-  font-size: var(--step--1);
+  margin: 0.35rem 0 0;
+  color: var(--text-3);
+  font-size: 0.8rem;
   overflow-wrap: anywhere;
 }
 
-.actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 
 .ghost {
-  padding: 0.55rem 1rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  padding: 0.45rem 1rem;
+  border: 1px solid #727272;
+  border-radius: 999px;
   background: transparent;
-  color: var(--chalk-2);
+  color: var(--text);
+  font-weight: 600;
+  font-size: var(--step--1);
 }
-.ghost:hover:not(:disabled) { color: var(--chalk); border-color: var(--chalk-3); }
-.ghost:disabled { opacity: 0.4; cursor: default; }
+.ghost:hover:not(:disabled) { border-color: var(--text); transform: scale(1.03); }
+.ghost:disabled { opacity: 0.35; cursor: default; }
 
 .save-box { display: flex; align-items: center; gap: 0.8rem; }
 
 .save {
-  padding: 0.65rem 1.4rem;
+  padding: 0.6rem 1.5rem;
   border: 0;
-  border-radius: 8px;
-  background: var(--gold);
-  color: var(--gold-ink);
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
   font-weight: 700;
-  font-size: var(--step-1);
+  font-size: var(--step-0);
 }
-.save:disabled { background: var(--raise); color: var(--chalk-3); cursor: default; }
+.save:hover:not(:disabled) { background: #3be477; transform: scale(1.03); }
+.save:disabled { background: var(--raise); color: var(--text-3); cursor: default; }
 
-.save-status { margin: 0; min-width: 12ch; color: var(--chalk-2); font-size: var(--step--1); }
-.save-status.unsaved { color: var(--gold); }
+.save-status { margin: 0; min-width: 12ch; max-width: 26rem; color: var(--text-2); font-size: var(--step--1); }
+.save-status.unsaved { color: var(--accent); }
 
 .problem {
-  margin: 1rem 2rem 0;
+  margin: 1rem 1.6rem 0;
   padding: 0.9rem 1.2rem;
-  border-left: 4px solid var(--danger);
-  background: #3B201C;
-  color: var(--chalk);
+  border-radius: 8px;
+  background: #3a1d22;
+  color: var(--text);
 }
 
 /* ---------- shared bits ---------- */
 .swatch { display: inline-block; width: 0.9rem; height: 0.9rem; border-radius: 3px; flex: none; }
 .field { display: grid; gap: 0.35rem; }
-.field-label { color: var(--chalk-2); font-size: var(--step--1); }
+.field-label { color: var(--text-2); font-size: var(--step--1); }
 .text-input, .select {
-  min-height: 3rem;
-  padding: 0.5rem 0.8rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  min-height: 2.8rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
   background: var(--raise);
 }
+.text-input:hover, .select:hover { border-color: #444; }
 .select { padding-right: 2rem; }
 .section-title {
-  margin: 2.6rem 0 0.8rem;
+  margin: 2.4rem 0 0.8rem;
   font-family: var(--display);
   font-weight: 800;
   font-size: var(--step-2);
-  line-height: 1;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
-.section-title small { margin-left: 0.6rem; font-family: var(--body); font-weight: 400; font-size: var(--step--1); color: var(--chalk-3); }
+.section-title small { margin-left: 0.6rem; font-family: var(--body); font-weight: 400; font-size: var(--step--1); color: var(--text-3); letter-spacing: 0; }
 kbd { padding: 0 0.35em; border: 1px solid var(--line); border-radius: 4px; font-family: inherit; font-size: 0.9em; }
 
 /* Phones: a compact top bar, so the page keeps most of the screen. */
 @media (max-width: 700px) {
   html { font-size: 16px; }
-  .top { gap: 0.4rem; padding: 0.5rem 0.8rem; }
+  /* Two rows: the pages and Save, then Undo/Redo and whether it's saved. */
+  .top { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr) auto; align-items: center; gap: 0.45rem 0.35rem; padding: 0.5rem 0.8rem; }
+  .brand { grid-column: 1 / 5; }
+  .actions, .save-box { display: contents; }
+  .save { grid-row: 1; grid-column: 5; padding: 0.45rem 1.1rem; font-size: 0.95rem; }
+  .save-status { grid-row: 2; grid-column: 4 / 6; min-width: 0; max-width: none; font-size: 0.75rem; line-height: 1.2; text-align: right; }
   .file { display: none; }
-  .tabs a { font-size: var(--step-1); }
-  .actions { gap: 0.35rem; width: 100%; }
-  .ghost { padding: 0.3rem 0.6rem; font-size: 0.9rem; }
-  .save-box { gap: 0.5rem; margin-left: auto; }
-  .save { padding: 0.35rem 0.9rem; font-size: var(--step-0); }
-  .save-status { min-width: 0; max-width: 9rem; font-size: 0.75rem; line-height: 1.2; }
+  .tabs a { padding: 0.3rem 0.9rem; }
+  .ghost { padding: 0.25rem 0.7rem; font-size: 0.8rem; }
   .problem { margin-inline: 0.8rem; }
 }
 
@@ -168,17 +175,17 @@ kbd { padding: 0 0.35em; border: 1px solid var(--line); border-radius: 4px; font
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(20, 15, 12, 0.85);
+  background: rgba(0, 0, 0, 0.8);
 }
 .setup-card {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.9rem;
   width: min(100%, 30rem);
-  padding: 1.6rem;
-  border-radius: 14px;
-  background: var(--felt);
+  padding: 1.8rem;
+  border-radius: 12px;
+  background: #282828;
 }
 .setup-card h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: var(--step-2); }
-.setup-card p { margin: 0; color: var(--chalk-2); }
+.setup-card p { margin: 0; color: var(--text-2); }
 .setup-card .text-input { width: 100%; }
 .setup-error { min-height: 1.2em; color: var(--danger) !important; }

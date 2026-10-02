@@ -6,7 +6,7 @@
   <title>Sound Board</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Big+Shoulders+Display:wght@600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="common.css">
   <link rel="stylesheet" href="sounds.css">
 </head>
@@ -48,20 +48,37 @@
       <div class="lib-filters" id="lib-filters"></div>
       <p class="lib-count" id="lib-count" aria-live="polite"></p>
       <ul class="results" id="lib-results" role="listbox" aria-label="Sounds"></ul>
-      <div class="lib-preview" id="lib-preview" hidden>
-        <div class="wave-box"><canvas id="lib-wave"></canvas><span class="playhead" id="lib-playhead" hidden></span></div>
-        <p class="preview-name" id="lib-preview-name"></p>
-        <p class="preview-meta" id="lib-preview-meta"></p>
-        <button type="button" class="use" id="lib-use"></button>
-      </div>
     </aside>
     <div class="middle">
       <p class="intro">Press <span class="intro-play" aria-hidden="true"></span> on any part to hear the sound it makes in the game.
-        Dashed circles are places that have no sound yet. To change a sound, drag one from the library onto its play button.</p>
+        Dashed circles are places that have no sound yet. To change a sound, play one from the library and press
+        “Use for…” at the bottom, or drag it onto the play button.</p>
       <div class="board" id="board"></div>
     </div>
     <aside class="mixer" id="mixer" aria-live="polite"></aside>
   </main>
+
+  <!-- The library's player: one sound at a time, streamed, so it starts at once. -->
+  <footer class="player idle" id="player" aria-label="Player">
+    <div class="np-info">
+      <span class="np-title" id="np-title">Pick a sound in the library to hear it</span>
+      <span class="np-sub" id="np-sub"></span>
+    </div>
+    <div class="np-center">
+      <button type="button" class="np-toggle" id="np-toggle" aria-label="Play" title="Play / pause (Space)" disabled>
+        <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4h4v16h-4zM13.5 4h4v16h-4z"/></svg>
+      </button>
+      <div class="np-bar">
+        <span class="np-time" id="np-now">0:00</span>
+        <input type="range" class="np-seek" id="np-seek" min="0" max="1000" step="1" value="0" aria-label="Position" disabled>
+        <span class="np-time" id="np-length">0:00</span>
+      </div>
+    </div>
+    <div class="np-actions">
+      <button type="button" class="use" id="lib-use" disabled>Press ▶ on a part first</button>
+    </div>
+  </footer>
 
   <script src="store.js"></script>
   <script src="sounds.js"></script>

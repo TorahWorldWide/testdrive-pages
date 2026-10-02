@@ -5,9 +5,10 @@
 // a second of every save.
 //
 // The library on the left holds new sounds to try: Freesound (searched live), Kenney's packs (on
-// disk), the recordings already in the game, and your starred picks. Drag one onto a play button to
-// replace that sound, or onto a layer in the mixer. Saving brings the new recordings into the game
-// (Assets/Resources/Sfx/lib) through the server (library.py).
+// disk), the recordings already in the game, and your starred picks. They play in the player bar
+// along the bottom (one <audio>, streamed). Drag one onto a play button to replace that sound, or
+// onto a layer in the mixer, or press "Use for…" in the player bar. Saving brings the new
+// recordings into the game (Assets/Resources/Sfx/lib) through the server (library.py).
 //
 // Sounds.json: sounds[]: { id, about, layers[]: { takes[], volume (0-1), pitchMin, pitchMax } }
 // A take is a recording in Assets/Resources/Sfx ("cloth1", "lib/fs123-..."), a sound made in code
@@ -132,6 +133,11 @@ const state = {
 };
 
 const $ = id => document.getElementById(id);
+const ICONS = {
+  play: `<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>`,
+  pause: `<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4h4v16h-4zM13.5 4h4v16h-4z"/></svg>`,
+  star: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.3l2.6 5.5 6 .8-4.4 4.1 1.1 6L12 16.8l-5.3 2.9 1.1-6-4.4-4.1 6-.8z"/></svg>`,
+};
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const snapshot = () => JSON.stringify(state.plan);
 const soundById = id => state.plan.sounds.find(s => s.id === id);
@@ -181,8 +187,10 @@ function load(take) {
       .then(data => context().decodeAudioData(data))
       .then(buffer => {
         let peak = 0.05;
-        for (let c = 0; c < buffer.numberOfChannels; c++)
-          for (const v of buffer.getChannelData(c)) peak = Math.max(peak, Math.abs(v));
+        for (let c = 0; c < buffer.numberOfChannels; c++) {
+          const d = buffer.getChannelData(c);
+          for (let i = 0; i < d.length; i++) { const v = d[i] < 0 ? -d[i] : d[i]; if (v > peak) peak = v; }
+        }
         return { buffer, gain: Math.min(3, 0.9 / peak) };
       });
     p.catch(() => buffers.delete(take)); // a failed load can be tried again
@@ -191,52 +199,84 @@ function load(take) {
   return buffers.get(take);
 }
 
-// Loads recordings in the background, a few at a time, so the first press plays at once.
-async function preload(takes) {
-  const queue = [...takes];
-  const worker = async () => { while (queue.length) await load(queue.shift()).catch(() => {}); };
-  await Promise.all(Array.from({ length: 6 }, worker));
+// Loads recordings in the background, two at a time, so a press plays at once.
+const toLoad = [];
+let loaders = 0;
+function warm(takes) {
+  for (const t of takes) if (!buffers.has(t) && !toLoad.includes(t)) toLoad.push(t);
+  while (loaders < 2 && toLoad.length) {
+    loaders++;
+    (async () => { while (toLoad.length) await load(toLoad.shift()).catch(() => {}); loaders--; })();
+  }
+}
+const takesOf = ids => ids.flatMap(id => soundById(id)?.layers.flatMap(l => l.takes) || []);
+
+// A phone shouldn't fetch every recording at the start: load the cards on screen (and the next
+// ones down) as they come into view.
+const nearby = "IntersectionObserver" in window && new IntersectionObserver(entries => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    nearby.unobserve(e.target);
+    warm(takesOf([...e.target.querySelectorAll("[data-sound]")].map(el => el.dataset.sound)));
+  }
+}, { rootMargin: "400px 0px" });
+function watchCards() {
+  if (nearby) document.querySelectorAll(".card").forEach(c => nearby.observe(c));
+  else warm(state.recordings);
 }
 
-// One take, at a volume and pitch. Returns the buffer and how long it lasts.
-async function playTake(take, volume, pitch) {
-  const { buffer, gain } = await load(take);
+// One sound at a time: a new press stops the last one, and a press that's still loading when a
+// newer one comes is dropped (on a slow phone, quick presses used to all play together at the end).
+const live = new Set();
+let presses = 0, lit = null;
+function stopSounds() {
+  for (const source of live) { try { source.stop(); } catch { /* already over */ } }
+  live.clear();
+  if (lit) { clearTimeout(lit._stop); lit.classList.remove("playing"); lit = null; }
+}
+function startTake({ buffer, gain }, volume, pitch) {
   const ctx = context();
-  await ctx.resume();
   const source = ctx.createBufferSource();
   source.buffer = buffer;
   source.playbackRate.value = pitch;
   const level = ctx.createGain();
   level.gain.value = Math.min(1, volume * gain * MASTER);
   source.connect(level).connect(ctx.destination);
+  source.onended = () => live.delete(source);
+  live.add(source);
   source.start();
-  return { buffer, seconds: buffer.duration / pitch, started: ctx.currentTime, source };
+  return buffer.duration / pitch;
 }
-
-// One random take of a layer, at a random pitch in its range. Returns how long it lasts.
-async function playLayer(layer) {
-  if (!layer.takes.length) return 0;
-  const take = layer.takes[Math.floor(Math.random() * layer.takes.length)];
-  const pitch = layer.pitchMin + Math.random() * Math.max(0, layer.pitchMax - layer.pitchMin);
-  return (await playTake(take, layer.volume, pitch)).seconds;
-}
-
-async function playSound(id) {
-  const sound = soundById(id);
-  if (!sound) return 0;
-  await context().resume();
-  const lengths = await Promise.all(sound.layers.map(l => playLayer(l).catch(() => 0)));
-  return Math.max(0, ...lengths);
-}
-
 // Lights up 'el' while a sound lasts.
 function glow(el, secs) {
   if (!el) return;
+  lit = el;
   el.classList.add("playing");
-  clearTimeout(el._stop);
-  el._stop = setTimeout(() => el.classList.remove("playing"), Math.max(250, secs * 1000));
+  el._stop = setTimeout(() => { el.classList.remove("playing"); if (lit === el) lit = null; }, Math.max(250, secs * 1000));
 }
-async function play(id, el) { glow(el, await playSound(id)); }
+// Plays layers together, the way the game does: each one a random take, at a random pitch in its
+// range. 'el' shows it's loading, then lights up while it sounds.
+async function playLayers(layers, el) {
+  const press = ++presses;
+  pausePreview();
+  const resumed = context().resume(); // inside the tap, so phones allow sound
+  const picks = layers.filter(l => l.takes.length).map(l => ({
+    take: l.takes[Math.floor(Math.random() * l.takes.length)],
+    volume: l.volume,
+    pitch: l.pitchMin + Math.random() * Math.max(0, l.pitchMax - l.pitchMin),
+  }));
+  el?.classList.add("loading");
+  const loaded = await Promise.all(picks.map(p => load(p.take).catch(() => null)));
+  await resumed.catch(() => {});
+  el?.classList.remove("loading");
+  if (press !== presses) return; // a newer press came while this one was loading
+  stopSounds();
+  glow(el, Math.max(0, ...picks.map((p, i) => loaded[i] ? startTake(loaded[i], p.volume, p.pitch) : 0)));
+}
+function play(id, el) {
+  const sound = soundById(id);
+  if (sound) playLayers(sound.layers, el);
+}
 
 // ---------- loading and saving ----------
 
@@ -274,7 +314,7 @@ async function start() {
     renderMixer();
     renderStatus();
     renderLibrary();
-    preload(state.recordings);
+    watchCards();
   } catch (err) {
     showProblem(err instanceof TypeError
       ? (Store.online ? "Can't reach GitHub. Check the internet connection and reload."
@@ -452,7 +492,7 @@ function renderMixer() {
   const sound = id && soundById(id);
   if (!sound) {
     $("mixer").innerHTML = `<h2>Mixer</h2><p class="empty-mixer">Press any play button: you'll hear it, and see here what it's made of.
-      To change it, drag a sound from the library onto its play button.</p>`;
+      To change it, play a sound from the library and press “Use for…” at the bottom.</p>`;
     return;
   }
   const fams = families();
@@ -494,8 +534,9 @@ function renderMixer() {
           ${options.map(k => `<option value="${esc(k)}">${esc(recordingName(k))}</option>`).join("")}</select></label>
       <p class="drop-hint">…or drag one here from the library.</p>
     </div>
-    <p class="hint">Drag a library sound onto a play button to replace that sound, or onto a layer above to
-      replace just that layer. Changes play here right away; press Save to put them in the game.
+    <p class="hint">To replace this sound, pick one in the library and press “Use for…” in the player bar, or
+      drag it onto a play button (or onto a layer above, to replace just that layer). Changes play here
+      right away; press Save to put them in the game.
       <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes.</p>`;
 }
 
@@ -504,7 +545,7 @@ function select(id) {
   state.selected = id;
   document.querySelectorAll(".spot").forEach(s => s.classList.toggle("selected", s.dataset.sound === id));
   renderMixer();
-  renderPreviewUse();
+  renderPlayer();
 }
 
 // ---------- the library ----------
@@ -517,7 +558,7 @@ function savePicks() {
 }
 const isPicked = ref => state.lib.picks.some(p => p.ref === ref);
 
-// Library entries: { ref, takes[], title, meta, link? }
+// Library entries: { ref, takes[], title, sub (author, pack or where it's used), time, meta, link? }
 function gameItems() {
   const used = new Map();
   for (const s of state.plan.sounds)
@@ -529,8 +570,10 @@ function gameItems() {
       }
   const q = state.lib.query.toLowerCase();
   return [...families().entries()]
-    .map(([k, takes]) => ({ ref: "game:" + k, takes, title: recordingName(k),
-      meta: (takes.length > 1 ? `${takes.length} takes. ` : "") + (used.has(k) ? "In: " + [...used.get(k)].join(", ") : "Not used yet") }))
+    .map(([k, takes]) => {
+      const meta = (takes.length > 1 ? `${takes.length} takes. ` : "") + (used.has(k) ? "In: " + [...used.get(k)].join(", ") : "Not used yet");
+      return { ref: "game:" + k, takes, title: recordingName(k), sub: meta, time: "", meta };
+    })
     .filter(i => !q || i.title.toLowerCase().includes(q) || i.ref.toLowerCase().includes(q))
     .sort((a, b) => a.title.localeCompare(b.title));
 }
@@ -541,11 +584,12 @@ function kenneyItems() {
   return k.sounds
     .filter(s => !state.lib.pack || s.pack === state.lib.pack)
     .filter(s => words.every(w => (s.name + " " + s.packName).toLowerCase().includes(w)))
-    .map(s => ({ ref: s.ref, takes: [s.ref], title: s.name, meta: `${seconds(s.seconds)}, ${s.packName}`,
+    .map(s => ({ ref: s.ref, takes: [s.ref], title: s.name, sub: s.packName, time: seconds(s.seconds), meta: `${seconds(s.seconds)}, ${s.packName}`,
       source: "Kenney: " + s.packName, author: "Kenney", seconds: s.seconds }));
 }
 function freesoundItems() {
-  return state.lib.fs.results.map(s => ({ ref: s.ref, takes: [s.ref], title: s.title, meta: `${seconds(s.seconds)}, by ${s.author}`,
+  return state.lib.fs.results.map(s => ({ ref: s.ref, takes: [s.ref], title: s.title, sub: "by " + s.author, time: seconds(s.seconds),
+    meta: `${seconds(s.seconds)}, by ${s.author}`,
     link: s.link, source: "Freesound", author: s.author, seconds: s.seconds }));
 }
 
@@ -629,54 +673,92 @@ function renderLibrary() {
   } else {
     const q = lib.query.toLowerCase();
     items = lib.picks.filter(p => !q || p.title.toLowerCase().includes(q));
-    if (!lib.picks.length) message = "Nothing starred yet. Press ☆ next to a sound to keep it here.";
+    if (!lib.picks.length) message = "Nothing here yet. Press the star next to a sound to keep it here.";
     $("lib-count").textContent = lib.picks.length ? `${items.length} picks` : "";
   }
   lib.items = items;
   if (lib.sel >= items.length) lib.sel = -1;
   $("lib-results").innerHTML = items.map((it, i) => `
-    <li class="hit${i === lib.sel ? " current" : ""}" draggable="true" data-i="${i}" role="option" aria-selected="${i === lib.sel}">
-      <button type="button" class="mini-play" data-hit-play="${i}" aria-label="Listen to ${esc(it.title)}"></button>
-      <span class="hit-text"><span class="hit-name">${esc(it.title)}</span><span class="hit-meta">${esc(it.meta)}</span></span>
-      <button type="button" class="star" data-star="${i}" aria-pressed="${isPicked(it.ref)}" aria-label="Star">${isPicked(it.ref) ? "★" : "☆"}</button>
+    <li class="track${i === lib.sel ? " current" : ""}" draggable="true" data-i="${i}" role="option" aria-selected="${i === lib.sel}">
+      <button type="button" class="track-play" data-hit-play="${i}" aria-label="Listen to ${esc(it.title)}"><span class="track-num">${i + 1}</span>${ICONS.play}${ICONS.pause}</button>
+      <span class="track-text"><span class="track-title">${esc(it.title)}</span><span class="track-sub">${esc(it.sub ?? it.meta ?? "")}</span></span>
+      <span class="track-time">${esc(it.time ?? "")}</span>
+      <button type="button" class="like" data-star="${i}" aria-pressed="${isPicked(it.ref)}" aria-label="${isPicked(it.ref) ? "Take out of Picks" : "Keep in Picks"}">${ICONS.star}</button>
     </li>`).join("") + (message ? `<li class="lib-message">${message.startsWith("<") ? message : esc(message)}</li>` : "") +
     (more ? `<li class="lib-message">${more}</li>` : "");
+  renderPlaying();
 }
 
-// The bottom of the library: the sound you last listened to, its waveform, and a button to use it.
-let previewItem = null, previewAnim = 0, previewSource = null;
-function drawWave(buffer) {
-  const canvas = $("lib-wave");
-  const w = canvas.width = canvas.clientWidth * devicePixelRatio;
-  const h = canvas.height = canvas.clientHeight * devicePixelRatio;
-  const g = canvas.getContext("2d");
-  g.clearRect(0, 0, w, h);
-  const data = buffer.getChannelData(0);
-  const step = Math.max(1, Math.floor(data.length / w));
-  let peak = 0.0001;
-  for (const v of data) peak = Math.max(peak, Math.abs(v));
-  g.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--chalk-2");
-  for (let x = 0; x < w; x++) {
-    let m = 0;
-    for (let i = x * step; i < (x + 1) * step && i < data.length; i++) m = Math.max(m, Math.abs(data[i]));
-    const bar = Math.max(1, (m / peak) * (h / 2 - 2));
-    g.fillRect(x, h / 2 - bar, 1, bar * 2);
+// ---------- the library's player (the bar along the bottom) ----------
+// One <audio> for every library sound. It streams, so it starts at once even on a phone, and a new
+// sound simply takes the last one's place: two can never play together.
+const player = new Audio();
+player.preload = "auto";
+player.volume = MASTER;
+let previewItem = null; // the sound in the player bar
+let listens = 0;
+
+function pausePreview() { if (!player.paused) player.pause(); }
+function togglePreview() {
+  if (!previewItem) return;
+  if (!player.getAttribute("src")) return listen(state.lib.sel, { again: true });
+  if (player.paused) player.play().catch(() => {});
+  else player.pause();
+}
+
+function renderPlayer() {
+  $("player").classList.toggle("idle", !previewItem);
+  $("np-toggle").disabled = $("np-seek").disabled = !previewItem;
+  if (previewItem) {
+    $("np-title").textContent = previewItem.title;
+    $("np-sub").innerHTML = esc(previewItem.sub ?? previewItem.meta ?? "") +
+      (previewItem.link ? ` <a href="${esc(previewItem.link)}" target="_blank" rel="noopener">(on Freesound)</a>` : "");
   }
-}
-function renderPreviewUse() {
-  const box = $("lib-preview");
-  if (!previewItem) { box.hidden = true; return; }
-  box.hidden = false;
-  $("lib-preview-name").textContent = previewItem.title;
-  $("lib-preview-meta").innerHTML = esc(previewItem.meta) + (previewItem.link ? ` <a href="${esc(previewItem.link)}" target="_blank" rel="noopener">on Freesound</a>` : "");
   const use = $("lib-use");
-  use.disabled = !state.selected;
-  use.textContent = state.selected ? `Use for “${nameOf(state.selected)}”` : "Press ▶ on the sound to replace";
+  use.disabled = !state.selected || !previewItem;
+  use.textContent = state.selected ? `Use for “${nameOf(state.selected)}”` : "Press ▶ on a part first";
+  use.title = state.selected ? `Put this sound in place of “${nameOf(state.selected)}” (Enter)` : "First press a play button on a character, to choose which sound to replace.";
 }
+// Playing or not: the bar's button and the row's pause icon.
+let frame = 0, seeking = false;
+function renderPlaying() {
+  const playing = !!previewItem && !player.paused && !player.ended;
+  $("player").classList.toggle("playing", playing);
+  $("np-toggle").setAttribute("aria-label", playing ? "Pause" : "Play");
+  const here = previewItem && state.lib.items[state.lib.sel]?.ref === previewItem.ref ? state.lib.sel : -1;
+  document.querySelectorAll(".track").forEach(li => li.classList.toggle("playing", playing && +li.dataset.i === here));
+  cancelAnimationFrame(frame);
+  if (playing) frame = requestAnimationFrame(tick);
+  renderTime();
+}
+function tick() { renderTime(); if (!player.paused) frame = requestAnimationFrame(tick); }
+function renderTime() {
+  const length = Number.isFinite(player.duration) ? player.duration : previewItem?.seconds || 0;
+  const now = Math.min(player.currentTime || 0, length || Infinity);
+  $("np-now").textContent = seconds(now);
+  $("np-length").textContent = seconds(length);
+  const seek = $("np-seek");
+  if (!seeking) seek.value = length ? Math.round(now / length * 1000) : 0;
+  seek.style.setProperty("--done", seek.value / 10 + "%");
+}
+for (const e of ["play", "playing", "pause", "ended", "emptied", "loadedmetadata"]) player.addEventListener(e, renderPlaying);
+player.addEventListener("play", () => { presses++; stopSounds(); }); // no game sound over a library one
+player.addEventListener("error", () => {
+  if (!player.getAttribute("src") || !previewItem) return;
+  showProblem(`Couldn't play “${previewItem.title}”. Check the internet connection, or try another one.`);
+  setTimeout(() => showProblem(null), 4000);
+});
+$("np-seek").addEventListener("input", ev => {
+  seeking = true;
+  if (Number.isFinite(player.duration)) player.currentTime = ev.target.value / 1000 * player.duration;
+  ev.target.style.setProperty("--done", ev.target.value / 10 + "%");
+});
+$("np-seek").addEventListener("change", () => { seeking = false; });
+
 // Scrolls the list (never the page) so row i is in view.
 function showInList(i) {
   const list = $("lib-results");
-  const row = list.querySelector(`.hit[data-i="${i}"]`);
+  const row = list.querySelector(`.track[data-i="${i}"]`);
   if (!row) return;
   const l = list.getBoundingClientRect(), r = row.getBoundingClientRect();
   if (r.top < l.top) list.scrollTop -= l.top - r.top;
@@ -697,36 +779,33 @@ async function step(delta) {
   }
   listen((next + n) % n);
 }
-async function listen(i) {
+// Plays library sound i in the player bar. Pressing the one that's already there pauses or resumes it.
+async function listen(i, { again = false } = {}) {
   const item = state.lib.items[i];
   if (!item) return;
+  if (!again && previewItem?.ref === item.ref && state.lib.sel === i && player.getAttribute("src")) return togglePreview();
   state.lib.sel = i;
-  document.querySelectorAll(".hit").forEach(li => { li.classList.toggle("current", +li.dataset.i === i); li.setAttribute("aria-selected", +li.dataset.i === i); });
+  document.querySelectorAll(".track").forEach(li => { li.classList.toggle("current", +li.dataset.i === i); li.setAttribute("aria-selected", +li.dataset.i === i); });
   showInList(i);
   previewItem = item;
   remember(item);
-  renderPreviewUse();
-  const btn = document.querySelector(`[data-hit-play="${i}"]`);
-  try {
-    const take = item.takes[Math.floor(Math.random() * item.takes.length)];
-    try { previewSource?.stop(); } catch { /* already finished */ } // like FL: one preview at a time
-    const { buffer, seconds: secs, started, source } = await playTake(take, 0.8, 1);
-    previewSource = source;
-    glow(btn, secs);
-    drawWave(buffer);
-    cancelAnimationFrame(previewAnim);
-    const head = $("lib-playhead");
-    const tick = () => {
-      const t = (context().currentTime - started) / secs;
-      head.style.left = Math.min(100, t * 100) + "%";
-      head.hidden = t >= 1;
-      if (t < 1) previewAnim = requestAnimationFrame(tick);
-    };
-    tick();
-  } catch {
-    showProblem(`Couldn't play “${item.title}”. Check the internet connection, or try another one.`);
-    setTimeout(() => showProblem(null), 4000);
+  renderPlayer();
+  const n = ++listens;
+  const take = item.takes[Math.floor(Math.random() * item.takes.length)];
+  let url = Store.streamUrl(take);
+  if (typeof url !== "string") { // a Freesound sound we haven't looked up yet
+    player.pause();
+    try { url = await url; } catch { url = null; }
+    if (n !== listens) return;
+    if (!url) {
+      showProblem(`Couldn't reach “${item.title}”. Check the internet connection, or try another one.`);
+      setTimeout(() => showProblem(null), 4000);
+      return;
+    }
   }
+  player.src = url;
+  player.play().catch(() => renderPlaying()); // a newer sound took its place, or the phone wants a tap on ▶
+  renderPlaying();
 }
 
 // Puts a library sound into a game sound: replacing it all, one layer, or as a new layer.
@@ -761,7 +840,7 @@ document.addEventListener("click", ev => {
   const layerPlay = t.closest("[data-layer-play]");
   if (layerPlay) {
     const layer = soundById(state.selected).layers[+layerPlay.dataset.layerPlay];
-    playLayer(layer).then(s => glow(layerPlay, s)).catch(() => {});
+    playLayers([layer], layerPlay);
     return;
   }
   const remove = t.closest("[data-remove]");
@@ -795,15 +874,18 @@ document.addEventListener("click", ev => {
   }
   const hitPlay = t.closest("[data-hit-play]");
   if (hitPlay) return listen(+hitPlay.dataset.hitPlay);
-  const hit = t.closest(".hit");
+  const hit = t.closest(".track");
   if (hit) return listen(+hit.dataset.i);
+  if (t.closest("#np-toggle")) return togglePreview();
   if (t.closest("#lib-more")) return searchFreesound(true);
   if (t.closest("#get-kenney")) {
     Store.downloadKenney().then(k => { state.lib.kenney = k; renderLibrary(); setTimeout(loadKenney, 2000); });
     return;
   }
   if (t.closest("#lib-use") && previewItem && state.selected) useOn(state.selected, previewItem);
-  if (t.closest("#sheet-toggle")) setSheet(!$("library").classList.contains("collapsed"));
+  // Phones: the drawer opens from anywhere on its head, and closes with its button.
+  if (t.closest("#sheet-toggle") || (t.closest(".library-head") && $("library").classList.contains("collapsed")))
+    setSheet(!$("library").classList.contains("collapsed"));
 });
 
 // Phones: open and close the library drawer.
@@ -817,7 +899,7 @@ if (matchMedia("(max-width: 800px)").matches) setSheet(true);
 // Dragging a library sound onto a play button or a mixer layer.
 let dragged = null;
 document.addEventListener("dragstart", ev => {
-  const hit = ev.target.closest?.(".hit");
+  const hit = ev.target.closest?.(".track");
   if (!hit) return;
   dragged = state.lib.items[+hit.dataset.i];
   remember(dragged);
@@ -882,7 +964,7 @@ function onField(el, commit) {
   if (commit) {
     commitPending();
     state.pending = snapshot();
-    if (field === "family") { renderMixer(); playLayer(layer).catch(() => {}); }
+    if (field === "family") { renderMixer(); playLayers([layer]); }
   }
   renderStatus();
 }
@@ -931,6 +1013,12 @@ document.addEventListener("keydown", ev => {
     step(ev.key === "ArrowDown" ? 1 : -1);
     return;
   }
+  // Space: play or pause the player bar (a focused button or box keeps its own Space).
+  if (ev.key === " " && !ctrl && !ev.target.matches?.("input, select, textarea, button, a") && previewItem) {
+    ev.preventDefault();
+    togglePreview();
+    return;
+  }
   if (inLibrary && ev.key === "Enter") {
     if (ev.target.id === "lib-search" && state.lib.source === "freesound") { clearTimeout(searchTimer); searchFreesound(); return; }
     if (previewItem && state.selected && ev.target.id !== "lib-search") useOn(state.selected, previewItem);
@@ -940,6 +1028,9 @@ document.addEventListener("keydown", ev => {
 $("undo").addEventListener("click", undo);
 $("redo").addEventListener("click", redo);
 $("save").addEventListener("click", save);
+// The library and the mixer stick just under the header, whatever its height.
+const header = document.querySelector(".top");
+new ResizeObserver(() => document.documentElement.style.setProperty("--below-top", header.offsetHeight + 8 + "px")).observe(header);
 $("lib-chips").innerHTML = CHIPS.map(c => `<button type="button" class="chip" data-chip="${c}">${c}</button>`).join("");
 window.addEventListener("beforeunload", ev => {
   if (state.plan && snapshot() !== state.saved) { ev.preventDefault(); ev.returnValue = ""; }

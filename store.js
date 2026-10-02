@@ -157,26 +157,40 @@ const Store = (() => {
 
   // ---------- the Sounds page's recordings and library ----------
   const previews = {};
+  const known = {}; // Freesound sounds whose preview links are already here (from a search)
   async function freesoundInfo(id) {
     if (!previews[id]) {
       previews[id] = fetch(`https://freesound.org/apiv2/sounds/${id}/?fields=id,name,username,url,license,previews&token=${freesoundKey}`)
-        .then(r => { if (!r.ok) throw new Error("Freesound answered " + r.status); return r.json(); });
+        .then(r => { if (!r.ok) throw new Error("Freesound answered " + r.status); return r.json(); })
+        .then(s => (known[id] = s));
       previews[id].catch(() => delete previews[id]);
     }
     return previews[id];
   }
   // Where a take's audio can be fetched. Online, sounds brought in from the library are played from
   // where they came from (Kenney's files here, or Freesound).
-  async function audioUrl(take) {
+  function fileUrl(take) { // every take except Freesound's online, which need a lookup
     const path = s => s.split("/").map(encodeURIComponent).join("/");
     if (take.startsWith("~")) return `made-sounds/${take.slice(1)}.wav`;
     if (take.startsWith("kenney:")) return "library/kenney/" + path(take.slice(7));
-    if (take.startsWith("freesound:")) {
-      const id = take.slice(10);
-      return online ? (await freesoundInfo(id)).previews["preview-hq-ogg"] : `api/library/freesound/preview/${id}`;
-    }
-    if (online && take.startsWith("lib/") && credits[take]?.from) return audioUrl(credits[take].from);
+    if (take.startsWith("freesound:")) return `api/library/freesound/preview/${take.slice(10)}`;
     return online ? `sfx/${path(take)}.ogg` : "sfx/" + path(take);
+  }
+  const from = take => online && take.startsWith("lib/") && credits[take]?.from ? from(credits[take].from) : take;
+  async function audioUrl(take) {
+    take = from(take);
+    if (online && take.startsWith("freesound:")) return (await freesoundInfo(take.slice(10))).previews["preview-hq-mp3"]; // mp3: every phone decodes it
+    return fileUrl(take);
+  }
+  // A link for listening in an <audio> player, which streams it (it starts before it has all of it).
+  // Online, Freesound sounds use their mp3 preview, which every phone plays. The link comes back
+  // straight away when it's known, so a phone still counts the play as the user's own tap.
+  function streamUrl(take) {
+    take = from(take);
+    if (!online || !take.startsWith("freesound:")) return fileUrl(take);
+    const id = take.slice(10);
+    if (known[id]) return known[id].previews["preview-hq-mp3"];
+    return freesoundInfo(id).then(s => s.previews["preview-hq-mp3"]);
   }
 
   async function kenney() {
@@ -216,6 +230,7 @@ const Store = (() => {
     const data = await r.json();
     const results = data.results.filter(s => s.license.includes("publicdomain/zero")).map(s => {
       previews[s.id] = Promise.resolve(s);
+      known[s.id] = s;
       return { ref: `freesound:${s.id}`, title: title(s.name), author: s.username, seconds: Math.round((s.duration || 0) * 100) / 100,
         license: "CC0", link: s.url, tags: (s.tags || []).slice(0, 6) };
     });
@@ -232,5 +247,5 @@ const Store = (() => {
     return body;
   }
 
-  return { online, Conflict, load, save, audioUrl, kenney, downloadKenney, searchFreesound, bringIn, formatPlan, credits: () => credits };
+  return { online, Conflict, load, save, audioUrl, streamUrl, kenney, downloadKenney, searchFreesound, bringIn, formatPlan, credits: () => credits };
 })();
