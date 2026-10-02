@@ -157,10 +157,10 @@ kbd { padding: 0 0.35em; border: 1px solid var(--line); border-radius: 4px; font
   html { font-size: 16px; }
   /* Two rows: the pages and Save, then Undo/Redo and whether it's saved. */
   .top { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr) auto; align-items: center; gap: 0.45rem 0.35rem; padding: 0.5rem 0.8rem; }
-  .brand { grid-column: 1 / 5; }
-  .actions, .save-box { display: contents; }
-  .save { grid-row: 1; grid-column: 5; padding: 0.45rem 1.1rem; font-size: 0.95rem; }
-  .save-status { grid-row: 2; grid-column: 4 / 6; min-width: 0; max-width: none; font-size: 0.75rem; line-height: 1.2; text-align: right; }
+  .top .brand { grid-column: 1 / 5; }
+  .top .actions, .top .save-box { display: contents; }
+  .top .save { grid-row: 1; grid-column: 5; padding: 0.45rem 1.1rem; font-size: 0.95rem; }
+  .top .save-status { grid-row: 2; grid-column: 4 / 6; min-width: 0; max-width: none; font-size: 0.75rem; line-height: 1.2; text-align: right; }
   .file { display: none; }
   .tabs a { padding: 0.3rem 0.9rem; }
   .ghost { padding: 0.25rem 0.7rem; font-size: 0.8rem; }
