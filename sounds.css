@@ -345,7 +345,7 @@ body.dragging-sound .layer, body.dragging-sound .drop-add { outline: 2px dashed 
 /* Phones: the library becomes a drawer along the bottom of the screen. Closed, it still shows the
    sound you last heard and its "Use for" button. */
 @media (max-width: 800px) {
-  .hall { grid-template-columns: 1fr; padding: 1rem 0.8rem 9rem; }
+  .hall { grid-template-columns: 1fr; padding: 1rem 0.8rem 9rem; overflow-x: clip; /* labels never widen the page */ }
   .library {
     position: fixed;
     top: auto;
