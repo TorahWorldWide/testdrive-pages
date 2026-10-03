@@ -1,15 +1,15 @@
 {
   "about": "What the editor knows about each enemy. Claude regenerates this from the prefabs (rewards, lives) when they change.",
   "enemies": [
-    { "type": "Basic", "name": "basic", "plural": "basics", "reward": 7, "lives": 1, "color": "#EC5D4B", "does": "Runs straight at you." },
-    { "type": "Worm", "name": "worm", "plural": "worms", "reward": 30, "lives": 1, "color": "#BC3A83", "does": "Tunnels under you and leaps up to catch you in the air." },
-    { "type": "RockThrower", "name": "rock thrower", "plural": "rock throwers", "reward": 12, "lives": 1, "color": "#C77F3E", "does": "Keeps its distance and lobs rocks at random spots around you." },
-    { "type": "Giant", "name": "giant", "plural": "giants", "reward": 25, "lives": 2, "color": "#886ACF", "does": "4 m tall with a club. Needs a double jump to stomp." },
-    { "type": "Archer", "name": "archer", "plural": "archers", "reward": 15, "lives": 1, "color": "#50A064", "does": "Keeps its distance and shoots arrows where you're about to be." }
+    { "type": "Basic", "name": "basic", "plural": "basics", "reward": 7, "lives": 1, "color": "#EC5D4B", "does": "A brainwashed soldier in a gas mask. Runs straight at you." },
+    { "type": "Worm", "name": "worm", "plural": "worms", "reward": 30, "lives": 1, "color": "#BC3A83", "does": "A mechanical drill worm. Tunnels under you and leaps up to catch you in the air." },
+    { "type": "RockThrower", "name": "rock thrower", "plural": "rock throwers", "reward": 12, "lives": 1, "color": "#C77F3E", "does": "A squat robot with two claws. Keeps its distance and lobs scrap at random spots around you." },
+    { "type": "Giant", "name": "giant", "plural": "giants", "reward": 25, "lives": 2, "color": "#886ACF", "does": "A 4 m combat robot with a steel girder. Needs a double jump to stomp." },
+    { "type": "Archer", "name": "archer", "plural": "archers", "reward": 15, "lives": 1, "color": "#50A064", "does": "A half-robot with a crossbow arm. Keeps its distance and shoots bolts where you're about to be." }
   ],
   "elites": [
-    { "type": "Giant", "lives": 10, "does": "Bigger, helmet and shield, longer club. Swings faster when enraged." },
-    { "type": "Worm", "lives": 13, "does": "Longer, 10 armour plates, leaps higher." },
-    { "type": "Archer", "lives": 6, "does": "Shoots volleys of 3 arrows. 5 when enraged." }
+    { "type": "Giant", "lives": 10, "does": "Bigger and gold, in helmet and shield, with a longer girder. Swings faster when enraged." },
+    { "type": "Worm", "lives": 13, "does": "Longer and gold, 10 armour plates, leaps higher." },
+    { "type": "Archer", "lives": 6, "does": "Bigger and gold, in helmet and shield. Shoots volleys of 3 bolts, 5 when enraged." }
   ]
 }

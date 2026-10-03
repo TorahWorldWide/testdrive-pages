@@ -20,12 +20,12 @@ const DRAG_TYPE = "application/x-testdrive-sound";
 // What each sound id is called on this page.
 const NAMES = {
   Jump: "Jump", AirJump: "Double jump", Land: "Landing", Kill: "Enemy dies", EnemyHit: "Enemy is hit",
-  Hurt: "You get hit", ArmorBreak: "Armour breaks", Arrow: "Arrow let go", Sword: "Sword swing",
-  Club: "Giant's club", Punch: "Punch", Spear: "Spear thrust", Hammer: "Hammer swing", HammerHit: "Hammer hit",
-  KnifeThrow: "Knife throw", FastDrop: "Fast drop (C)", Slam: "Ground slam", RockThrow: "Rock throw",
-  RockImpact: "Rock lands", Buy: "Buy", Equip: "Equip a weapon", WaveStart: "Wave starts", WaveEnd: "Wave ends",
-  Dash: "Dash", BowDraw: "Bow draw", ArrowFlyBy: "Arrow flies past", ArrowHit: "Arrow hits you",
-  ArrowStick: "Arrow sticks in the ground", Empty: "Out of knives",
+  Hurt: "You get hit", ArmorBreak: "Armour breaks", Arrow: "Crossbow shot", Sword: "Sword swing",
+  Club: "Giant's girder", Punch: "Punch", Spear: "Spear thrust", Hammer: "Hammer swing", HammerHit: "Hammer hit",
+  KnifeThrow: "Knife throw", FastDrop: "Fast drop (C)", Slam: "Ground slam", RockThrow: "Scrap throw",
+  RockImpact: "Scrap lands", Buy: "Buy", Equip: "Equip a weapon", WaveStart: "Wave starts", WaveEnd: "Wave ends",
+  Dash: "Dash", BowDraw: "Crossbow draw", ArrowFlyBy: "Bolt flies past", ArrowHit: "Bolt hits you",
+  ArrowStick: "Bolt sticks in the ground", Empty: "Out of knives",
 };
 
 // What each recording (or family of takes) already in the game is called on this page.
@@ -53,12 +53,14 @@ const SOURCES = {
 
 // The cards. Each play button sits on a part of a portrait: 'at' is a part found in the game
 // (portraits.json), dx/dy nudge it (in parts of the picture), 'left'/'below' move its label.
+// docs/claude-tools/portraits.cs crops each picture to leave room for these nudges (its Room table):
+// move a button here, give it room there.
 const SHARED = [
   { sound: "EnemyHit", label: "Hit" },
   { sound: "Kill", label: "Dies" },
 ];
 const CARDS = [
-  { kind: "portrait", title: "You", color: "#F28C28", subject: "Player", note: "Moving and getting hurt.", spots: [
+  { kind: "portrait", title: "You", color: "#F28C28", subject: "Player", note: "You, the cyborg: moving and getting hurt.", spots: [
     { sound: "AirJump", label: "Double jump", at: "top", dy: -0.06 },
     { sound: "Hurt", label: "You get hit", at: "center" },
     { sound: "Dash", label: "Dash (Shift)", at: "right", dx: -0.1, below: true },
@@ -78,38 +80,38 @@ const CARDS = [
       { sound: "KnifeThrow", label: "Throw", at: "tip", below: true },
       { sound: "Empty", label: "None left", at: "tail", below: true }] },
   ] },
-  { kind: "portrait", title: "Basic", type: "Basic", subject: "Basic", note: "Hit, dies and armour sound the same on every enemy.", spots: [
+  { kind: "portrait", title: "Basic", type: "Basic", subject: "Basic", note: "The brainwashed soldier. Hit, dies and armour sound the same on every enemy.", spots: [
     { sound: "ArmorBreak", label: "Armour breaks", at: "helmet" },
     { ...SHARED[0], at: "center", dx: 0.1 },
     { ...SHARED[1], at: "center", dx: 0.1, dy: 0.16 },
     { silent: true, label: "Footsteps: no sound yet", at: "feet", dy: 0.12 },
   ] },
-  { kind: "portrait", title: "Archer", type: "Archer", subject: "Archer", note: "The bow creaks first: that's your warning.", spots: [
-    { sound: "BowDraw", label: "Draws the bow", at: "bow", dy: -0.08 },
-    { sound: "Arrow", label: "Lets go", at: "bow", dy: 0.08 },
+  { kind: "portrait", title: "Archer", type: "Archer", subject: "Archer", note: "A half-robot with a crossbow arm. The crossbow creaks first: that's your warning.", spots: [
+    { sound: "BowDraw", label: "Draws the crossbow", at: "bow", dy: -0.08 },
+    { sound: "Arrow", label: "Shoots", at: "bow", dy: 0.08 },
     { ...SHARED[0], at: "center", dx: 0.2 },
     { ...SHARED[1], at: "center", dx: 0.2, dy: 0.16 },
     { silent: true, label: "Footsteps: no sound yet", at: "feet", dy: 0.05 },
-  ], sidekick: { subject: "Arrow", name: "Its arrow", aspect: 3, spots: [
+  ], sidekick: { subject: "Arrow", name: "Its bolt", aspect: 3, spots: [
     { sound: "ArrowFlyBy", label: "Flies past you", at: "tail", below: true },
     { sound: "ArrowHit", label: "Hits you", at: "center", below: true },
     { sound: "ArrowStick", label: "Hits the ground", at: "tip", below: true },
   ] } },
-  { kind: "portrait", title: "Rock thrower", type: "RockThrower", subject: "RockThrower", note: "It raises the rock over its head before throwing.", spots: [
+  { kind: "portrait", title: "Rock thrower", type: "RockThrower", subject: "RockThrower", note: "A squat robot. It lifts a chunk of scrap over its head before throwing.", spots: [
     { sound: "RockThrow", label: "Throws", at: "rock" },
     { ...SHARED[0], at: "center", dx: 0.2 },
     { ...SHARED[1], at: "center", dx: 0.2, dy: 0.16 },
     { silent: true, label: "Footsteps: no sound yet", at: "feet", dy: 0.05 },
-  ], sidekick: { subject: "Rock", name: "Its rock", spots: [
+  ], sidekick: { subject: "Rock", name: "Its scrap", spots: [
     { sound: "RockImpact", label: "Lands", at: "center", below: true },
   ] } },
-  { kind: "portrait", title: "Giant", type: "Giant", subject: "Giant", size: 25, note: "4 m tall. It raises the club, then swings.", spots: [
-    { sound: "Club", label: "Swings the club", at: "club", below: true },
+  { kind: "portrait", title: "Giant", type: "Giant", subject: "Giant", size: 25, note: "A 4 m combat robot. It raises its steel girder, then swings.", spots: [
+    { sound: "Club", label: "Swings the girder", at: "club", below: true },
     { ...SHARED[0], at: "center", dx: 0.16 },
     { ...SHARED[1], at: "center", dx: 0.16, dy: 0.16 },
     { silent: true, label: "Footsteps: no sound yet", at: "feet", dx: 0.06 },
   ] },
-  { kind: "portrait", title: "Worm", type: "Worm", subject: "Worm", note: "Armoured worms carry metal plates on their segments.", spots: [
+  { kind: "portrait", title: "Worm", type: "Worm", subject: "Worm", note: "A mechanical drill worm. Armoured ones carry metal plates on their segments.", spots: [
     { ...SHARED[0], at: "head", dx: 0.12, dy: -0.12 },
     { ...SHARED[1], at: "head", dx: 0.12, dy: 0.06 },
     { sound: "ArmorBreak", label: "A plate breaks", at: "middle", left: true },

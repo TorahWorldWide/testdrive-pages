@@ -230,7 +230,11 @@
   width: 5.2rem;
   height: 5.2rem;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 40%, #3a3a3a, #1f1f1f 70%);
+  /* A light steel backdrop with a hint of the enemy's colour: the characters are dark worn metal and gas masks,
+     which disappeared on the old dark grey. (A browser without color-mix keeps the plain light grey.) */
+  background: radial-gradient(circle at 50% 38%, #e6e9ec, #a0a7af 74%);
+  background: radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--piece, #8a7f72) 12%, #e9ecef),
+    color-mix(in srgb, var(--piece, #8a7f72) 24%, #9ea5ad) 74%);
   box-shadow: inset 0 0 0 3px var(--piece, var(--line));
   overflow: hidden;
   flex: none;
@@ -246,6 +250,7 @@
   font-weight: 800;
   font-size: 2.2rem;
   color: var(--piece, var(--text));
+  color: color-mix(in srgb, var(--piece, var(--text)) 70%, #000); /* darker, so it reads on the light backdrop */
 }
 
 .who { grid-area: who; min-width: 0; }

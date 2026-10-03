@@ -52,7 +52,19 @@
   aspect-ratio: 1;
   margin: 1.2rem auto 0.4rem;
 }
-.stage img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+/* A soft light steel disc behind the picture, with a hint of the card's colour: the characters are dark worn
+   metal, which disappeared on the dark card (the same backdrop as the Waves page's tokens). */
+.stage::before {
+  content: "";
+  position: absolute;
+  inset: 2%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(226, 230, 234, 0.9), rgba(150, 158, 167, 0.6) 72%, rgba(150, 158, 167, 0));
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--piece, #8a7f72) 12%, rgba(226, 230, 234, 0.9)),
+    color-mix(in srgb, var(--piece, #8a7f72) 22%, rgba(150, 158, 167, 0.6)) 72%, rgba(150, 158, 167, 0));
+  pointer-events: none;
+}
+.stage img { position: relative; width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
 .stage.small { width: min(100%, 9.5rem); margin-top: 0.4rem; }
 .stage.small.wide-stage { width: min(100%, 13rem); margin-bottom: 1.6rem; }
 

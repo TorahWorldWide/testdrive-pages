@@ -1,17 +1,17 @@
 {
   "subjects": {
-    "Basic": { "image": "images/sounds/Basic.png", "anchors": { "center": [0.5, 0.451], "feet": [0.5, 0.769], "helmet": [0.504, 0.194], "shield": [0.405, 0.671] } },
-    "Archer": { "image": "images/sounds/Archer.png", "anchors": { "center": [0.576, 0.513], "feet": [0.576, 0.889], "bow": [0.239, 0.505], "top": [0.576, 0.053] } },
-    "RockThrower": { "image": "images/sounds/RockThrower.png", "anchors": { "center": [0.508, 0.487], "feet": [0.508, 0.883], "rock": [0.494, 0.171] } },
-    "Giant": { "image": "images/sounds/Giant.png", "anchors": { "center": [0.496, 0.52], "feet": [0.496, 0.925], "club": [0.367, 0.592], "top": [0.496, 0.04] } },
-    "Worm": { "image": "images/sounds/Worm.png", "anchors": { "head": [0.189, 0.764], "middle": [0.764, 0.446], "tail": [0.912, 0.159] } },
-    "Player": { "image": "images/sounds/Player.png", "anchors": { "center": [0.514, 0.45], "feet": [0.514, 0.687], "top": [0.514, 0.159], "left": [0.779, 0.526], "right": [0.282, 0.383] } },
-    "Fist": { "image": "images/sounds/Fist.png", "anchors": { "center": [0.458, 0.446], "tip": [0.726, 0.425] } },
-    "Sword": { "image": "images/sounds/Sword.png", "anchors": { "center": [0.521, 0.487], "tip": [0.863, 0.46] } },
-    "Spear": { "image": "images/sounds/Spear.png", "anchors": { "center": [0.52, 0.503], "tip": [0.863, 0.476] } },
-    "Hammer": { "image": "images/sounds/Hammer.png", "anchors": { "center": [0.482, 0.514], "tip": [0.799, 0.49] } },
-    "Arrow": { "image": "images/sounds/Arrow.png", "anchors": { "center": [0.513, 0.478], "tip": [0.867, 0.451], "tail": [0.125, 0.508] } },
-    "Rock": { "image": "images/sounds/Rock.png", "anchors": { "center": [0.505, 0.49], "tip": [1, 0.444], "tail": [0, 0.539] } },
-    "ThrownKnife": { "image": "images/sounds/ThrownKnife.png", "anchors": { "center": [0.516, 0.48], "tip": [0.871, 0.453], "tail": [0.127, 0.51] } }
+    "Archer": { "image": "images/sounds/Archer.png", "anchors": { "center": [0.499, 0.498], "top": [0.499, 0.07], "feet": [0.499, 0.868], "eyes": [0.562, 0.212], "bow": [0.36, 0.848] } },
+    "Basic": { "image": "images/sounds/Basic.png", "anchors": { "center": [0.464, 0.485], "top": [0.463, 0.118], "feet": [0.465, 0.81], "eyes": [0.533, 0.256], "helmet": [0.463, 0.132], "shield": [0.676, 0.611] } },
+    "Giant": { "image": "images/sounds/Giant.png", "anchors": { "center": [0.733, 0.524], "top": [0.748, 0.069], "feet": [0.719, 0.924], "eyes": [0.779, 0.16], "club": [0.366, 0.773] } },
+    "RockThrower": { "image": "images/sounds/RockThrower.png", "anchors": { "center": [0.505, 0.602], "top": [0.505, 0.296], "feet": [0.505, 0.879], "eyes": [0.538, 0.381], "rock": [0.521, 0.069] } },
+    "Worm": { "image": "images/sounds/Worm.png", "anchors": { "head": [0.128, 0.743], "middle": [0.604, 0.418], "tail": [0.914, 0.206] } },
+    "Player": { "image": "images/sounds/Player.png", "anchors": { "center": [0.506, 0.429], "feet": [0.505, 0.69], "top": [0.506, 0.13], "left": [0.642, 0.39], "right": [0.355, 0.473] } },
+    "Fist": { "image": "images/sounds/Fist.png", "anchors": { "center": [0.493, 0.501], "tip": [0.929, 0.501], "grip": [0.569, 0.501] } },
+    "Sword": { "image": "images/sounds/Sword.png", "anchors": { "center": [0.492, 0.496], "tip": [0.929, 0.494], "grip": [0.127, 0.494] } },
+    "Spear": { "image": "images/sounds/Spear.png", "anchors": { "center": [0.489, 0.5], "tip": [0.93, 0.5], "grip": [0.186, 0.5] } },
+    "Hammer": { "image": "images/sounds/Hammer.png", "anchors": { "center": [0.492, 0.503], "tip": [0.908, 0.503], "grip": [0.413, 0.503] } },
+    "Arrow": { "image": "images/sounds/Arrow.png", "anchors": { "center": [0.509, 0.499], "tip": [0.818, 0.499], "tail": [0.071, 0.499] } },
+    "Rock": { "image": "images/sounds/Rock.png", "anchors": { "center": [0.516, 0.5], "tip": [0.516, 0.5], "tail": [0.073, 0.5] } },
+    "ThrownKnife": { "image": "images/sounds/ThrownKnife.png", "anchors": { "center": [0.509, 0.499], "tip": [0.52, 0.499], "tail": [0.071, 0.499] } }
   }
 }
