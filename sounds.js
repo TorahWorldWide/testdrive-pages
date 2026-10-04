@@ -10,9 +10,34 @@
 // onto a layer in the mixer, or press "Use for…" in the player bar. Saving brings the new
 // recordings into the game (Assets/Resources/Sfx/lib) through the server (library.py).
 //
-// Sounds.json: sounds[]: { id, about, layers[]: { takes[], volume (0-1), pitchMin, pitchMax } }
+// Sounds.json: sounds[]: { id, about, layers[]: { takes[], volume (0-1), pitchMin, pitchMax, ...optional } }
 // A take is a recording in Assets/Resources/Sfx ("cloth1", "lib/fs123-..."), a sound made in code
 // ("~whoosh"), or, until it's saved, a library sound ("kenney:pack/file.ogg", "freesound:123").
+//
+// Each layer can also be shaped (round 19: "Cut and effects" in the mixer). These fields are OPTIONAL:
+// a missing one is off, and a layer with none of them plays its recordings untouched, as before.
+// The page (sound_dsp.js) and the game (Assets/Scripts/SfxDsp.cs) run the same algorithm on the samples,
+// in this order: cut, reverse, fades, EQ, drive, echo, reverb (spec: .superpowers/sdd/2026-10-04-next-
+// session-plan/r19-sound-dsp-spec.md). The page writes a field only when it's not at its default.
+//   field      type    range              default  meaning
+//   cuts       object  {"<take>": [start, end]} s   where each recording starts and ends (per take: a layer's
+//                                                   takes are different recordings); end <= start = to the end
+//   reverse    bool                       false    the cut plays backwards
+//   fadeIn     number  0-2 s              0        fades in from silence
+//   fadeOut    number  0-2 s              0        fades out to silence
+//   eqLow      number  -15..15 dB         0        low shelf at 200 Hz (bass)
+//   eqMid      number  -15..15 dB         0        peak at 1200 Hz, Q 0.9 (middle)
+//   eqHigh     number  -15..15 dB         0        high shelf at 5000 Hz (treble)
+//   drive      number  0-1                0        distortion (soft clip)
+//   echo       number  0-1                0        echo level
+//   echoDelay  number  0.02-1 s           0.25     time between echoes
+//   reverb     number  0-1                0        reverb level (a small room)
+//   delay      number  0-2 s              0        this layer starts this long after the sound starts
+//                                                   (layering in time; not processing)
+// Example row: { "takes": ["cloth1"], "volume": 0.6, "pitchMin": 1, "pitchMax": 1.2,
+//                "cuts": {"cloth1": [0.02, 0.3]}, "fadeOut": 0.05, "eqHigh": 4, "delay": 0.1 }
+// A library sound loses the silence at its start and end when it comes into the game, so it's cut (and reversed
+// or faded) only where the page plays the game's copy: after Save, on the PC's page (playsOriginal).
 
 const MASTER = 0.8; // Sfx.masterVolume in the game
 const DRAG_TYPE = "application/x-testdrive-sound";
@@ -146,6 +171,144 @@ const soundById = id => state.plan.sounds.find(s => s.id === id);
 const nameOf = id => NAMES[id] || id;
 const isNew = take => take.startsWith("kenney:") || take.startsWith("freesound:"); // not in the game yet
 const seconds = s => s == null ? "" : s < 10 ? s.toFixed(1) + " s" : Math.round(s) + " s";
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+// ---------- shaping a layer: the optional fields (the table at the top) ----------
+
+// The algorithm lives in sound_dsp.js (SoundDsp); the game runs the same one (SfxDsp.cs). Without it the
+// page still plays and edits everything else; only the "Cut and effects" panel is missing.
+const DSP = typeof SoundDsp === "object" && SoundDsp && typeof SoundDsp.process === "function" ? SoundDsp : null;
+// The sliders' names, ranges, defaults, steps, units and explanations come from SoundDsp.FIELDS (one copy,
+// shared with the game's numbers); these are only for a field the table leaves without words.
+const FX_TEXT = {
+  fadeIn: ["Fade in", "Rises from silence over this long at the start."],
+  fadeOut: ["Fade out", "Sinks to silence over this long at the end."],
+  eqLow: ["Low (200 Hz)", "Bass: a low shelf at 200 Hz."],
+  eqMid: ["Mid (1.2 kHz)", "The middle: a peak at 1200 Hz."],
+  eqHigh: ["High (5 kHz)", "Treble: a high shelf at 5000 Hz."],
+  drive: ["Drive", "Distortion: grit and crunch (soft clipping)."],
+  echo: ["Echo", "How loud the repeats are."],
+  echoDelay: ["Echo delay", "Time between the repeats."],
+  reverb: ["Reverb", "How much room sound is added."],
+  delay: ["Starts after", "This layer starts this long after the sound starts, to line layers up in time."],
+};
+const FX_GROUPS = [["Fades", ["fadeIn", "fadeOut"]], ["EQ", ["eqLow", "eqMid", "eqHigh"]],
+  ["Effects", ["drive", "echo", "echoDelay", "reverb"]], ["Timing", ["delay"]]];
+// The numeric fields: { name, min, max, def, step, unit, label, help }.
+const FX = (() => {
+  if (!DSP) return [];
+  const raw = Array.isArray(DSP.FIELDS) ? DSP.FIELDS : Object.entries(DSP.FIELDS || {}).map(([name, f]) => ({ name, ...f }));
+  const list = raw.filter(f => f && typeof f.name === "string" && Number.isFinite(+f.min) && Number.isFinite(+f.max)
+      && f.name !== "cuts" && f.name !== "reverse")
+    .map(f => ({ name: f.name, min: +f.min, max: +f.max, def: +(f.default ?? f.def ?? 0), step: +f.step || (f.max - f.min) / 100,
+      unit: f.unit || "", label: f.label || FX_TEXT[f.name]?.[0] || f.name, help: f.hint || FX_TEXT[f.name]?.[1] || "" }));
+  // 'delay' is scheduling, not processing: if the shared table leaves it out, the page still needs it.
+  if (!list.some(f => f.name === "delay"))
+    list.push({ name: "delay", min: 0, max: 2, def: 0, step: 0.01, unit: "s", label: FX_TEXT.delay[0], help: FX_TEXT.delay[1] });
+  return list;
+})();
+const fxByName = Object.fromEntries(FX.map(f => [f.name, f]));
+// The order the fields are written in a row of Sounds.json.
+const ROW_ORDER = ["takes", "volume", "pitchMin", "pitchMax", "cuts", "reverse",
+  ...FX_GROUPS.flatMap(g => g[1]), ...FX.map(f => f.name)];
+const MIN_CUT = 0.01; // seconds: the shortest cut the handles allow
+
+const decimals = step => Math.max(0, Math.min(4, Math.ceil(-Math.log10(step) - 1e-9)));
+// A value as the slider's number: "0.25 s", "+6 dB", "40%".
+function fxText(f, v) {
+  if (f.unit === "dB") return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(f.step < 1 ? 1 : 0).replace(/\.0$/, "") + " dB";
+  if (f.unit === "s") return v.toFixed(2) + " s";
+  if (f.unit === "%" || (!f.unit && f.min >= 0 && f.max <= 1)) return Math.round(v * 100) + "%";
+  return v.toFixed(decimals(f.step)) + (f.unit ? " " + f.unit : "");
+}
+const fxValue = (layer, f) => typeof layer[f.name] === "number" ? layer[f.name] : f.def;
+const fxOn = (layer, f) => typeof layer[f.name] === "number" && layer[f.name] !== f.def;
+
+// Writes the row's fields in one order (Sounds.json stays easy to read), leaving out what's at its default.
+function tidyLayer(layer) {
+  if (layer.cuts) {
+    for (const take of Object.keys(layer.cuts)) if (!layer.takes.includes(take)) delete layer.cuts[take];
+    if (!Object.keys(layer.cuts).length) delete layer.cuts;
+  }
+  if (!layer.reverse) delete layer.reverse;
+  for (const f of FX) if (layer[f.name] === f.def) delete layer[f.name];
+  const copy = { ...layer };
+  for (const k of Object.keys(layer)) delete layer[k];
+  for (const k of ROW_ORDER) if (k in copy && !(k in layer)) layer[k] = copy[k];
+  for (const k of Object.keys(copy)) if (!(k in layer)) layer[k] = copy[k];
+  return layer;
+}
+function setFx(layer, f, v) {
+  const value = +clamp(+v, f.min, f.max).toFixed(decimals(f.step));
+  if (value === f.def) delete layer[f.name];
+  else layer[f.name] = value;
+  tidyLayer(layer);
+}
+// Puts a layer back to plain: no cut, no effects, no delay (its recordings, volume and pitch stay).
+function plainLayer(layer) {
+  delete layer.cuts;
+  delete layer.reverse;
+  for (const f of FX) delete layer[f.name];
+}
+// Where a take's cut starts and ends, in seconds, the way the algorithm reads it (spec, step 1).
+function cutOf(layer, take, length) {
+  const c = layer.cuts?.[take];
+  if (!Array.isArray(c)) return [0, length];
+  const s = clamp(+c[0] || 0, 0, length);
+  const e = +c[1] > +c[0] ? Math.min(+c[1], length) : length;
+  return [s, Math.max(s, e)];
+}
+// Stores a cut rounded to the millisecond. An end at the end of the recording is stored rounded up, so
+// it still means "to the end"; a cut of the whole recording is no cut at all.
+function setCut(layer, take, s, e, length) {
+  s = Math.round(clamp(s, 0, length) * 1000) / 1000;
+  const toEnd = e >= length - 0.0005;
+  e = toEnd ? Math.ceil(length * 1000) / 1000 : Math.round(e * 1000) / 1000;
+  if (s <= 0 && toEnd) { if (layer.cuts) delete layer.cuts[take]; }
+  else layer.cuts = { ...(layer.cuts || {}), [take]: [s, e] };
+  tidyLayer(layer);
+}
+// What a layer's shaping does, in a few words (the chips on the "Cut and effects" button).
+function fxChips(layer) {
+  const on = [];
+  if (layer.cuts && Object.keys(layer.cuts).length) on.push("Cut");
+  if (layer.reverse) on.push("Backwards");
+  const any = names => names.some(n => fxByName[n] && fxOn(layer, fxByName[n]));
+  if (any(["fadeIn", "fadeOut"])) on.push("Fades");
+  if (any(["eqLow", "eqMid", "eqHigh"])) on.push("EQ");
+  for (const n of ["drive", "echo", "reverb"]) if (any([n])) on.push(shortLabel(fxByName[n]));
+  for (const f of FX) if (!FX_GROUPS.some(g => g[1].includes(f.name)) && fxOn(layer, f)) on.push(shortLabel(f));
+  if (fxByName.delay && fxOn(layer, fxByName.delay)) on.push(`${shortLabel(fxByName.delay)} ${fxValue(layer, fxByName.delay).toFixed(2)} s`);
+  return on;
+}
+// "Low (200 Hz)" -> "Low": the name without its note in brackets.
+const shortLabel = f => f.label.replace(/\s*\([^)]*\)\s*$/, "");
+const isShaped = layer => fxChips(layer).length > 0;
+
+// The page cuts what it plays, and a library sound comes into the game (library.py) without the silence at its
+// start and end. Where the page plays the ORIGINAL instead of the game's copy, its seconds aren't the game's: a
+// library sound not saved into the game yet, and online one brought in from the library (Store plays it from where
+// it came from). Such a take can't be cut here, and its layer can't be reversed or faded (they'd fall on that
+// silence), until the page plays the game's copy: after Save, on the PC's page.
+const playsOriginal = take => isNew(take) || (!!Store.online && take.startsWith("lib/") && !!state.credits[take]?.from);
+const lockedLayer = layer => layer.takes.some(playsOriginal);
+const isLocked = (layer, name) => (name === "fadeIn" || name === "fadeOut") && lockedLayer(layer);
+const PC_PAGE = "the PC's Sounds page (in Unity: TestDrive > Offline (this PC only) > Open Sounds page)";
+const lockNote = take => !isNew(take)
+  ? `To cut it, use ${PC_PAGE}: online it plays as it came, with silence at its start and end that the game's copy doesn't have.`
+  : Store.online ? `Cut it once your PC has brought it into the game (without the silence at its start and end), on ${PC_PAGE}.`
+  : "To cut it, press Save first: the game keeps this sound without the silence at its start and end, and you cut that copy.";
+// A cut made on a library sound's original, moved onto the game's copy, which lost 'trimStart' seconds at its start
+// (library.py's number, once it reports it). Without that number the cut can't be placed, so it goes. (The page
+// itself doesn't cut a sound before it's in the game: this is for a cut made somewhere else.)
+function moveCut(c, trimStart) {
+  if (!Array.isArray(c) || typeof trimStart !== "number" || !(trimStart >= 0)) return null;
+  const ms = v => Math.round(v * 1000) / 1000;
+  const s = ms(Math.max(0, +c[0] - trimStart));
+  if (!(+c[1] > +c[0])) return s > 0 ? [s, 0] : null; // "to the end" stays to the end
+  const e = ms(+c[1] - trimStart);
+  return e > s ? [s, e] : null; // a cut inside the silence that went is nothing
+}
 
 // ---------- recordings and their families ----------
 
@@ -180,25 +343,64 @@ function layerFamily(layer) {
 let audio = null;
 const buffers = new Map();
 const context = () => audio || (audio = new AudioContext());
-// Loads a recording once; like the game, each one is evened out by its loudest moment.
+// Like the game, each recording is evened out by its loudest moment (Sfx: min(3, 0.9 / peak)).
+function loudest(buffer) {
+  let peak = 0.05;
+  for (let c = 0; c < buffer.numberOfChannels; c++) {
+    const d = buffer.getChannelData(c);
+    for (let i = 0; i < d.length; i++) { const v = d[i] < 0 ? -d[i] : d[i]; if (v > peak) peak = v; }
+  }
+  return peak;
+}
+const evenOut = buffer => Math.min(3, 0.9 / loudest(buffer));
+// Loads a recording once.
 function load(take) {
   if (!buffers.has(take)) {
     const p = Store.audioUrl(take)
       .then(url => fetch(url))
       .then(r => { if (!r.ok) throw new Error("missing " + take); return r.arrayBuffer(); })
       .then(data => context().decodeAudioData(data))
-      .then(buffer => {
-        let peak = 0.05;
-        for (let c = 0; c < buffer.numberOfChannels; c++) {
-          const d = buffer.getChannelData(c);
-          for (let i = 0; i < d.length; i++) { const v = d[i] < 0 ? -d[i] : d[i]; if (v > peak) peak = v; }
-        }
-        return { buffer, gain: Math.min(3, 0.9 / peak) };
-      });
+      .then(buffer => ({ buffer, gain: evenOut(buffer) }));
     p.catch(() => buffers.delete(take)); // a failed load can be tried again
     buffers.set(take, p);
   }
   return buffers.get(take);
+}
+
+// A take as a layer plays it: cut and processed by SoundDsp (once per take and settings, then kept),
+// or untouched when the layer doesn't shape it. Like the game (Sfx.cs), the loudness evening-out comes
+// from the recording itself, so a cut or an EQ boost really changes how loud the layer is.
+const shapedBuffers = new Map(); // take + settings -> Promise<{ buffer, gain }>
+const SHAPED_KEEP = 48;          // processed takes kept (the oldest goes first)
+function shapeKey(layer, take) {
+  const { takes, volume, pitchMin, pitchMax, delay, cuts, ...rest } = layer;
+  return JSON.stringify([take, cuts?.[take] || null, Object.keys(rest).sort().map(k => [k, rest[k]])]);
+}
+function shaped(take, layer) {
+  if (!DSP || DSP.isPlain(layer, take)) return load(take);
+  const key = shapeKey(layer, take);
+  if (!shapedBuffers.has(key)) {
+    const settings = JSON.parse(JSON.stringify(layer)); // the layer as it is now, even if it changes meanwhile
+    const p = load(take).then(plain => {
+      const { buffer, gain } = plain;
+      try {
+        const input = [];
+        for (let c = 0; c < buffer.numberOfChannels; c++) input.push(new Float32Array(buffer.getChannelData(c)));
+        const output = DSP.process(input, buffer.sampleRate, settings, take);
+        const length = Math.max(1, ...output.map(d => d.length));
+        const result = context().createBuffer(output.length, length, buffer.sampleRate);
+        output.forEach((d, c) => result.copyToChannel(d, c));
+        return { buffer: result, gain };
+      } catch (err) { // as in the game: if the edit can't be made, the recording itself plays
+        console.warn("Sounds page: couldn't edit " + take, err);
+        return plain;
+      }
+    });
+    p.catch(() => shapedBuffers.delete(key));
+    shapedBuffers.set(key, p);
+    while (shapedBuffers.size > SHAPED_KEEP) shapedBuffers.delete(shapedBuffers.keys().next().value);
+  }
+  return shapedBuffers.get(key);
 }
 
 // Loads recordings in the background, two at a time, so a press plays at once.
@@ -235,8 +437,11 @@ function stopSounds() {
   for (const source of live) { try { source.stop(); } catch { /* already over */ } }
   live.clear();
   if (lit) { clearTimeout(lit._stop); lit.classList.remove("playing"); lit = null; }
+  for (const a of sweeps) a.cancel();
+  sweeps.clear();
 }
-function startTake({ buffer, gain }, volume, pitch) {
+// Starts a take at 'when' on the audio clock (0 = now); returns how long it sounds from its start.
+function startTake({ buffer, gain }, volume, pitch, when = 0) {
   const ctx = context();
   const source = ctx.createBufferSource();
   source.buffer = buffer;
@@ -246,7 +451,7 @@ function startTake({ buffer, gain }, volume, pitch) {
   source.connect(level).connect(ctx.destination);
   source.onended = () => live.delete(source);
   live.add(source);
-  source.start();
+  source.start(when);
   return buffer.duration / pitch;
 }
 // Lights up 'el' while a sound lasts.
@@ -256,25 +461,163 @@ function glow(el, secs) {
   el.classList.add("playing");
   el._stop = setTimeout(() => { el.classList.remove("playing"); if (lit === el) lit = null; }, Math.max(250, secs * 1000));
 }
-// Plays layers together, the way the game does: each one a random take, at a random pitch in its
-// range. 'el' shows it's loading, then lights up while it sounds.
-async function playLayers(layers, el) {
+// Plays layers together, the way the game does: each one a random take, shaped (cut and effects), at
+// a random pitch in its range, starting after its delay. 'el' shows it's loading, then lights up
+// while it sounds. 'solo' (one layer's own play button) starts at once, without the layer's delay.
+function playLayers(layers, el, { solo = false } = {}) {
+  return playPicks(layers.filter(l => l.takes.length).map(l => ({
+    layer: l,
+    take: l.takes[Math.floor(Math.random() * l.takes.length)],
+    pitch: l.pitchMin + Math.random() * Math.max(0, l.pitchMax - l.pitchMin),
+    delay: solo || !fxByName.delay ? 0 : clamp(fxValue(l, fxByName.delay), 0, fxByName.delay.max), // as Sfx.cs clamps it
+  })), el);
+}
+// Plays one take of a layer, shaped, at the middle of its pitch range and at once (the play button
+// next to each recording in "Cut and effects", to hear just that cut).
+function playCut(layer, take, el) {
+  return playPicks([{ layer, take, pitch: (layer.pitchMin + layer.pitchMax) / 2, delay: 0 }], el);
+}
+async function playPicks(picks, el) {
   const press = ++presses;
   pausePreview();
   const resumed = context().resume(); // inside the tap, so phones allow sound
-  const picks = layers.filter(l => l.takes.length).map(l => ({
-    take: l.takes[Math.floor(Math.random() * l.takes.length)],
-    volume: l.volume,
-    pitch: l.pitchMin + Math.random() * Math.max(0, l.pitchMax - l.pitchMin),
-  }));
   el?.classList.add("loading");
-  const loaded = await Promise.all(picks.map(p => load(p.take).catch(() => null)));
+  const loaded = await Promise.all(picks.map(p => shaped(p.take, p.layer).catch(() => null)));
   await resumed.catch(() => {});
   el?.classList.remove("loading");
   if (press !== presses) return; // a newer press came while this one was loading
   stopSounds();
-  glow(el, Math.max(0, ...picks.map((p, i) => loaded[i] ? startTake(loaded[i], p.volume, p.pitch) : 0)));
+  const now = context().currentTime + 0.01; // one clock for every layer, so their delays are exact
+  glow(el, Math.max(0, ...picks.map((p, i) => {
+    if (!loaded[i]) return 0;
+    const secs = startTake(loaded[i], p.layer.volume, p.pitch, now + p.delay);
+    sweep(p);
+    return p.delay + secs;
+  })));
 }
+// A line runs over the waveform of the take that's playing (when its "Cut and effects" is open):
+// which take was picked, and where in the cut it is. The browser animates it; nothing runs per frame.
+const sweeps = new Set();
+function sweep(pick) {
+  const sound = soundById(state.selected);
+  const n = sound ? sound.layers.indexOf(pick.layer) : -1;
+  const ti = n < 0 ? -1 : pick.layer.takes.indexOf(pick.take);
+  const wave = ti < 0 ? null : $("mixer").querySelector(`.wave[data-wave="${n}:${ti}"]`);
+  const length = waveInfo.get(pick.take)?.seconds;
+  const head = wave?.querySelector(".wave-head");
+  if (!head || !length || !head.animate) return;
+  const [s, e] = cutOf(pick.layer, pick.take, length);
+  const [from, to] = pick.layer.reverse ? [e, s] : [s, e];
+  const a = head.animate([{ left: from / length * 100 + "%", opacity: 1 }, { left: to / length * 100 + "%", opacity: 1 }],
+    { duration: Math.max(1, (e - s) / pick.pitch * 1000), delay: pick.delay * 1000, easing: "linear" });
+  sweeps.add(a);
+  a.onfinish = a.oncancel = () => sweeps.delete(a);
+}
+
+// ---------- the waveforms in "Cut and effects" ----------
+
+const waveInfo = new Map(); // take -> { peaks (lowest and highest sample per column), seconds, loudest }
+const WAVE_COLUMNS = 800;
+function waveOf(take) {
+  if (waveInfo.has(take)) return Promise.resolve(waveInfo.get(take));
+  return load(take).then(({ buffer }) => {
+    if (!waveInfo.has(take)) {
+      const peaks = new Float32Array(WAVE_COLUMNS * 2), n = buffer.length, per = n / WAVE_COLUMNS;
+      for (let c = 0; c < buffer.numberOfChannels; c++) {
+        const d = buffer.getChannelData(c);
+        for (let col = 0; col < WAVE_COLUMNS; col++) {
+          let lo = peaks[col * 2], hi = peaks[col * 2 + 1];
+          for (let i = Math.floor(col * per), end = Math.min(n, Math.max(i + 1, Math.floor((col + 1) * per))); i < end; i++) {
+            if (d[i] < lo) lo = d[i];
+            if (d[i] > hi) hi = d[i];
+          }
+          peaks[col * 2] = lo;
+          peaks[col * 2 + 1] = hi;
+        }
+      }
+      waveInfo.set(take, { peaks, seconds: buffer.duration, loudest: loudest(buffer) });
+    }
+    return waveInfo.get(take);
+  });
+}
+// Draws a take's waveform evened out like the game does it, in the canvas's CSS colour.
+function drawWave(canvas, info) {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (!w || !h) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  const g = canvas.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  g.fillStyle = getComputedStyle(canvas).color;
+  // A square-root scale, so a quiet tail still shows next to a loud hit (only the picture: the sound isn't changed).
+  const mid = h / 2, gain = Math.min(3, 0.95 / info.loudest);
+  const y = v => Math.sign(v) * Math.sqrt(Math.min(1, Math.abs(v) * gain)) * (h / 2 - 1);
+  for (let x = 0; x < w; x += 1) {
+    const a = Math.floor(x / w * WAVE_COLUMNS), b = Math.max(a + 1, Math.floor((x + 1) / w * WAVE_COLUMNS));
+    let lo = 0, hi = 0;
+    for (let c = a; c < b; c++) { lo = Math.min(lo, info.peaks[c * 2]); hi = Math.max(hi, info.peaks[c * 2 + 1]); }
+    const top = mid - y(hi);
+    g.fillRect(x, top, 1, Math.max(1, mid - y(lo) - top));
+  }
+}
+// Puts a take's handles, shading, fades line and numbers where its cut is (no redraw of the waveform).
+function refreshWave(n, ti) {
+  const wave = $("mixer").querySelector(`.wave[data-wave="${n}:${ti}"]`);
+  const layer = soundById(state.selected)?.layers[n];
+  const take = layer?.takes[ti];
+  const info = take != null && waveInfo.get(take);
+  if (!wave || !info) return;
+  const length = info.seconds;
+  const [s, e] = cutOf(layer, take, length);
+  const pct = v => (length ? v / length * 100 : 0).toFixed(3) + "%";
+  wave.style.setProperty("--s", pct(s));
+  wave.style.setProperty("--e", pct(e));
+  wave.classList.remove("loading");
+  wave.classList.toggle("is-cut", !!layer.cuts?.[take]);
+  wave.classList.toggle("reversed", !!layer.reverse);
+  // The fades, as a line over the cut: in playing order, so a reversed cut fades in from its right end.
+  const span = Math.max(1e-6, e - s);
+  const fin = Math.min(1, fxValue(layer, fxByName.fadeIn || { def: 0 }) / span) * 100;
+  const fout = Math.min(1, fxValue(layer, fxByName.fadeOut || { def: 0 }) / span) * 100;
+  const [left, right] = layer.reverse ? [fout, fin] : [fin, fout];
+  wave.querySelector(".wave-env polyline").setAttribute("points",
+    left || right ? `0,${left ? 100 : 14} ${left},14 ${100 - right},14 100,${right ? 100 : 14}` : "");
+  for (const h of wave.querySelectorAll(".wave-handle")) {
+    const v = h.dataset.handle === "start" ? s : e;
+    h.setAttribute("aria-valuemin", 0);
+    h.setAttribute("aria-valuemax", length.toFixed(3));
+    h.setAttribute("aria-valuenow", v.toFixed(3));
+    h.setAttribute("aria-valuetext", v.toFixed(3) + " seconds");
+  }
+  const block = wave.closest(".take");
+  for (const input of block.querySelectorAll("input[type=number]")) {
+    input.disabled = playsOriginal(take);
+    input.max = length.toFixed(3);
+    if (document.activeElement !== input) input.value = (input.dataset.field === "cutStart" ? s : e).toFixed(3);
+  }
+  block.querySelector(".take-len").textContent = layer.cuts?.[take] ? `${(e - s).toFixed(2)} of ${length.toFixed(2)} s` : `${length.toFixed(2)} s`;
+}
+// Draws the waveforms in the mixer (each recording is fetched once, then kept).
+function drawWaves() {
+  for (const wave of $("mixer").querySelectorAll(".wave[data-wave]")) {
+    const [n, ti] = wave.dataset.wave.split(":").map(Number);
+    const take = soundById(state.selected)?.layers[n]?.takes[ti];
+    if (take == null) continue;
+    waveOf(take).then(info => {
+      if (!wave.isConnected) return;
+      drawWave(wave.querySelector("canvas"), info);
+      refreshWave(n, ti);
+    }).catch(() => {
+      if (!wave.isConnected) return;
+      wave.classList.add("failed");
+      wave.querySelector(".wave-note").textContent = "Couldn't load this recording.";
+    });
+  }
+}
+let redrawTimer = 0;
+window.addEventListener("resize", () => { clearTimeout(redrawTimer); redrawTimer = setTimeout(drawWaves, 150); });
 function play(id, el) {
   const sound = soundById(id);
   if (sound) playLayers(sound.layers, el);
@@ -333,16 +676,26 @@ async function save() {
   if (!state.plan || snapshot() === state.saved) return;
   const fresh = [...new Set(state.plan.sounds.flatMap(s => s.layers.flatMap(l => l.takes)).filter(isNew))];
   try {
-    const swap = {};
+    const swap = {}; // library ref -> the entry of the recording it became
     for (let i = 0; i < fresh.length && !Store.online; i++) {
       renderStatus(`Bringing new sound ${i + 1} of ${fresh.length} into the game…`);
       const entry = await Store.bringIn(fresh[i]);
-      swap[fresh[i]] = entry.take;
+      swap[fresh[i]] = entry;
       state.meta[entry.take] = entry;
     }
     if (Object.keys(swap).length) {
       for (const s of state.plan.sounds)
-        for (const l of s.layers) l.takes = l.takes.map(t => swap[t] || t);
+        for (const l of s.layers) {
+          l.takes = l.takes.map(t => swap[t]?.take || t);
+          if (l.cuts && Object.keys(l.cuts).some(t => swap[t])) { // a cut follows its recording onto the game's copy, or goes (moveCut)
+            l.cuts = Object.fromEntries(Object.entries(l.cuts).flatMap(([t, c]) => {
+              if (!swap[t]) return [[t, c]];
+              const moved = moveCut(c, swap[t].trimStart);
+              return moved ? [[swap[t].take, moved]] : [];
+            }));
+            tidyLayer(l);
+          }
+        }
       await refreshRecordings();
     }
     const r = await Store.save("sounds", state.plan, { force: forceNextSave });
@@ -489,7 +842,90 @@ function layerTitle(layer) {
   return state.saved.includes(JSON.stringify(take)) ? `${name} (new: your PC brings it into the game)` : `${name} (new, not saved yet)`;
 }
 
+// Which layers have "Cut and effects" open: sound id -> Set of layer numbers (kept while you edit).
+const openFx = new Map();
+const isOpen = (id, n) => !!openFx.get(id)?.has(n);
+function setOpen(id, n, open) {
+  if (!openFx.has(id)) openFx.set(id, new Set());
+  openFx.get(id)[open ? "add" : "delete"](n);
+}
+// Removing or duplicating a layer moves the open ones below it along.
+function openAfterRemove(id, n) {
+  const s = openFx.get(id);
+  if (s) openFx.set(id, new Set([...s].filter(i => i !== n).map(i => i > n ? i - 1 : i)));
+}
+function openAfterDuplicate(id, n) {
+  const s = openFx.get(id);
+  if (s) openFx.set(id, new Set([...s].flatMap(i => i < n ? [i] : i === n ? [n, n + 1] : [i + 1])));
+}
+const takeName = take => RECORDINGS[take] || state.meta[take]?.title ||
+  take.replace(/^(kenney:|freesound:)/, "").split("/").pop().replace(/\.(ogg|wav|mp3|flac)$/i, "");
+
+function takeHtml(layer, n, take, ti) {
+  // A family's takes ("footstep_grass_000", ...) are named by number: the menu above already says what they are.
+  const name = layer.takes.length > 1 && layerFamily(layer) ? `Take ${ti + 1}` : takeName(take);
+  const locked = playsOriginal(take); // no handles and no numbers: a note says when it can be cut
+  const handle = locked ? `aria-disabled="true"` : `tabindex="0"`;
+  return `<div class="take">
+    <div class="take-head">
+      <button type="button" class="mini-play cut-play" data-cut-play="${n}:${ti}" data-key="cp-${n}-${ti}" aria-label="Play just this cut of ${esc(name)}" title="Play just this cut"></button>
+      <span class="take-name" title="${esc(take)}">${esc(name)}</span>
+      <span class="take-len"></span>
+    </div>
+    <div class="wave loading${locked ? " locked" : ""}" data-wave="${n}:${ti}">
+      <canvas aria-hidden="true"></canvas>
+      <span class="wave-dim wave-before"></span><span class="wave-dim wave-after"></span>
+      <svg class="wave-env" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline vector-effect="non-scaling-stroke" points=""/></svg>
+      <span class="wave-handle" data-handle="start" role="slider" ${handle} data-key="hs-${n}-${ti}" aria-label="Where ${esc(name)} starts"></span>
+      <span class="wave-handle" data-handle="end" role="slider" ${handle} data-key="he-${n}-${ti}" aria-label="Where ${esc(name)} ends"></span>
+      <span class="wave-head"></span>
+      <span class="wave-tag">◀ plays backwards</span>
+      <span class="wave-note">Loading…</span>
+    </div>
+    ${locked ? `<p class="fx-note cut-lock">${esc(lockNote(take))}</p>` : `<div class="cut-row">
+      <label>From <input type="number" class="num" min="0" step="0.001" inputmode="decimal" data-field="cutStart" data-layer="${n}" data-take="${ti}" data-key="cs-${n}-${ti}" disabled> s</label>
+      <label>to <input type="number" class="num" min="0" step="0.001" inputmode="decimal" data-field="cutEnd" data-layer="${n}" data-take="${ti}" data-key="ce-${n}-${ti}" disabled> s</label>
+    </div>`}
+  </div>`;
+}
+function fxKnobHtml(layer, n, f) {
+  const v = fxValue(layer, f);
+  const idle = f.name === "echoDelay" && fxByName.echo && !fxOn(layer, fxByName.echo);
+  const locked = isLocked(layer, f.name);
+  const note = /\(([^)]*)\)\s*$/.exec(f.label)?.[1]; // "Low (200 Hz)": "200 Hz" goes under "Low"
+  return `<label class="knob fx-knob${idle ? " idle" : ""}${locked ? " locked" : ""}" title="${esc(f.help)}${f.help ? " " : ""}Double-click the slider to put it back.">
+    <span class="fx-label">${esc(shortLabel(f))}${note ? `<small>${esc(note)}</small>` : ""}</span>
+    <input type="range" min="${f.min}" max="${f.max}" step="${f.step}" value="${v}" data-field="fx" data-name="${esc(f.name)}" data-layer="${n}" data-key="fx-${n}-${esc(f.name)}"${f.unit === "dB" ? ` list="zero-db"` : ""}${locked ? " disabled" : ""}>
+    <output data-out="fx-${n}-${esc(f.name)}">${fxText(f, v)}</output></label>`;
+}
+function fxPanelHtml(layer, n) {
+  const groups = FX_GROUPS.map(([title, names]) => [title, names.map(x => fxByName[x]).filter(Boolean)]);
+  groups[2][1].push(...FX.filter(f => !FX_GROUPS.some(g => g[1].includes(f.name)))); // anything new: with the effects
+  const lock = lockedLayer(layer);
+  return `<div class="fx-panel">
+    <p class="fx-sub">Where it starts and ends
+      <span class="fx-note">Drag the green handles, or type the seconds.${layer.takes.length > 1 ? ` Each of the ${layer.takes.length} takes has its own cut; the game picks one at random each time.` : ""}</span></p>
+    ${layer.takes.map((take, ti) => takeHtml(layer, n, take, ti)).join("")}
+    ${lock ? `<p class="fx-note cut-lock">Backwards and the fades wait for that too: here they'd fall on silence the game's copy doesn't have.</p>` : ""}
+    <label class="switch${lock ? " locked" : ""}"><input type="checkbox" data-reverse="${n}" data-key="rev-${n}" ${layer.reverse ? "checked" : ""}${lock ? " disabled" : ""}>
+      <span class="switch-track" aria-hidden="true"></span><span>Backwards <span class="fx-note">(reverse: the cut plays from its end)</span></span></label>
+    ${groups.filter(g => g[1].length).map(([title, list]) =>
+      `<p class="fx-sub">${title}</p>${list.map(f => fxKnobHtml(layer, n, f)).join("")}`).join("")}
+    <div class="fx-foot">
+      <button type="button" class="ghost small-ghost" data-fx-reset="${n}" data-key="reset-${n}" ${isShaped(layer) ? "" : "disabled"}>Reset cut and effects</button>
+    </div>
+  </div>`;
+}
+// The "Cut and effects" button: its title, then what's on as chips (or "none yet").
+function fxToggleHtml(layer) {
+  const chips = fxChips(layer);
+  return `<span class="fx-title">Cut and effects${chips.length ? "" : ` <span class="fx-none">none yet</span>`}</span>` +
+    (chips.length ? `<span class="fx-chips">${chips.map(c => `<span class="fx-chip">${esc(c)}</span>`).join("")}</span>` : "");
+}
+
 function renderMixer() {
+  // Keep the keyboard where it was when the mixer is drawn again.
+  const focused = document.activeElement?.closest?.("#mixer [data-key]")?.dataset.key;
   const id = state.selected;
   const sound = id && soundById(id);
   if (!sound) {
@@ -505,18 +941,26 @@ function renderMixer() {
     const opts = (fam ? "" : `<option value="" selected>${esc(layerTitle(layer))}</option>`) +
       options.map(k => `<option value="${esc(k)}" ${k === fam ? "selected" : ""}>${esc(recordingName(k))}</option>`).join("");
     const credit = state.meta[layer.takes[0]];
-    return `<div class="layer" data-drop="layer" data-layer="${n}">
+    const open = isOpen(id, n);
+    const fx = !DSP ? `<p class="fx-note">Cut and effects need sound_dsp.js, which didn't load. Reload the page.</p>`
+      : `<button type="button" class="fx-toggle" data-fx-open="${n}" data-key="fx-open-${n}" aria-expanded="${open}">${fxToggleHtml(layer)}</button>
+        ${open ? fxPanelHtml(layer, n) : ""}`;
+    return `<div class="layer${open ? " open" : ""}" data-drop="layer" data-layer="${n}">
       <div class="layer-head">
-        <button type="button" class="mini-play" data-layer-play="${n}" aria-label="Play only this recording"></button>
-        <select class="select" data-field="family" data-layer="${n}" aria-label="Recording">${opts}</select>
+        <button type="button" class="mini-play" data-layer-play="${n}" data-key="lp-${n}" aria-label="Play only this layer" title="Play only this layer (at once, with its cut and effects)"></button>
+        <select class="select" data-field="family" data-layer="${n}" data-key="fam-${n}" aria-label="Recording">${opts}</select>
       </div>
-      <label class="knob">Volume <input type="range" min="0" max="100" step="1" value="${Math.round(layer.volume * 100)}" data-field="volume" data-layer="${n}">
+      <label class="knob">Volume <input type="range" min="0" max="100" step="1" value="${Math.round(layer.volume * 100)}" data-field="volume" data-layer="${n}" data-key="vol-${n}">
         <output data-out="volume-${n}">${Math.round(layer.volume * 100)}%</output></label>
-      <label class="knob">Pitch <input type="range" min="30" max="250" step="1" value="${Math.round(center * 100)}" data-field="pitch" data-layer="${n}">
+      <label class="knob">Pitch <input type="range" min="30" max="250" step="1" value="${Math.round(center * 100)}" data-field="pitch" data-layer="${n}" data-key="pitch-${n}">
         <output data-out="pitch-${n}">×${center.toFixed(2)}</output></label>
+      ${fx}
       <div class="layer-foot"><span>${credit ? `${esc(credit.source || "")}${credit.author ? ", by " + esc(credit.author) : ""}` :
         `${layer.takes.length} take${layer.takes.length === 1 ? "" : "s"}, one picked at random`}</span>
-        <button type="button" class="remove" data-remove="${n}">Remove</button></div>
+        <span class="layer-actions">
+          <button type="button" class="remove" data-duplicate="${n}" data-key="dup-${n}" title="Add a copy of this layer below it (with its cut and effects)">Duplicate</button>
+          <button type="button" class="remove" data-remove="${n}" data-key="rm-${n}">Remove</button>
+        </span></div>
     </div>`;
   }).join("");
   const changed = JSON.stringify(sound) !== JSON.stringify(savedSound(id));
@@ -528,7 +972,8 @@ function renderMixer() {
       <button type="button" class="play-big" id="play-big">Play</button>
       ${changed ? `<button type="button" class="ghost" id="revert">Back to the saved version</button>` : ""}
     </div>
-    <h3>Made of ${sound.layers.length} layer${sound.layers.length === 1 ? "" : "s"}, played together</h3>
+    <h3 id="layers-title">${layersTitle(sound)}</h3>
+    <datalist id="zero-db"><option value="0"></option></datalist>
     ${layers || `<p class="empty-mixer">Nothing: this sound is silent. Add a recording below.</p>`}
     <div class="drop-add" data-drop="add">
       <label class="add-layer"><span class="field-label">Add a recording to this sound</span>
@@ -540,6 +985,23 @@ function renderMixer() {
       drag it onto a play button (or onto a layer above, to replace just that layer). Changes play here
       right away; press Save to put them in the game.
       <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes.</p>`;
+  if (focused) $("mixer").querySelector(`[data-key="${CSS.escape(focused)}"]`)?.focus({ preventScroll: true });
+  drawWaves();
+}
+function layersTitle(sound) {
+  const later = fxByName.delay && sound.layers.some(l => fxOn(l, fxByName.delay));
+  return `Made of ${sound.layers.length} layer${sound.layers.length === 1 ? "" : "s"}, played together${later ? " (some start later)" : ""}`;
+}
+// Redraws only a layer's chips and Reset button (while a slider moves, the mixer isn't drawn again).
+function refreshChips(n) {
+  const sound = soundById(state.selected);
+  const layer = sound?.layers[n];
+  const toggle = $("mixer").querySelector(`[data-fx-open="${n}"]`);
+  if (!layer || !toggle) return;
+  toggle.innerHTML = fxToggleHtml(layer);
+  const reset = $("mixer").querySelector(`[data-fx-reset="${n}"]`);
+  if (reset) reset.disabled = !isShaped(layer);
+  if ($("layers-title")) $("layers-title").textContent = layersTitle(sound);
 }
 
 function select(id) {
@@ -818,8 +1280,10 @@ function useOn(id, item, { layer = null, add = false } = {}) {
     const s = soundById(id);
     const fresh = { takes: [...item.takes], volume: 0.8, pitchMin: 0.97, pitchMax: 1.03 };
     if (add) s.layers.push({ ...fresh, volume: 0.6 });
-    else if (layer != null && s.layers[layer]) s.layers[layer].takes = [...item.takes];
-    else s.layers = [fresh];
+    else if (layer != null && s.layers[layer]) {
+      s.layers[layer].takes = [...item.takes]; // its effects stay; the old recordings' cuts go
+      tidyLayer(s.layers[layer]);
+    } else s.layers = [fresh];
   });
   if (state.selected !== id) select(id);
   play(id, document.querySelector(`.spot[data-sound="${id}"] .spot-button`) || $("play-big"));
@@ -842,11 +1306,40 @@ document.addEventListener("click", ev => {
   const layerPlay = t.closest("[data-layer-play]");
   if (layerPlay) {
     const layer = soundById(state.selected).layers[+layerPlay.dataset.layerPlay];
-    playLayers([layer], layerPlay);
+    playLayers([layer], layerPlay, { solo: true });
     return;
   }
   const remove = t.closest("[data-remove]");
-  if (remove) return change(() => soundById(state.selected).layers.splice(+remove.dataset.remove, 1));
+  if (remove) {
+    const n = +remove.dataset.remove;
+    openAfterRemove(state.selected, n);
+    return change(() => soundById(state.selected).layers.splice(n, 1));
+  }
+  // Cut and effects
+  const fxOpen = t.closest("[data-fx-open]");
+  if (fxOpen) {
+    setOpen(state.selected, +fxOpen.dataset.fxOpen, !isOpen(state.selected, +fxOpen.dataset.fxOpen));
+    commitPending();
+    return renderMixer();
+  }
+  const cutPlay = t.closest("[data-cut-play]");
+  if (cutPlay) {
+    const [n, ti] = cutPlay.dataset.cutPlay.split(":").map(Number);
+    const layer = soundById(state.selected)?.layers[n];
+    if (layer?.takes[ti] != null) playCut(layer, layer.takes[ti], cutPlay);
+    return;
+  }
+  const duplicate = t.closest("[data-duplicate]");
+  if (duplicate) {
+    const n = +duplicate.dataset.duplicate;
+    openAfterDuplicate(state.selected, n);
+    return change(() => {
+      const layers = soundById(state.selected).layers;
+      layers.splice(n + 1, 0, JSON.parse(JSON.stringify(layers[n])));
+    });
+  }
+  const reset = t.closest("[data-fx-reset]");
+  if (reset) return change(() => plainLayer(soundById(state.selected).layers[+reset.dataset.fxReset]));
 
   // library
   const tab = t.closest("[data-source]");
@@ -946,6 +1439,102 @@ document.addEventListener("focusin", ev => {
   if (ev.target.dataset?.field) { commitPending(); state.pending = snapshot(); }
 });
 
+// ---------- cutting: dragging the handles on a waveform ----------
+// Pressing on a waveform moves the nearer handle there, and dragging moves it on. On a phone a swipe
+// up or down still scrolls the page (and puts the handle back).
+function waveTarget(wave) {
+  const [n, ti] = wave.dataset.wave.split(":").map(Number);
+  const layer = soundById(state.selected)?.layers[n];
+  const take = layer?.takes[ti];
+  const length = take != null && waveInfo.get(take)?.seconds;
+  return length && !playsOriginal(take) ? { n, ti, layer, take, length } : null;
+}
+document.addEventListener("pointerdown", ev => {
+  // A slider pressed on a touch screen may never get the focus: remember the sound before it moves.
+  if (ev.target.dataset?.field && ev.target.closest("#mixer")) { commitPending(); state.pending = snapshot(); }
+  const wave = ev.target.closest?.(".wave[data-wave]");
+  if (!wave || ev.button > 0) return;
+  const it = waveTarget(wave);
+  if (!it) return;
+  ev.preventDefault();
+  commitPending();
+  state.pending = snapshot();
+  const before = it.layer.cuts?.[it.take] ? [...it.layer.cuts[it.take]] : null;
+  const rect = wave.getBoundingClientRect();
+  const at = x => clamp((x - rect.left) / rect.width, 0, 1) * it.length;
+  let [s, e] = cutOf(it.layer, it.take, it.length);
+  const t0 = at(ev.clientX);
+  const which = ev.target.closest(".wave-handle")?.dataset.handle || (Math.abs(t0 - s) <= Math.abs(t0 - e) ? "start" : "end");
+  const move = x => {
+    const v = at(x);
+    if (which === "start") s = Math.min(v, e - MIN_CUT);
+    else e = Math.max(v, s + MIN_CUT);
+    setCut(it.layer, it.take, Math.max(0, s), Math.min(it.length, e), it.length);
+    refreshWave(it.n, it.ti);
+  };
+  move(ev.clientX);
+  wave.classList.add("dragging");
+  wave.querySelector(`.wave-handle[data-handle="${which}"]`)?.focus({ preventScroll: true });
+  try { wave.setPointerCapture(ev.pointerId); } catch { /* the pointer is gone already */ }
+  const done = cancelled => {
+    wave.removeEventListener("pointermove", onMove);
+    wave.removeEventListener("pointerup", onUp);
+    wave.removeEventListener("pointercancel", onCancel);
+    wave.classList.remove("dragging");
+    if (cancelled) { // the page scrolled instead: the cut goes back to what it was
+      if (before) it.layer.cuts = { ...(it.layer.cuts || {}), [it.take]: before };
+      else if (it.layer.cuts) delete it.layer.cuts[it.take];
+      tidyLayer(it.layer);
+      refreshWave(it.n, it.ti);
+    }
+    commitPending();
+    refreshChips(it.n);
+    renderStatus();
+  };
+  const onMove = e2 => move(e2.clientX);
+  const onUp = () => done(false);
+  const onCancel = () => done(true);
+  wave.addEventListener("pointermove", onMove);
+  wave.addEventListener("pointerup", onUp);
+  wave.addEventListener("pointercancel", onCancel);
+});
+// The handles with the keyboard: ← → move by 0.01 s (with Shift 0.1 s), Home and End go to the ends,
+// Space or Enter plays the cut.
+document.addEventListener("keydown", ev => {
+  const handle = ev.target.closest?.(".wave-handle");
+  if (!handle || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  const it = waveTarget(handle.closest(".wave"));
+  if (!it) return;
+  if (ev.key === " " || ev.key === "Enter") {
+    ev.preventDefault();
+    ev.stopImmediatePropagation(); // not the player bar's Space
+    playCut(it.layer, it.take, handle.closest(".take").querySelector(".cut-play"));
+    return;
+  }
+  const step = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 }[ev.key];
+  if (!step && ev.key !== "Home" && ev.key !== "End") return;
+  ev.preventDefault();
+  ev.stopImmediatePropagation(); // not the library's ↑/↓
+  commitPending();
+  state.pending = snapshot();
+  let [s, e] = cutOf(it.layer, it.take, it.length);
+  const by = step * (ev.shiftKey ? 0.1 : 0.01);
+  if (handle.dataset.handle === "start") s = clamp(ev.key === "Home" ? 0 : ev.key === "End" ? e - MIN_CUT : s + by, 0, e - MIN_CUT);
+  else e = clamp(ev.key === "Home" ? s + MIN_CUT : ev.key === "End" ? it.length : e + by, s + MIN_CUT, it.length);
+  setCut(it.layer, it.take, s, e, it.length);
+  refreshWave(it.n, it.ti);
+  commitPending();
+  refreshChips(it.n);
+  renderStatus();
+}, true);
+// Double-click a slider in "Cut and effects" to put it back to where it starts.
+document.addEventListener("dblclick", ev => {
+  const el = ev.target.closest?.('[data-field="fx"]');
+  const f = el && fxByName[el.dataset.name];
+  const layer = f && soundById(state.selected)?.layers[+el.dataset.layer];
+  if (layer && fxOn(layer, f) && !isLocked(layer, f.name)) change(() => setFx(layer, f, f.def));
+});
+
 function onField(el, commit) {
   const sound = soundById(state.selected);
   const layer = sound?.layers[+el.dataset.layer];
@@ -962,11 +1551,35 @@ function onField(el, commit) {
     document.querySelector(`[data-out="pitch-${el.dataset.layer}"]`).textContent = "×" + center.toFixed(2);
   } else if (field === "family" && commit && el.value) {
     layer.takes = [...families().get(el.value)];
+    tidyLayer(layer); // the old recordings' cuts go, its effects stay
+  } else if (field === "fx") {
+    const f = fxByName[el.dataset.name];
+    if (!f) return;
+    if (isLocked(layer, f.name)) { el.value = fxValue(layer, f); return; }
+    setFx(layer, f, +el.value);
+    const n = el.dataset.layer;
+    $("mixer").querySelector(`[data-out="fx-${n}-${CSS.escape(f.name)}"]`).textContent = fxText(f, fxValue(layer, f));
+    if (f.name === "echo") $("mixer").querySelector(`[data-name="echoDelay"][data-layer="${n}"]`)?.closest(".knob").classList.toggle("idle", !fxOn(layer, f));
+    if (f.name === "fadeIn" || f.name === "fadeOut") layer.takes.forEach((_, ti) => refreshWave(+n, ti));
+  } else if (field === "cutStart" || field === "cutEnd") {
+    if (!commit) return; // typed numbers count when you press Enter or leave the box
+    const take = layer.takes[+el.dataset.take];
+    const length = waveInfo.get(take)?.seconds;
+    if (!length || playsOriginal(take)) return;
+    let [s, e] = cutOf(layer, take, length);
+    const v = clamp(Number.isFinite(+el.value) && el.value !== "" ? +el.value : field === "cutStart" ? 0 : length, 0, length);
+    if (field === "cutStart") s = Math.min(v, e - MIN_CUT);
+    else e = Math.max(v, s + MIN_CUT);
+    setCut(layer, take, Math.max(0, s), Math.min(length, e), length);
+    // The box shows the value the cut really got (refreshWave leaves a focused box alone).
+    el.value = cutOf(layer, take, length)[field === "cutStart" ? 0 : 1].toFixed(3);
+    refreshWave(+el.dataset.layer, +el.dataset.take);
   }
   if (commit) {
     commitPending();
     state.pending = snapshot();
-    if (field === "family") { renderMixer(); playLayers([layer]); }
+    if (field === "family") { renderMixer(); playLayers([layer], null, { solo: true }); }
+    else if (field === "fx" || field === "cutStart" || field === "cutEnd") refreshChips(+el.dataset.layer);
   }
   renderStatus();
 }
@@ -989,6 +1602,12 @@ function renderLibraryKeepFocus() {
 }
 document.addEventListener("change", ev => {
   const t = ev.target;
+  if (t.dataset?.reverse != null) {
+    const layer = soundById(state.selected)?.layers[+t.dataset.reverse];
+    if (layer && lockedLayer(layer)) t.checked = !!layer.reverse;
+    else if (layer) change(() => { layer.reverse = t.checked; tidyLayer(layer); });
+    return;
+  }
   if (t.dataset?.field) return onField(t, true);
   if (t.id === "add-layer" && t.value) {
     const takes = [...families().get(t.value)];
