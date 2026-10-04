@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>גלריה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="art.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <nav class="tabs" aria-label="Pages">
+        <a href="index.html">Waves</a>
+        <a href="sounds.html">Sounds</a>
+        <a href="art.html" lang="he" aria-current="page">גלריה</a>
+      </nav>
+      <p class="file" id="file-path">טוען…</p>
+    </div>
+    <div class="actions"></div>
+  </header>
+
+  <p class="problem" id="problem" hidden></p>
+
+  <div class="intro">
+    <p><b>בגרסה הזו:</b> התמונות שכבר צולמו מהמשחק (התאריך של כל פריט כתוב מתחת לשם שלו), לכל פריט בנפרד. התפאורה של הסצנות עוד בלי האביזרים,
+      והאביזרים מוצגים כל אחד לבד.</p>
+    <p><b>בהמשך:</b> אפשר יהיה לסובב כל פריט ולראות אותו מכל הצדדים, לצפות בכל האנימציות ובכל המיתות עם הפעלה והילוך
+      איטי, ולסמן על כל פריט "מאשר" או "לשנות...".</p>
+  </div>
+
+  <main class="gallery">
+    <aside class="subjects" id="subjects" aria-label="הרשימה" hidden>
+      <button type="button" class="subjects-toggle" id="subjects-toggle" aria-expanded="false" aria-controls="subject-groups"></button>
+      <div class="subject-groups" id="subject-groups"></div>
+    </aside>
+
+    <section class="viewer" id="viewer" aria-labelledby="subject-title" hidden>
+      <div class="subject-head">
+        <div class="titles">
+          <h1 class="subject-title" id="subject-title"></h1>
+          <p class="subject-meta" id="subject-meta"></p>
+        </div>
+        <div class="step">
+          <button type="button" class="ghost" id="prev" title="הפריט הקודם ברשימה" aria-label="הקודם">→<span class="step-word"> הקודם</span></button>
+          <button type="button" class="ghost" id="next" title="הפריט הבא ברשימה" aria-label="הבא"><span class="step-word">הבא </span>←</button>
+        </div>
+      </div>
+      <button type="button" class="stage" id="stage">
+        <span class="enlarge" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M10.5 4a6.5 6.5 0 1 0 3.9 11.7l4.4 4.4 1.4-1.4-4.4-4.4A6.5 6.5 0 0 0 10.5 4zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM9.5 8v1.5H8v2h1.5V13h2v-1.5H13v-2h-1.5V8z"/></svg>
+          לחיצה לגודל מלא
+        </span>
+      </button>
+      <p class="caption" id="caption"></p>
+      <div class="controls" id="controls"></div>
+      <p class="subject-note" id="subject-note" dir="auto"></p>
+      <div class="strip" id="strip"></div>
+    </section>
+  </main>
+
+  <!-- A picture at full size: zoom with the wheel, + and −, a pinch or a double tap; drag to move it. -->
+  <dialog class="zoom" id="zoom" aria-labelledby="zoom-title">
+    <div class="zoom-bar">
+      <p class="zoom-title" id="zoom-title"></p>
+      <div class="zoom-buttons">
+        <button type="button" class="zoom-button" id="zoom-out" aria-label="הקטנה" title="הקטנה (−)">−</button>
+        <output class="zoom-level" id="zoom-level" aria-live="polite">×1</output>
+        <button type="button" class="zoom-button" id="zoom-in" aria-label="הגדלה" title="הגדלה (+)">+</button>
+        <button type="button" class="zoom-fit ghost" id="zoom-fit" title="כל התמונה (0)">כל התמונה</button>
+        <button type="button" class="zoom-button zoom-close" id="zoom-close" aria-label="סגירה" title="סגירה" autofocus>✕</button>
+      </div>
+    </div>
+    <div class="zoom-view" id="zoom-view">
+      <div class="zoom-pic" id="zoom-pic"><img id="zoom-img" alt="" draggable="false"></div>
+    </div>
+    <p class="zoom-hint">
+      <span class="for-mouse">גלגלת או <kbd>+</kbd> <kbd>−</kbd>: הגדלה והקטנה · לחיצה כפולה: הגדלה · גרירה: הזזה · <kbd>Esc</kbd>: סגירה</span>
+      <span class="for-touch">צביטה או הקשה כפולה: הגדלה · גרירה: הזזה</span>
+    </p>
+  </dialog>
+
+  <script src="store.js"></script>
+  <script src="art.js"></script>
+</body>
+</html>

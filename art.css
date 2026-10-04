@@ -1,0 +1,372 @@
+/* The Art page (Hebrew, right to left): the list of items on the right, the item chosen on the left: its big
+   picture, the look, view and hitbox buttons under it, then all its pictures small. A picture opens full size with
+   zoom. Phones: the list folds up into one button at the top, and the picture takes the whole width. */
+
+.intro {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0.9rem 1.6rem 0;
+  padding: 0.7rem 1.1rem;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: var(--step--1);
+}
+.intro p { margin: 0; max-width: 110ch; }
+.intro b { color: var(--text); font-weight: 600; }
+
+/* A command or a file in a problem: on one line, so a phone doesn't break it in two. */
+.problem code {
+  padding: 0 0.3em;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  font-family: Consolas, "Cascadia Mono", ui-monospace, monospace;
+  font-size: 0.88em;
+  white-space: nowrap;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: clamp(13rem, 26vw, 19rem) minmax(0, 1fr);
+  gap: 1.4rem;
+  padding: 0.9rem 1.6rem 4rem;
+  align-items: start;
+}
+
+/* ---------- the list ---------- */
+.subjects {
+  position: sticky;
+  top: var(--below-top, 5.6rem);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - var(--below-top, 5.6rem) - 0.8rem);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.subjects-toggle { display: none; }
+.subject-groups {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 0.4rem 0.8rem;
+  scrollbar-width: thin;
+  scrollbar-color: #4d4d4d transparent;
+}
+.group-title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.8rem 0.5rem 0.45rem;
+  background: var(--surface);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--step-0);
+}
+.count { color: var(--text-3); font-family: var(--body); font-weight: 500; font-size: 0.8rem; }
+.group-list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+
+.item {
+  display: grid;
+  grid-template-columns: 2.9rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.3rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  text-align: start;
+}
+.item:hover { background: var(--hover); }
+.item[aria-current="true"] { background: rgba(255, 255, 255, 0.1); }
+.item[aria-current="true"] .item-he { color: var(--accent); }
+.item-names { display: grid; min-width: 0; line-height: 1.25; }
+.item-he { font-weight: 600; font-size: 0.95rem; overflow-wrap: anywhere; }
+.item-en {
+  justify-self: start; /* on the Hebrew name's side */
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text-3);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Small pictures: whole in their box, or filling it (.fill, set by art.js for pictures of about its shape). */
+.thumb, .pic-frame { display: block; overflow: hidden; border-radius: 5px; background: #0d0d0d; }
+.thumb { width: 2.9rem; height: 2.9rem; }
+.thumb img, .pic-frame img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.thumb img.fill, .pic-frame img.fill { object-fit: cover; }
+/* Pictures with a see-through background (the close-ups from the Sounds page) have dark handles and blades: they go
+   on a light steel backdrop, as on the Waves and Sounds pages, not on the near-black. */
+.thumb.alpha, .pic-frame.alpha, .shot.alpha, .zoom-pic.alpha { background: radial-gradient(circle at 50% 40%, #e6e9ec, #a0a7af 78%); }
+
+/* ---------- the item chosen ---------- */
+.viewer { min-width: 0; scroll-margin-top: var(--below-top, 5.6rem); }
+.subject-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 0.6rem 1rem; }
+.titles { min-width: 0; }
+.subject-title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--step-3);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.subject-en {
+  margin-inline-start: 0.4rem;
+  color: var(--text-3);
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: var(--step--1);
+  letter-spacing: 0.03em;
+}
+.subject-meta { margin: 0.4rem 0 0; color: var(--text-3); font-size: var(--step--1); }
+.step { display: flex; gap: 0.4rem; }
+.subject-note { margin: 1rem 0 0; max-width: 110ch; color: var(--text-2); font-size: var(--step--1); }
+.subject-note:empty { display: none; }
+
+/* The big picture. It fits in the stage, and a small one is enlarged at most --cap times (it gets blurry). A tap
+   below it (the strip, the look and view buttons) scrolls up to it when it is out of sight: the scroll margin keeps
+   it clear of the header. */
+.stage {
+  --stage-h: clamp(17rem, 100vh - 24rem, 40rem);
+  --cap: 3;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: var(--stage-h);
+  margin-top: 0.9rem;
+  padding: 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: radial-gradient(ellipse at 50% 45%, #202020, #151515 72%);
+  color: inherit;
+  cursor: zoom-in;
+  scroll-margin-top: var(--below-top, 5.6rem);
+}
+.shot {
+  position: relative;
+  display: block;
+  width: min(100%, calc((var(--stage-h) - 1.2rem) * var(--w) / var(--h)), calc(var(--w) * var(--cap) * 1px));
+  aspect-ratio: var(--w) / var(--h);
+  border-radius: 4px;
+  transition: opacity 0.15s;
+}
+.shot img { display: block; width: 100%; height: 100%; border-radius: inherit; object-fit: contain; }
+.stage.loading .shot { opacity: 0.55; }
+.shot.broken { background: var(--raise); }
+.shot.broken img { visibility: hidden; }
+.broken-note { position: absolute; inset: 0; display: grid; place-items: center; color: var(--danger); font-size: var(--step--1); }
+
+/* In a picture from the game camera (many items), the ring marks this one. Its place is a share of the picture's
+   width and height from its top left corner, so it uses the physical left and top on this right-to-left page. */
+.ring {
+  position: absolute;
+  left: calc(var(--fx) * 100%);
+  top: calc(var(--fy) * 100%);
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.55), inset 0 0 0 2px rgba(0, 0, 0, 0.55);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.badge {
+  position: absolute;
+  top: 0.6rem;
+  inset-inline-start: 0.6rem;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.78);
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.enlarge {
+  position: absolute;
+  bottom: 0.6rem;
+  inset-inline-end: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.65rem 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--text-2);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+.enlarge svg { width: 1rem; height: 1rem; fill: currentColor; }
+.stage:hover .enlarge { color: var(--text); }
+
+.caption { min-height: 1.45em; margin: 0.5rem 0 0; color: var(--text-2); font-size: var(--step--1); text-align: center; }
+.caption-more { color: var(--text-3); }
+
+/* ---------- look, view and hitbox ---------- */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem 1.6rem; margin-top: 0.7rem; }
+.controls:empty { display: none; }
+.control { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.control-label { margin-inline-end: 0.2rem; color: var(--text-3); font-size: var(--step--1); }
+.control.unused .pill { opacity: 0.5; } /* the picture shown has no look (a close-up): pick one to go back */
+.pill {
+  padding: 0.38rem 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--raise);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.pill:hover { background: var(--hover); }
+.pill[aria-pressed="true"] { background: var(--text); color: #000; }
+/* The hitbox switch: a little capsule, like the hitbox lines; green when they show. */
+.hitbox { display: inline-flex; align-items: center; gap: 0.5rem; }
+.hitbox::before { content: ""; width: 0.7rem; height: 1rem; border: 2px solid var(--accent); border-radius: 999px; }
+.hitbox[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.hitbox[aria-pressed="true"]::before { border-color: var(--accent-ink); }
+
+/* ---------- all its pictures, small ---------- */
+.strip { display: grid; gap: 1rem; margin-top: 1.5rem; }
+.strip:empty { display: none; }
+.strip-row { display: grid; gap: 0.45rem; }
+.strip-title { margin: 0; color: var(--text-2); font-size: var(--step--1); font-weight: 600; }
+.strip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.4rem, 1fr)); gap: 0.5rem; }
+.strip-grid.wide { grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); }
+.pic {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.3rem;
+  padding: 0.3rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--raise);
+  color: var(--text-2);
+  text-align: start;
+}
+.pic:hover { background: var(--hover); color: var(--text); }
+.pic[aria-pressed="true"] { border-color: var(--accent); color: var(--text); }
+.pic-frame { aspect-ratio: var(--ratio, 1); }
+.pic-label {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.tag {
+  position: absolute;
+  top: 0.55rem;
+  inset-inline-start: 0.55rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.78);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+.hitbox-tag { color: var(--accent); }
+.badge-tag { color: var(--gold); }
+
+/* ---------- the full-size view ---------- */
+html.zooming { overflow: hidden; }
+.zoom {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #000;
+  color: var(--text);
+}
+.zoom[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+.zoom-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; padding: 0.6rem 1rem; }
+.zoom-title { min-width: 0; margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.zoom-buttons { display: flex; align-items: center; gap: 0.4rem; margin-inline-start: auto; }
+.zoom-button {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--raise);
+  color: var(--text);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.zoom-button:hover { background: var(--hover); }
+.zoom-button[aria-disabled="true"] { opacity: 0.35; cursor: default; }
+.zoom-close { margin-inline-start: 0.4rem; background: var(--text); color: #000; }
+.zoom-close:hover { background: #d9d9d9; }
+.zoom-fit { padding-block: 0.35rem; }
+.zoom-level { min-width: 3.4ch; color: var(--text-2); font-variant-numeric: tabular-nums; text-align: center; }
+/* The picture moves by its own numbers (left and top, physical), so the view doesn't follow the page's direction. */
+.zoom-view { position: relative; overflow: hidden; direction: ltr; touch-action: none; user-select: none; -webkit-user-select: none; cursor: zoom-in; }
+.zoom-view.can-drag { cursor: grab; }
+.zoom-view.can-drag.dragging { cursor: grabbing; }
+.zoom-pic { position: absolute; top: 0; left: 0; }
+.zoom-pic img { display: block; width: 100%; height: 100%; pointer-events: none; -webkit-user-drag: none; }
+.zoom-hint { margin: 0; padding: 0.5rem 1rem 0.8rem; color: var(--text-3); font-size: 0.8rem; text-align: center; }
+.for-touch { display: none; }
+@media (hover: none) {
+  .for-mouse { display: none; }
+  .for-touch { display: inline; }
+}
+
+/* ---------- phones ---------- */
+@media (max-width: 700px) {
+  .intro { margin: 0.6rem 0.8rem 0; padding: 0.55rem 0.8rem; font-size: 0.78rem; }
+  .gallery { grid-template-columns: minmax(0, 1fr); gap: 0.9rem; padding: 0.6rem 0.8rem 3rem; }
+  .subjects { position: static; max-height: none; }
+  .subjects-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    font-weight: 700;
+    text-align: start;
+  }
+  .subjects-toggle .count { margin-inline-start: 0.3rem; }
+  .chevron { color: var(--text-2); transition: transform 0.2s; }
+  .subjects.open .chevron { transform: rotate(180deg); }
+  .subject-groups { display: none; max-height: 62vh; border-top: 1px solid var(--line); }
+  .subjects.open .subject-groups { display: block; }
+  .group-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .item { grid-template-columns: 2.5rem minmax(0, 1fr); gap: 0.5rem; }
+  .thumb { width: 2.5rem; height: 2.5rem; }
+  .item-he { font-size: 0.88rem; }
+  .subject-head { flex-wrap: nowrap; align-items: flex-start; }
+  .titles { flex: 1; }
+  .subject-title { font-size: var(--step-2); }
+  .step .ghost { width: 2.4rem; height: 2.4rem; padding: 0; } /* just the arrows, beside the name */
+  .step-word { display: none; }
+  .stage { --stage-h: min(21rem, 55vh); margin-top: 0.7rem; padding: 0.4rem; }
+  .shot { width: min(100%, calc((var(--stage-h) - 0.8rem) * var(--w) / var(--h)), calc(var(--w) * var(--cap) * 1px)); }
+  .controls { gap: 0.6rem 1rem; }
+  .pill { padding: 0.35rem 0.8rem; font-size: 0.85rem; }
+  .strip-grid { grid-template-columns: repeat(auto-fill, minmax(5.2rem, 1fr)); }
+  .strip-grid.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .zoom-bar { padding: 0.5rem 0.7rem; }
+  .zoom-title { flex: 1 0 100%; font-size: 0.9rem; }
+}
