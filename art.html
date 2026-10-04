@@ -27,10 +27,11 @@
   <p class="problem" id="problem" hidden></p>
 
   <div class="intro">
-    <p><b>בגרסה הזו:</b> התמונות שכבר צולמו מהמשחק (התאריך של כל פריט כתוב מתחת לשם שלו), לכל פריט בנפרד. התפאורה של הסצנות עוד בלי האביזרים,
-      והאביזרים מוצגים כל אחד לבד.</p>
-    <p><b>בהמשך:</b> אפשר יהיה לסובב כל פריט ולראות אותו מכל הצדדים, לצפות בכל האנימציות ובכל המיתות עם הפעלה והילוך
-      איטי, ולסמן על כל פריט "מאשר" או "לשנות...".</p>
+    <p><b>בגרסה הזו:</b> כל פריט צולם מהמשחק עצמו. גוררים אותו הצידה (בטלפון: מחליקים) כדי לסובב אותו ולראות את כל
+      הצדדים, ובמיתות לוחצים על הפעלה: הילוך איטי, פריים אחרי פריים ומצלמה מכל צד. על כל פריט מסמנים "מאשר" או "לשנות...".</p>
+    <p class="limits"><b>מה שלא רואים כאן:</b> מה שהמשחק מצייר על המסך עצמו: הכיתובים (<bdi dir="ltr">HUD</bdi>), החנות,
+      מסכי ההפסד והניצחון, ההבהובים האדומים והלבנים ורעידת המצלמה. תמונות שלהם מתוך מסך המשחק יגיעו בהמשך. ולגיבור אין
+      אנימציית מוות: כשהוא מת הזמן נעצר ומסך ההפסד מופיע.</p>
   </div>
 
   <main class="gallery">
@@ -50,14 +51,78 @@
           <button type="button" class="ghost" id="next" title="הפריט הבא ברשימה" aria-label="הבא"><span class="step-word">הבא </span>←</button>
         </div>
       </div>
-      <button type="button" class="stage" id="stage">
-        <span class="enlarge" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M10.5 4a6.5 6.5 0 1 0 3.9 11.7l4.4 4.4 1.4-1.4-4.4-4.4A6.5 6.5 0 0 0 10.5 4zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM9.5 8v1.5H8v2h1.5V13h2v-1.5H13v-2h-1.5V8z"/></svg>
-          לחיצה לגודל מלא
-        </span>
-      </button>
-      <p class="caption" id="caption"></p>
-      <div class="controls" id="controls"></div>
+
+      <!-- What the stage shows: the item turning, one of its clips, or its pictures. -->
+      <div class="modes" id="modes" role="group" aria-label="מה מוצג"></div>
+
+      <!-- The stage, its words and its buttons; "מסך מלא" makes all three fill the screen. -->
+      <div class="theatre" id="theatre">
+        <div class="stage" id="stage">
+          <!-- a picture: a tap opens it full size -->
+          <button type="button" class="pic-view" id="pic-view" hidden>
+            <span class="enlarge" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M10.5 4a6.5 6.5 0 1 0 3.9 11.7l4.4 4.4 1.4-1.4-4.4-4.4A6.5 6.5 0 0 0 10.5 4zm0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zM9.5 8v1.5H8v2h1.5V13h2v-1.5H13v-2h-1.5V8z"/></svg>
+              לחיצה לגודל מלא
+            </span>
+          </button>
+          <!-- the item turning: drag sideways to turn it, zoom in for the sharp picture of that side -->
+          <div class="turn" id="turn" tabindex="0" role="img" hidden>
+            <div class="layer" id="turn-layer">
+              <canvas id="turn-canvas"></canvas>
+              <img id="turn-still" alt="" draggable="false" hidden>
+            </div>
+            <span class="hint" id="turn-hint" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M7 7 2 12l5 5v-3.5h10V17l5-5-5-5v3.5H7z"/></svg>
+              <span class="for-mouse">גרירה הצידה מסובבת</span><span class="for-touch">החלקה הצידה מסובבת</span>
+            </span>
+          </div>
+          <!-- a clip: one camera of the mosaic video at a time; zoom or full screen loads that camera's own video -->
+          <div class="clip" id="clip" tabindex="0" hidden>
+            <div class="tile" id="clip-tile">
+              <img id="clip-poster" alt="" draggable="false">
+              <video id="clip-mosaic" muted playsinline preload="none" disablepictureinpicture></video>
+            </div>
+            <div class="layer wide" id="clip-wide" hidden>
+              <video id="clip-angle" muted playsinline preload="auto" disablepictureinpicture></video>
+            </div>
+            <button type="button" class="big-play" id="big-play" aria-label="הפעלה" title="הפעלה">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <div class="stage-tools" id="stage-tools" hidden>
+            <button type="button" class="tool" id="stage-zoom-out" aria-label="הקטנה" title="הקטנה (−)">−</button>
+            <output class="tool-level" id="stage-zoom-level" aria-live="polite">×1</output>
+            <button type="button" class="tool" id="stage-zoom-in" aria-label="הגדלה" title="הגדלה (+)">+</button>
+            <button type="button" class="tool" id="stage-full" aria-label="מסך מלא" title="מסך מלא">
+              <svg viewBox="0 0 24 24"><path d="M4 4h6v2H6v4H4zm10 0h6v6h-2V6h-4zM4 14h2v4h4v2H4zm14 0h2v6h-6v-2h4z"/></svg>
+            </button>
+          </div>
+          <span class="stage-busy" id="stage-busy" hidden>טוען…</span>
+        </div>
+        <p class="caption" id="caption"></p>
+        <div class="controls" id="controls"></div>
+        <button type="button" class="theatre-close" id="theatre-close" aria-label="יציאה ממסך מלא" title="יציאה ממסך מלא" hidden>✕</button>
+      </div>
+
+      <!-- Approve or Change...: saved to feedback.json (the GitHub key is asked for only on the first save on a device). -->
+      <div class="verdict" id="verdict">
+        <p class="verdict-state" id="verdict-state"></p>
+        <div class="verdict-buttons">
+          <button type="button" class="verdict-approve" id="approve">מאשר</button>
+          <button type="button" class="ghost" id="change" aria-expanded="false" aria-controls="note-box">לשנות…</button>
+        </div>
+        <p class="verdict-said" id="verdict-said" role="status"></p>
+      </div>
+      <form class="note-box" id="note-box" hidden>
+        <label class="note-label" for="note-input">מה לשנות? בעברית או באנגלית, במילים שלך: זה נשמר בדיוק כמו שכתבת.</label>
+        <p class="note-where" id="note-where"></p>
+        <textarea class="text-input note-input" id="note-input" dir="auto" rows="3"></textarea>
+        <div class="note-buttons">
+          <button type="submit" class="save" id="note-save">שמירה</button>
+          <button type="button" class="ghost" id="note-cancel">ביטול</button>
+        </div>
+      </form>
+
       <p class="subject-note" id="subject-note" dir="auto"></p>
       <div class="strip" id="strip"></div>
     </section>

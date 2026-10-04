@@ -1,10 +1,11 @@
-/* The Art page (Hebrew, right to left): the list of items on the right, the item chosen on the left: its big
-   picture, the look, view and hitbox buttons under it, then all its pictures small. A picture opens full size with
-   zoom. Phones: the list folds up into one button at the top, and the picture takes the whole width. */
+/* The Art page (Hebrew, right to left): the list of items on the right, the item chosen on the left: what its stage
+   shows (turning, a clip, its pictures), the stage, its buttons, "מאשר" and "לשנות...", then all its pictures small. A
+   picture opens full size with zoom; the stage itself can fill the screen. Phones: the list folds up into one button at
+   the top, and the stage takes the whole width. */
 
 .intro {
   display: grid;
-  gap: 0.2rem;
+  gap: 0.35rem;
   margin: 0.9rem 1.6rem 0;
   padding: 0.7rem 1.1rem;
   border-radius: 8px;
@@ -12,8 +13,9 @@
   color: var(--text-2);
   font-size: var(--step--1);
 }
-.intro p { margin: 0; max-width: 110ch; }
+.intro p { margin: 0; max-width: 120ch; }
 .intro b { color: var(--text); font-weight: 600; }
+.intro .limits { color: var(--text-3); }
 
 /* A command or a file in a problem: on one line, so a phone doesn't break it in two. */
 .problem code {
@@ -70,7 +72,7 @@
 
 .item {
   display: grid;
-  grid-template-columns: 2.9rem minmax(0, 1fr);
+  grid-template-columns: 2.9rem minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.7rem;
   width: 100%;
@@ -95,12 +97,20 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* His verdict on the item: approved, change asked for, changed (approve again). */
+.mark { width: 1.1rem; font-size: 0.85rem; font-weight: 700; text-align: center; }
+.mark[data-mark="ok"]::before { content: "✓"; color: var(--accent); }
+.mark[data-mark="change"]::before { content: "✎"; color: var(--gold); }
+.mark[data-mark="again"]::before { content: "↻"; color: #7cc4ff; }
 
 /* Small pictures: whole in their box, or filling it (.fill, set by art.js for pictures of about its shape). */
 .thumb, .pic-frame { display: block; overflow: hidden; border-radius: 5px; background: #0d0d0d; }
 .thumb { width: 2.9rem; height: 2.9rem; }
 .thumb img, .pic-frame img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .thumb img.fill, .pic-frame img.fill { object-fit: cover; }
+/* A clip's poster cut to one camera's tile (art.js places the whole mosaic so that tile fills the box). */
+.thumb.tile-thumb { position: relative; }
+.thumb.tile-thumb img { position: absolute; max-width: none; object-fit: fill; }
 /* Pictures with a see-through background (the close-ups from the Sounds page) have dark handles and blades: they go
    on a light steel backdrop, as on the Waves and Sounds pages, not on the near-black. */
 .thumb.alpha, .pic-frame.alpha, .shot.alpha, .zoom-pic.alpha { background: radial-gradient(circle at 50% 40%, #e6e9ec, #a0a7af 78%); }
@@ -131,9 +141,29 @@
 .subject-note { margin: 1rem 0 0; max-width: 110ch; color: var(--text-2); font-size: var(--step--1); }
 .subject-note:empty { display: none; }
 
-/* The big picture. It fits in the stage, and a small one is enlarged at most --cap times (it gets blurry). A tap
-   below it (the strip, the look and view buttons) scrolls up to it when it is out of sight: the scroll margin keeps
-   it clear of the header. */
+/* What the stage shows: turning, each clip, the pictures. */
+.modes { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.9rem; }
+.mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.42rem 1rem 0.42rem 0.85rem;
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  background: transparent;
+  font-weight: 600;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+.mode svg { width: 1.05rem; height: 1.05rem; fill: currentColor; }
+.mode:hover { background: var(--hover); }
+.mode[aria-pressed="true"] { border-color: var(--accent); background: rgba(30, 215, 96, 0.14); color: var(--accent); }
+.mode-more { color: var(--text-3); font-weight: 500; font-size: 0.8rem; }
+.mode[aria-pressed="true"] .mode-more { color: inherit; opacity: 0.75; }
+
+/* The stage: a picture fits in it (a small one enlarged at most --cap times: it gets blurry); turning and clips fill it.
+   A tap below it (the strip, the buttons) scrolls up to it when it is out of sight: the scroll margin keeps it clear
+   of the header. */
 .stage {
   --stage-h: clamp(17rem, 100vh - 24rem, 40rem);
   --cap: 3;
@@ -142,14 +172,25 @@
   place-items: center;
   width: 100%;
   height: var(--stage-h);
-  margin-top: 0.9rem;
+  margin-top: 0.7rem;
   padding: 0.6rem;
-  border: 0;
+  overflow: hidden;
   border-radius: 8px;
   background: radial-gradient(ellipse at 50% 45%, #202020, #151515 72%);
+  scroll-margin-top: var(--below-top, 5.6rem);
+}
+.stage[data-mode="turn"], .stage[data-mode="clip"] { --stage-h: clamp(19rem, 100vh - 22rem, 44rem); }
+.pic-view {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: inherit;
   cursor: zoom-in;
-  scroll-margin-top: var(--below-top, 5.6rem);
 }
 .shot {
   position: relative;
@@ -190,7 +231,7 @@
   font-size: 0.8rem;
   font-weight: 700;
 }
-.enlarge {
+.enlarge, .hint {
   position: absolute;
   bottom: 0.6rem;
   inset-inline-end: 0.6rem;
@@ -204,19 +245,113 @@
   font-size: 0.75rem;
   pointer-events: none;
 }
-.enlarge svg { width: 1rem; height: 1rem; fill: currentColor; }
-.stage:hover .enlarge { color: var(--text); }
+.enlarge svg, .hint svg { width: 1rem; height: 1rem; fill: currentColor; }
+.pic-view:hover .enlarge { color: var(--text); }
+
+/* Turning and clips: the view fills the stage; the layer (the picture or video) moves and grows in it by its own
+   numbers (left, top, width and height, physical), so the view doesn't follow the page's direction. A sideways drag
+   turns (or changes the camera) and the page still scrolls up and down; zoomed in, a drag moves the picture. */
+.turn, .clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  direction: ltr;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  outline-offset: -3px;
+}
+.turn.dragging, .clip.dragging { cursor: grabbing; }
+.turn.zoomed, .clip.zoomed { touch-action: none; }
+.layer, .tile { position: absolute; }
+.turn .layer canvas, .turn .layer img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.turn .layer img { object-fit: fill; pointer-events: none; -webkit-user-drag: none; }
+.stage.loading .turn canvas { opacity: 0.6; }
+.hint { inset-inline-end: auto; inset-inline-start: 50%; transform: translateX(-50%); bottom: 0.7rem; transition: opacity 0.4s; }
+.hint.gone { opacity: 0; }
+
+/* A clip: the mosaic (and its poster) is cols x rows times the box, placed so one camera's tile fills it. */
+.tile { overflow: hidden; border-radius: 4px; background: #000; }
+.tile video, .tile img { position: absolute; max-width: none; object-fit: fill; pointer-events: none; -webkit-user-drag: none; }
+.tile img { z-index: 1; }
+.clip .wide { z-index: 2; background: #000; }
+.clip .wide video { display: block; width: 100%; height: 100%; object-fit: fill; }
+.clip .wide.loading { background: transparent; }
+.clip .wide.loading video { visibility: hidden; }
+.clip.camera-on .tile { visibility: hidden; }
+.big-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 4.2rem;
+  height: 4.2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  transform: translate(-50%, -50%);
+}
+.big-play svg { width: 2.2rem; height: 2.2rem; fill: currentColor; margin-inline-start: 0.2rem; }
+.big-play:hover { background: var(--accent); color: var(--accent-ink); }
+
+.stage-tools { /* at the top corner: a turning item's feet and floor are at the bottom */
+  position: absolute;
+  top: 0.6rem;
+  inset-inline-end: 0.6rem;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+}
+.tool {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--raise);
+  color: var(--text);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.tool:hover { background: var(--hover); }
+.tool svg { width: 1.15rem; height: 1.15rem; fill: currentColor; }
+.tool-level { min-width: 3.2ch; color: var(--text-2); font-size: 0.85rem; font-variant-numeric: tabular-nums; text-align: center; }
+.stage-busy {
+  position: absolute;
+  bottom: 0.6rem;
+  inset-inline-start: 0.6rem;
+  z-index: 4;
+  padding: 0.15rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--text-2);
+  font-size: 0.8rem;
+}
 
 .caption { min-height: 1.45em; margin: 0.5rem 0 0; color: var(--text-2); font-size: var(--step--1); text-align: center; }
 .caption-more { color: var(--text-3); }
 
-/* ---------- look, view and hitbox ---------- */
+/* ---------- the stage's buttons ---------- */
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.7rem 1.6rem; margin-top: 0.7rem; }
 .controls:empty { display: none; }
 .control { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
 .control-label { margin-inline-end: 0.2rem; color: var(--text-3); font-size: var(--step--1); }
 .control.unused .pill { opacity: 0.5; } /* the picture shown has no look (a close-up): pick one to go back */
 .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.38rem 0.95rem;
   border: 0;
   border-radius: 999px;
@@ -226,13 +361,129 @@
   font-size: 0.9rem;
   white-space: nowrap;
 }
+.pill svg { width: 1rem; height: 1rem; fill: currentColor; }
 .pill:hover { background: var(--hover); }
 .pill[aria-pressed="true"] { background: var(--text); color: #000; }
 /* The hitbox switch: a little capsule, like the hitbox lines; green when they show. */
-.hitbox { display: inline-flex; align-items: center; gap: 0.5rem; }
 .hitbox::before { content: ""; width: 0.7rem; height: 1rem; border: 2px solid var(--accent); border-radius: 999px; }
 .hitbox[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
 .hitbox[aria-pressed="true"]::before { border-color: var(--accent-ink); }
+.how { flex: 1 0 100%; margin: 0; color: var(--text-3); font-size: 0.78rem; }
+
+/* A clip's player: play, a frame back and forward, the time bar and clock (left to right, as media players are in
+   every language), the speeds, loop, and the dial of cameras round the item seen from above (its face down). */
+.transport { display: flex; flex: 1 0 100%; align-items: center; gap: 0.45rem; }
+.transport .play { width: 2.8rem; height: 2.8rem; background: var(--text); color: #000; }
+.transport .play:hover { background: #d9d9d9; }
+.timebar { flex: 1; min-width: 6rem; accent-color: var(--accent); }
+.clock { min-width: 9ch; color: var(--text-2); font-size: 0.85rem; font-variant-numeric: tabular-nums; text-align: end; }
+.loop[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.camera { gap: 0.6rem; }
+.compass { position: relative; width: 5.6rem; height: 5.6rem; flex: none; border-radius: 50%; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.compass-body {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: #6d7480;
+  transform: translate(-50%, -50%);
+}
+.compass-body::after { /* its face: toward the bottom, where the front camera is */
+  content: "";
+  position: absolute;
+  bottom: -0.32rem;
+  left: 50%;
+  border: 0.32rem solid transparent;
+  border-top: 0.42rem solid var(--x-red);
+  border-bottom: 0;
+  transform: translateX(-50%);
+}
+.compass-dot {
+  position: absolute;
+  top: calc(50% + var(--y) * 2.15rem);
+  left: calc(50% + var(--x) * 2.15rem);
+  width: 1.05rem;
+  height: 1.05rem;
+  padding: 0;
+  border: 2px solid var(--text-3);
+  border-radius: 50%;
+  background: var(--bg);
+  transform: translate(-50%, -50%);
+}
+.compass-dot::after { content: ""; position: absolute; inset: -0.45rem; } /* a bigger target for a finger */
+.compass-dot:hover { border-color: var(--text); }
+.compass-dot[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); }
+.camera-name { min-width: 7.5em; color: var(--text); font-weight: 600; font-size: 0.9rem; }
+
+/* ---------- full screen: the stage, its words and its buttons ---------- */
+html.theatre-open { overflow: hidden; }
+.theatre.full {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  padding: 0.6rem 0.9rem 0.8rem;
+  overflow-y: auto;
+  background: #000;
+}
+.theatre.full .stage { height: auto; min-height: 14rem; margin: 0; }
+.theatre.full .controls { justify-content: center; }
+.theatre-close {
+  position: fixed;
+  top: 1rem;
+  inset-inline-start: 1.3rem;
+  z-index: 31;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--text);
+  color: #000;
+  font-size: 1.2rem;
+}
+
+/* ---------- Approve or Change... ---------- */
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  margin-top: 1.1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--surface);
+}
+.verdict-state { min-width: 0; margin: 0; color: var(--text-2); overflow-wrap: anywhere; }
+.verdict-state.ok { color: var(--accent); }
+.verdict-state.change { color: var(--gold); }
+.verdict-state.again { color: #7cc4ff; font-weight: 700; }
+.verdict-state q { color: var(--text); }
+.verdict-buttons { display: flex; gap: 0.5rem; margin-inline-start: auto; }
+.verdict-approve {
+  padding: 0.45rem 1.3rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+.verdict-approve:hover:not(:disabled) { background: #3be477; }
+.verdict-approve:disabled { background: var(--raise); color: var(--text-3); cursor: default; }
+.verdict-said { flex: 1 0 100%; margin: 0; color: var(--text-2); font-size: var(--step--1); }
+.verdict-said:empty { display: none; }
+.verdict-said.bad { color: var(--danger); }
+.note-box { display: grid; gap: 0.5rem; margin-top: 0.6rem; padding: 0.9rem 1rem; border-radius: 8px; background: var(--surface); }
+.note-label { color: var(--text); font-weight: 600; }
+.note-where { margin: 0; color: var(--text-3); font-size: var(--step--1); }
+.note-input { width: 100%; min-height: 5rem; resize: vertical; font: inherit; line-height: 1.4; }
+.note-buttons { display: flex; gap: 0.5rem; }
 
 /* ---------- all its pictures, small ---------- */
 .strip { display: grid; gap: 1rem; margin-top: 1.5rem; }
@@ -278,7 +529,7 @@
 .hitbox-tag { color: var(--accent); }
 .badge-tag { color: var(--gold); }
 
-/* ---------- the full-size view ---------- */
+/* ---------- the full-size view of a picture ---------- */
 html.zooming { overflow: hidden; }
 .zoom {
   position: fixed;
@@ -353,7 +604,8 @@ html.zooming { overflow: hidden; }
   .subject-groups { display: none; max-height: 62vh; border-top: 1px solid var(--line); }
   .subjects.open .subject-groups { display: block; }
   .group-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
-  .item { grid-template-columns: 2.5rem minmax(0, 1fr); gap: 0.5rem; }
+  .item { grid-template-columns: 2.5rem minmax(0, 1fr) auto; gap: 0.5rem; }
+  .mark { width: 0.8rem; }
   .thumb { width: 2.5rem; height: 2.5rem; }
   .item-he { font-size: 0.88rem; }
   .subject-head { flex-wrap: nowrap; align-items: flex-start; }
@@ -361,10 +613,23 @@ html.zooming { overflow: hidden; }
   .subject-title { font-size: var(--step-2); }
   .step .ghost { width: 2.4rem; height: 2.4rem; padding: 0; } /* just the arrows, beside the name */
   .step-word { display: none; }
-  .stage { --stage-h: min(21rem, 55vh); margin-top: 0.7rem; padding: 0.4rem; }
+  .modes { gap: 0.35rem; margin-top: 0.7rem; }
+  .mode { padding: 0.35rem 0.8rem 0.35rem 0.7rem; font-size: 0.85rem; }
+  .stage { --stage-h: min(21rem, 55vh); margin-top: 0.6rem; padding: 0.4rem; }
+  .stage[data-mode="turn"], .stage[data-mode="clip"] { --stage-h: min(27rem, 62vh); }
   .shot { width: min(100%, calc((var(--stage-h) - 0.8rem) * var(--w) / var(--h)), calc(var(--w) * var(--cap) * 1px)); }
   .controls { gap: 0.6rem 1rem; }
   .pill { padding: 0.35rem 0.8rem; font-size: 0.85rem; }
+  .tool { width: 2.5rem; height: 2.5rem; }
+  .stage-tools .tool { width: 2.15rem; height: 2.15rem; font-size: 1.1rem; }
+  .stage-tools .tool-level { display: none; }
+  .transport { gap: 0.35rem; }
+  .clock { min-width: 0; font-size: 0.78rem; }
+  .theatre.full { padding: 0.4rem 0.5rem 0.6rem; }
+  .theatre-close { top: 0.6rem; inset-inline-start: 0.7rem; }
+  .verdict { padding: 0.65rem 0.8rem; }
+  .verdict-buttons { flex: 1 0 100%; }
+  .verdict-buttons > * { flex: 1; }
   .strip-grid { grid-template-columns: repeat(auto-fill, minmax(5.2rem, 1fr)); }
   .strip-grid.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .zoom-bar { padding: 0.5rem 0.7rem; }
