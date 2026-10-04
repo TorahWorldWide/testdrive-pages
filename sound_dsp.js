@@ -11,8 +11,13 @@
 //              takes are different recordings). end <= start, or end missing, = to the end of the recording.
 //   reverse    true = the cut plays backwards.
 //   fadeIn, fadeOut   0 to 2 s.
-//   eqLow      -15 to 15 dB, a low shelf at 200 Hz.      eqHigh  -15 to 15 dB, a high shelf at 5000 Hz.
-//   eqMid      -15 to 15 dB, a peak at 1200 Hz (Q 0.9).
+//   The EQ has six bands, each -15 to 15 dB, from low to high:
+//   eqSub      a peak at 70 Hz (Q 0.9).
+//   eqLow      a low shelf at 200 Hz.
+//   eqLowMid   a peak at 450 Hz (Q 0.9).
+//   eqMid      a peak at 1200 Hz (Q 0.9).
+//   eqPresence a peak at 3000 Hz (Q 0.9).
+//   eqHigh     a high shelf at 5000 Hz.
 //   drive      0 to 1, distortion (a soft clip).
 //   echo       0 to 1, how loud the repeats are;  echoDelay  0.02 to 1 s between repeats (default 0.25).
 //   reverb     0 to 1, how loud the room is.
@@ -24,7 +29,8 @@
 //               A cut that runs to the end ends at sample N exactly (floor((N/sr)*sr) is N-1 for about 8% of lengths).
 //   2. Reverse
 //   3. Fades    fade in first (x[i] *= i / nIn), then fade out (x[i] *= (L-1-i) / nOut)
-//   4. EQ       RBJ cookbook biquads (Direct Form I) in the order low, mid, high; a band only if its gain is not 0
+//   4. EQ       RBJ cookbook biquads (Direct Form I) in the order sub, low, lowMid, mid, presence, high; a band only if
+//               its gain is not 0
 //   5. Drive    x = tanh(k*x) / tanh(k)
 //   6. Echo     a feedback delay; the sound ends 8 echo delays later than it did
 //   7. Reverb   4 combs in parallel, 2 allpasses in series; the sound ends 1.5 s later than it did
@@ -33,17 +39,24 @@
 // the 5.0 ms allpass at 44100 Hz is exactly 220.5 samples (here: 221; Math.Round: 220).
 //
 // The API (a classic script: load it before sounds.js; it defines one global const, SoundDsp):
-//   SoundDsp.FIELDS      the sliders' table: { name, label, unit, min, max, default, step, processing, hint } per number field
+//   SoundDsp.FIELDS      the sliders' table: { name, label, unit, min, max, default, step, processing, hint } per number field,
+//                        in display order (the EQ bands low to high)
 //   SoundDsp.isPlain(layer, take)   true = use the recording exactly as it is (skip process)
 //   SoundDsp.process(channels, sampleRate, layer, take)   Float32Array[] in, new Float32Array[] out (longer by the tails)
+//   SoundDsp.eqResponse(layer, freqsHz, sampleRate)   number[]: the layer's EQ gain in dB at each frequency in Hz, for the
+//                        page's EQ curve. It is 20 log10 of the product of the six bands' magnitude responses |H(e^jw)|
+//                        (w = 2 pi f / sampleRate), computed from the very coefficients process() filters with; a band at
+//                        0 dB is skipped, so no EQ at all is 0 dB everywhere. (Page only: the game never draws a curve.)
 
 const SoundDsp = (() => {
   // ---- Shared constants. The same block, with the same values, is at the top of Assets/Scripts/SfxDsp.cs. ----
-  //  EQ: 200 Hz low shelf, 1200 Hz peak with Q 0.9, 5000 Hz high shelf (slope 1); f0 is at most 0.45 x the sample rate.
+  //  EQ: peaks at 70 / 450 / 1200 / 3000 Hz, all with Q 0.9; a low shelf at 200 Hz and a high shelf at 5000 Hz (slope 1);
+  //      f0 is at most 0.45 x the sample rate.
   //  Drive: k = 1 + 20 x drive.
   //  Echo: feedback 0.4, a tail of 8 echoes.
   //  Reverb: combs 29.7 / 37.1 / 41.1 / 43.7 ms with feedback 0.77; allpasses 5.0 / 1.7 ms with gain 0.7; a tail of 1.5 s.
-  const EQ_LOW_HZ = 200, EQ_MID_HZ = 1200, EQ_MID_Q = 0.9, EQ_HIGH_HZ = 5000, EQ_MAX_F0_OF_SR = 0.45;
+  const EQ_SUB_HZ = 70, EQ_LOW_HZ = 200, EQ_LOWMID_HZ = 450, EQ_MID_HZ = 1200, EQ_PRESENCE_HZ = 3000, EQ_HIGH_HZ = 5000;
+  const EQ_PEAK_Q = 0.9, EQ_MAX_F0_OF_SR = 0.45;
   const DRIVE_BASE = 1, DRIVE_PER_UNIT = 20;
   const ECHO_FEEDBACK = 0.4, ECHO_TAIL_ECHOES = 8, ECHO_DELAY_MIN_SECONDS = 0.02, ECHO_DELAY_MAX_SECONDS = 1;
   const COMB_MS = [29.7, 37.1, 41.1, 43.7], COMB_FEEDBACK = 0.77;
@@ -58,11 +71,17 @@ const SoundDsp = (() => {
       "Brings the volume up from silence over this long. Softens a hard start."),
     field("fadeOut", "Fade out", "s", 0, 2, 0, 0.01, true,
       "Takes the volume down to silence over this long at the end of the cut."),
-    field("eqLow", "Low (200 Hz)", "dB", -15, 15, 0, 0.5, true,
+    field("eqSub", "Sub 70 Hz", "dB", -15, 15, 0, 0.5, true,
+      "The deepest bass, felt more than heard. Boost for a chest-thumping boom, cut to tighten a boomy sound."),
+    field("eqLow", "Low 200 Hz", "dB", -15, 15, 0, 0.5, true,
       "Bass. Boost for weight, cut to remove rumble."),
-    field("eqMid", "Mid (1.2 kHz)", "dB", -15, 15, 0, 0.5, true,
+    field("eqLowMid", "Low-mid 450 Hz", "dB", -15, 15, 0, 0.5, true,
+      "The body of the sound, where it turns warm or boxy. Boost for thickness, cut to clear muddiness."),
+    field("eqMid", "Mid 1.2 kHz", "dB", -15, 15, 0, 0.5, true,
       "The middle, where voices and metal clanks sit. Boost to push it forward, cut to hollow it out."),
-    field("eqHigh", "High (5 kHz)", "dB", -15, 15, 0, 0.5, true,
+    field("eqPresence", "Presence 3 kHz", "dB", -15, 15, 0, 0.5, true,
+      "Where a sound gets its edge and cuts through. Boost for snap and clarity, cut to push it back."),
+    field("eqHigh", "High 5 kHz", "dB", -15, 15, 0, 0.5, true,
       "Treble. Boost for bite and sparkle, cut to soften hiss."),
     field("drive", "Drive", "", 0, 1, 0, 0.01, true,
       "Distortion: squashes the loud parts into a gritty edge. 0 is off."),
@@ -91,12 +110,18 @@ const SoundDsp = (() => {
     return Array.isArray(c) ? { start: num(c[0], 0), end: num(c[1], Infinity) } : null;
   }
 
-  // The layer's numbers as process() uses them. Anything that is not a finite number counts as absent.
+  // The layer's number fields as process() uses them. Anything that is not a finite number counts as absent.
+  function fieldValues(layer) {
+    const l = (layer && typeof layer === "object") ? layer : {};
+    const v = {};
+    for (const f of FIELDS) v[f.name] = num(l[f.name], f.default);
+    return v;
+  }
+
+  // Everything process() needs from the layer row for one take.
   function settings(layer, take) {
     const l = (layer && typeof layer === "object") ? layer : {};
-    const s = { cut: cutOf(l, take), reverse: l.reverse === true };
-    for (const f of FIELDS) s[f.name] = num(l[f.name], f.default);
-    return s;
+    return { cut: cutOf(l, take), reverse: l.reverse === true, ...fieldValues(l) };
   }
 
   // true when this take is used exactly as recorded: no cut for it, not reversed, and every processing field absent or
@@ -182,16 +207,52 @@ const SoundDsp = (() => {
       x2 = x1; x1 = x0; y2 = y1; y1 = y0;
     }
   }
-  function eqStep(x, sr, s) {
+  // The EQ's bands in processing order (sub, low, lowMid, mid, presence, high): the coefficients of each band whose gain is
+  // not 0. eqStep() filters with them and eqResponse() measures them, so the curve the page draws is the filter that runs.
+  function eqBands(s, sr) {
     const bands = [];
+    if (s.eqSub !== 0) bands.push(peakCoefficients(s.eqSub, EQ_SUB_HZ, EQ_PEAK_Q, sr));
     if (s.eqLow !== 0) bands.push(shelfCoefficients(true, s.eqLow, EQ_LOW_HZ, sr));
-    if (s.eqMid !== 0) bands.push(peakCoefficients(s.eqMid, EQ_MID_HZ, EQ_MID_Q, sr));
+    if (s.eqLowMid !== 0) bands.push(peakCoefficients(s.eqLowMid, EQ_LOWMID_HZ, EQ_PEAK_Q, sr));
+    if (s.eqMid !== 0) bands.push(peakCoefficients(s.eqMid, EQ_MID_HZ, EQ_PEAK_Q, sr));
+    if (s.eqPresence !== 0) bands.push(peakCoefficients(s.eqPresence, EQ_PRESENCE_HZ, EQ_PEAK_Q, sr));
     if (s.eqHigh !== 0) bands.push(shelfCoefficients(false, s.eqHigh, EQ_HIGH_HZ, sr));
+    return bands;
+  }
+  function eqStep(x, sr, s) {
+    const bands = eqBands(s, sr);
     if (!bands.length) return x;
     const buf = Float64Array.from(x);               // the bands run in double; only the end of the step is float32
     for (const c of bands) biquad(buf, c);
     for (let i = 0; i < x.length; i++) x[i] = buf[i];
     return x;
+  }
+
+  // |H(e^jw)| of one biquad: |b0 + b1 e^-jw + b2 e^-2jw| / |a0 + a1 e^-jw + a2 e^-2jw|.
+  function biquadMagnitude(c, w) {
+    const cos1 = Math.cos(w), sin1 = Math.sin(w), cos2 = Math.cos(2 * w), sin2 = Math.sin(2 * w);
+    const nRe = c.b0 + c.b1 * cos1 + c.b2 * cos2, nIm = -(c.b1 * sin1 + c.b2 * sin2);
+    const dRe = c.a0 + c.a1 * cos1 + c.a2 * cos2, dIm = -(c.a1 * sin1 + c.a2 * sin2);
+    return Math.sqrt((nRe * nRe + nIm * nIm) / (dRe * dRe + dIm * dIm));
+  }
+
+  // The layer's EQ gain in dB at each frequency (Hz) at this sample rate, for the page's EQ curve: 20 log10 of the product of
+  // the bands' magnitude responses at w = 2 pi f / sr. Same coefficients as the filter (so the 0.45 x sample-rate limit on f0
+  // applies, and a band at 0 dB is skipped): no EQ is exactly 0 dB. A frequency that is not a finite number gives NaN.
+  function eqResponse(layer, freqsHz, sampleRate) {
+    if (!(sampleRate > 0)) throw new RangeError("SoundDsp.eqResponse: sampleRate must be above 0");
+    if (!freqsHz || typeof freqsHz.length !== "number") throw new TypeError("SoundDsp.eqResponse: freqsHz must be an array of frequencies in Hz");
+    const bands = eqBands(fieldValues(layer), sampleRate);
+    const out = [];
+    for (let i = 0; i < freqsHz.length; i++) {
+      const hz = freqsHz[i];
+      if (typeof hz !== "number" || !Number.isFinite(hz)) { out.push(NaN); continue; }
+      const w = 2 * Math.PI * hz / sampleRate;
+      let magnitude = 1;
+      for (const c of bands) magnitude *= biquadMagnitude(c, w);
+      out.push(20 * Math.log10(magnitude));
+    }
+    return out;
   }
 
   // ---- Step 5: drive (a soft clip), in place ----
@@ -277,5 +338,5 @@ const SoundDsp = (() => {
     return out;
   }
 
-  return Object.freeze({ FIELDS, isPlain, process: processTake });
+  return Object.freeze({ FIELDS, eqResponse, isPlain, process: processTake });
 })();

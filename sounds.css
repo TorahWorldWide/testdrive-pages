@@ -356,6 +356,53 @@
 .fx-foot { display: flex; justify-content: flex-end; margin-top: 0.4rem; }
 .small-ghost { padding: 0.3rem 0.85rem; font-size: 0.82rem; }
 
+/* ---------- live editing (round 19): Loop, the EQ's curve, a knob's value while it's dragged ---------- */
+/* Loop a layer: a round button like its play button, with two arrows going round. */
+.mini-loop {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--hover) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M17 1.5l4 4-4 4v-3H7.5A3.5 3.5 0 0 0 4 10v2H2v-2a5.5 5.5 0 0 1 5.5-5.5H17zM7 22.5l-4-4 4-4v3h9.5A3.5 3.5 0 0 0 20 14v-2h2v2a5.5 5.5 0 0 1-5.5 5.5H7z'/%3E%3C/svg%3E") center / 55% no-repeat;
+}
+.mini-loop:hover { transform: scale(1.06); background-color: #3a3a3a; }
+.mini-loop[aria-pressed="true"] {
+  background-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M17 1.5l4 4-4 4v-3H7.5A3.5 3.5 0 0 0 4 10v2H2v-2a5.5 5.5 0 0 1 5.5-5.5H17zM7 22.5l-4-4 4-4v3h9.5A3.5 3.5 0 0 0 20 14v-2h2v2a5.5 5.5 0 0 1-5.5 5.5H7z'/%3E%3C/svg%3E");
+}
+.loop-big[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+@media (prefers-reduced-motion: no-preference) {
+  .mini-loop[aria-pressed="true"], .loop-big[aria-pressed="true"] { animation: looping 1.2s ease-in-out infinite alternate; }
+  @keyframes looping { to { box-shadow: 0 0 0 4px rgba(30, 215, 96, 0.25); } }
+}
+/* The take a layer's Loop and Download use, when it has several. */
+.take.current { box-shadow: inset 3px 0 0 var(--accent); }
+/* The EQ's curve: how much louder (above the line) or quieter each frequency comes out, 20 Hz to 20 kHz. */
+.eq-curve { display: block; width: 100%; height: 6.5rem; border-radius: 4px; background: #0b0b0b; color: var(--accent); }
+/* A knob's value, over its thumb while it's dragged (and its number goes green). */
+.knob { position: relative; }
+.knob.live output { color: var(--accent); }
+.knob-bubble {
+  position: absolute;
+  z-index: 3;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  background: var(--text);
+  color: #000;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  transform: translate(-50%, calc(-100% - 4px));
+}
+.layer-actions .remove:disabled { opacity: 0.4; cursor: default; text-decoration: none; }
+/* "backwards" sits in the corner, off the waveform's middle. */
+.wave-tag { top: 0.15rem; right: 0.3rem; bottom: auto; left: auto; transform: none; }
+
 .drop-add { margin-top: 0.4rem; padding: 0.2rem; border-radius: 6px; }
 .add-layer { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; margin-top: 0.4rem; }
 .add-layer .select { width: 100%; min-width: 0; }
