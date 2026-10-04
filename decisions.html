@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>החלטות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="decisions.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <nav class="tabs" aria-label="Pages">
+        <a href="index.html">Waves</a>
+        <a href="sounds.html">Sounds</a>
+        <a href="art.html" lang="he">גלריה</a>
+        <a href="decisions.html" lang="he" aria-current="page">החלטות</a>
+      </nav>
+      <p class="file" id="file-path">טוען…</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost" id="copy-text" title="העתקת כל ההחלטות שמחכות לך במילים פשוטות, להדבקה בצ'אט" disabled>העתקה כטקסט</button>
+    </div>
+  </header>
+
+  <p class="problem" id="problem" hidden></p>
+
+  <section class="summary" id="summary" aria-labelledby="headline" hidden>
+    <h1 class="headline" id="headline"></h1>
+    <p class="how">לכל החלטה: הסתכל בתמונות, לחץ <b>בחירה</b> על האפשרות שאתה רוצה, ואם תרצה כתוב הערה.
+      <bdi>Claude</bdi> קורא את הבחירות בתחילת כל סשן ומכניס אותן למשחק.</p>
+    <div class="filters">
+      <div class="filter-row" role="group" aria-label="לפי מצב" id="by-stage"></div>
+      <div class="filter-row" role="group" aria-label="לפי נושא" id="by-group"></div>
+    </div>
+  </section>
+
+  <main class="cards" id="cards" aria-live="off"></main>
+  <p class="empty" id="empty" hidden></p>
+
+  <!-- A picture at full size: zoom with the wheel, + and −, a pinch or a double tap; drag to move it (as on the Art page). -->
+  <dialog class="zoom" id="zoom" aria-labelledby="zoom-title">
+    <div class="zoom-bar">
+      <p class="zoom-title" id="zoom-title"></p>
+      <div class="zoom-buttons">
+        <button type="button" class="zoom-button" id="zoom-out" aria-label="הקטנה" title="הקטנה (−)">−</button>
+        <output class="zoom-level" id="zoom-level" aria-live="polite">×1</output>
+        <button type="button" class="zoom-button" id="zoom-in" aria-label="הגדלה" title="הגדלה (+)">+</button>
+        <button type="button" class="zoom-fit ghost" id="zoom-fit" title="כל התמונה (0)">כל התמונה</button>
+        <button type="button" class="zoom-button zoom-close" id="zoom-close" aria-label="סגירה" title="סגירה" autofocus>✕</button>
+      </div>
+    </div>
+    <div class="zoom-view" id="zoom-view">
+      <div class="zoom-pic" id="zoom-pic"><img id="zoom-img" alt="" draggable="false"></div>
+    </div>
+    <p class="zoom-hint">
+      <span class="for-mouse">גלגלת או <kbd>+</kbd> <kbd>−</kbd>: הגדלה והקטנה · לחיצה כפולה: הגדלה · גרירה: הזזה · <kbd>Esc</kbd>: סגירה</span>
+      <span class="for-touch">צביטה או הקשה כפולה: הגדלה · גרירה: הזזה</span>
+    </p>
+  </dialog>
+
+  <script src="store.js"></script>
+  <script src="decisions.js"></script>
+</body>
+</html>
