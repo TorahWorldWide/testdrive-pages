@@ -44,8 +44,21 @@
 // once a frame as anything changes; Loop (the whole sound, or one layer) plays it over and over, and each change swaps
 // the playing sound for the new version at the same point (5 ms crossfade); the EQ draws its curve
 // (SoundDsp.eqResponse, when sound_dsp.js has it); Download WAV saves a layer or the whole sound as a 16-bit WAV.
+//
+// A/B and Normalize (round 19, in the mixer):
+//  - A/B changes nothing in the sound (it isn't saved and isn't an undo step). While a Loop plays, the A/B button by the
+//    layer's Loop (or the one by the sound's Loop, or the A and B keys) swaps what loops for the ORIGINAL: each recording as
+//    it is, without its cut, backwards, fades, EQ, drive, echo, reverb or delay (what "Reset cut and effects" would leave:
+//    plainCopy), at the layer's own volume and pitch. It swaps at the same point in the loop with the live editor's 5 ms
+//    crossfade (updateLoop) and goes with the Loop. A is your edit, B the original; a new Loop starts on A.
+//  - Normalize (under a layer's Volume) sets Volume so the loudest sample of the layer's current take (the one its Loop and
+//    Download WAV use), with its cut and effects, peaks at NORMALIZE_PEAK_DB as the page plays it: volume x the recording's
+//    evening-out x master, at most 1 (normalizedVolume). It's a change(), so Undo and Save work. Where even 100% can't get
+//    there (a plain take tops out at 0.72 = -2.9 dBFS, because the evening-out aims at 0.9 and the master is 0.8) it sets
+//    100% and says where the loudest sample ended up.
 
 const MASTER = 0.8; // Sfx.masterVolume in the game
+const NORMALIZE_PEAK_DB = -1; // Normalize: where a layer's loudest sample should peak (dBFS)
 const DRAG_TYPE = "application/x-testdrive-sound";
 
 // What each sound id is called on this page.
@@ -263,6 +276,8 @@ function plainLayer(layer) {
   delete layer.reverse;
   for (const f of FX) delete layer[f.name];
 }
+// A copy of a layer as "Reset cut and effects" would leave it (the layer itself isn't touched): what A/B plays.
+const plainCopy = layer => { const copy = { ...layer }; plainLayer(copy); return copy; };
 // Where a take's cut starts and ends, in seconds, the way the algorithm reads it (spec, step 1).
 function cutOf(layer, take, length) {
   const c = layer.cuts?.[take];
@@ -359,9 +374,10 @@ function layerFamily(layer) {
 let audio = null;
 const buffers = new Map();
 const context = () => audio || (audio = new AudioContext());
-// Like the game, each recording is evened out by its loudest moment (Sfx: min(3, 0.9 / peak)).
-function loudest(buffer) {
-  let peak = 0.05;
+// Like the game, each recording is evened out by its loudest moment (Sfx: min(3, 0.9 / peak)). 'floor' is the game's
+// 0.05 (a silent recording isn't boosted without end); Normalize asks for the true peak with 0.
+function loudest(buffer, floor = 0.05) {
+  let peak = floor;
   for (let c = 0; c < buffer.numberOfChannels; c++) {
     const d = buffer.getChannelData(c);
     for (let i = 0; i < d.length; i++) { const v = d[i] < 0 ? -d[i] : d[i]; if (v > peak) peak = v; }
@@ -793,7 +809,7 @@ function onFrame() {
 const LOOP_GAP_SECONDS = 0.35;   // silence between the repeats
 const SWAP_FADE_SECONDS = 0.005; // the crossfade when a change swaps in the new version: no click
 const LOOP_AHEAD_SECONDS = 0.01; // a change is heard this long after the frame that made it
-let loop = null;                 // { id, n (a layer, or -1 = the whole sound), voice }
+let loop = null;                 // { id, n (a layer, or -1 = the whole sound), voice, original (A/B: B, the recordings as they are) }
 const loopTakes = new Map();     // "sound id:layer" -> the take that layer's Loop and Download use (the one last touched)
 const takeIndex = (id, n, layer) => clamp(loopTakes.get(id + ":" + n) || 0, 0, Math.max(0, layer.takes.length - 1));
 const delayOf = layer => fxByName.delay ? clamp(fxValue(layer, fxByName.delay), 0, fxByName.delay.max) : 0; // as Sfx.cs clamps it
@@ -844,30 +860,33 @@ function loopBuffer(channels, sampleRate) {
   return b;
 }
 const channelsOf = buffer => Array.from({ length: buffer.numberOfChannels }, (_, c) => buffer.getChannelData(c));
-// What the loop should play now: { key (the same key = nothing to swap), rate, level, build(), parts (where each
-// layer's take is in it, for the line over its waveform) }, { waiting } while a recording loads, or null (nothing).
+// What the loop should play now: { key (the same key = nothing to swap), original (A/B: the recordings as they are, not
+// your edit), rate, level, build(), parts (where each layer's take is in it, for the line over its waveform) },
+// { waiting } while a recording loads, or null (nothing).
 function loopTarget() {
   const sound = soundById(loop.id);
   if (!sound) return null;
+  // A/B: while it's on, every layer is what plainCopy makes of it (the recording at the layer's own volume and pitch).
+  const original = loop.original, layers = original ? sound.layers.map(l => plainCopy(l)) : sound.layers;
   if (loop.n >= 0) {
-    const layer = sound.layers[loop.n];
+    const layer = layers[loop.n];
     if (!layer?.takes.length) return null;
     const ti = takeIndex(loop.id, loop.n, layer), take = layer.takes[ti];
     const made = shapeNow(take, layer);
     if (!made) { load(take).then(liveChanged, () => stopLoop()); return { waiting: true }; }
-    return { key: JSON.stringify([shapeKey(layer, take), ti]), rate: centerPitch(layer), level: Math.min(1, layer.volume * made.gain * MASTER),
+    return { key: JSON.stringify([shapeKey(layer, take), ti]), original, rate: centerPitch(layer), level: Math.min(1, layer.volume * made.gain * MASTER),
       build: () => loopBuffer(channelsOf(made.buffer), made.buffer.sampleRate), parts: [{ n: loop.n, ti, delay: 0, rate: 1 }] };
   }
-  const waiting = sound.layers.map((l, n) => l.takes[takeIndex(loop.id, n, l)]).filter(t => t != null && !decoded.has(t) && !failed.has(t));
+  const waiting = layers.map((l, n) => l.takes[takeIndex(loop.id, n, l)]).filter(t => t != null && !decoded.has(t) && !failed.has(t));
   if (waiting.length) { for (const t of waiting) load(t).then(liveChanged, liveChanged); return { waiting: true }; }
-  const key = JSON.stringify(sound.layers.map((l, n) => {
+  const key = JSON.stringify(layers.map((l, n) => {
     const take = l.takes[takeIndex(loop.id, n, l)];
     return take == null ? null : [shapeKey(l, take), l.volume, centerPitch(l), delayOf(l)];
   }));
-  if (loop.voice?.key === key) return { key, rate: 1, level: 1, parts: loop.voice.parts };
-  const mix = mixSound(sound, { center: true });
+  if (loop.voice?.key === key) return { key, original, rate: 1, level: 1, parts: loop.voice.parts };
+  const mix = mixSound({ ...sound, layers }, { center: true });
   if (!mix?.parts.length) return null;
-  return { key, rate: 1, level: 1, build: () => loopBuffer(mix.channels, mix.sampleRate),
+  return { key, original, rate: 1, level: 1, build: () => loopBuffer(mix.channels, mix.sampleRate),
     parts: mix.parts.map(p => ({ n: p.n, ti: p.ti, delay: p.delay, rate: p.rate })) };
 }
 // Where a voice is in its buffer (seconds) at a time on the audio clock.
@@ -883,12 +902,17 @@ function startVoice(t, at, offset) {
   source.loop = true;
   source.playbackRate.value = t.rate;
   const gain = ctx.createGain();
+  // Silent from the very start. A gain node begins at 1, and a source that starts between two sample frames can play its first
+  // frame just before the 0 at 'at' takes hold: one loud sample, a tick. Whether it happens depends on how the audio clock's
+  // value rounds, so in tests it came in stretches (up to half of the swaps for a while, none at other times) whenever the old
+  // and the new sound differ a lot, as they do with A/B.
+  gain.gain.value = 0;
   gain.gain.setValueAtTime(0, at);
   gain.gain.linearRampToValueAtTime(t.level, at + SWAP_FADE_SECONDS);
   source.connect(gain).connect(ctx.destination);
   const p0 = buffer.duration ? offset % buffer.duration : 0;
   source.start(at, p0);
-  return { source, gain, buffer, key: t.key, rate: t.rate, level: t.level, t0: at, p0, parts: t.parts };
+  return { source, gain, buffer, key: t.key, original: t.original, rate: t.rate, level: t.level, t0: at, p0, parts: t.parts };
 }
 function fadeOutVoice(v, at) {
   v.gain.gain.cancelScheduledValues(at);
@@ -928,7 +952,7 @@ function startLoop(id, n) {
   context().resume().catch(() => {}); // inside the tap, so phones allow sound
   stopSounds(); // and any other loop
   if (again) return; // the same Loop button again stops it
-  loop = { id, n, voice: null };
+  loop = { id, n, voice: null, original: false }; // a Loop always starts with your edit (A)
   renderLoopButtons();
   updateLoop();
   liveChanged();
@@ -940,14 +964,38 @@ function stopLoop() {
   moveHeads();
   renderLoopButtons();
 }
+const AB_LOOK = `<span class="ab-a">A</span><span class="ab-slash">/</span><span class="ab-b">B</span>`; // the lit letter is what plays
 function renderLoopButtons() {
+  const mixer = $("mixer");
   const on = n => !!loop && loop.id === state.selected && loop.n === n;
   const big = $("loop-big");
   if (big) {
     big.setAttribute("aria-pressed", on(-1));
     big.textContent = on(-1) ? "Stop loop" : "Loop";
   }
-  for (const b of $("mixer").querySelectorAll("[data-layer-loop]")) b.setAttribute("aria-pressed", on(+b.dataset.layerLoop));
+  for (const b of mixer.querySelectorAll("[data-layer-loop]")) b.setAttribute("aria-pressed", on(+b.dataset.layerLoop));
+  // A/B works on the loop that plays: a layer's button while that layer's Loop plays, the sound's while the whole sound's does.
+  const original = !!loop && loop.id === state.selected && loop.original;
+  const abs = [...mixer.querySelectorAll("[data-layer-ab]")].map(b => [b, +b.dataset.layerAb]);
+  if ($("ab-big")) abs.push([$("ab-big"), -1]);
+  for (const [b, n] of abs) {
+    b.disabled = !on(n);
+    b.setAttribute("aria-pressed", on(n) && original);
+    b.title = on(n)
+      ? "A/B (or the A and B keys): hear the original recording, without its cut and effects, in place of your edit, and back, at the same point and the same volume. Nothing is saved or changed."
+      : `Press ${n < 0 ? "the sound's" : "this layer's"} Loop first: then A/B plays the original recording, without its cut and effects, in place of your edit, and back.`;
+  }
+  mixer.classList.toggle("hearing-original", original);
+  if ($("ab-note")) $("ab-note").hidden = !original;
+}
+// A/B: while a Loop plays, what loops is the original (B) or your edit (A). Nothing is saved and it isn't an undo step.
+function setOriginal(original) {
+  if (!loop || loop.id !== state.selected) return;
+  if (original === undefined) original = !loop.original; // the buttons toggle; the A and B keys say which
+  if (original === loop.original) return;
+  loop.original = original;
+  renderLoopButtons();
+  liveChanged(); // the next frame swaps the loop for the other version at the same point (updateLoop)
 }
 const loopWave = () => {
   const p = loop?.voice?.parts[0];
@@ -961,9 +1009,13 @@ function moveHeads() {
     for (const p of v.parts) {
       const wave = $("mixer").querySelector(`.wave[data-wave="${p.n}:${p.ti}"]`);
       const head = wave?.querySelector(".wave-head");
-      const at = (pos - p.delay) * p.rate; // seconds into the edited take
-      if (!head || !wave._map || at < 0 || at >= wave._dur) continue;
-      head.style.left = (wave._map.x(wave._s + at) * 100).toFixed(3) + "%";
+      const at = (pos - p.delay) * p.rate; // seconds into the take that plays
+      // The edited take starts where its cut does and lasts as long as the edit makes it (drawTake); the original (A/B) is
+      // the whole recording, from its start.
+      const take = soundById(loop.id)?.layers[p.n]?.takes[p.ti];
+      const from = v.original ? 0 : wave?._s, length = v.original ? waveInfo.get(take)?.seconds : wave?._dur;
+      if (!head || !wave._map || !(length > 0) || at < 0 || at >= length) continue;
+      head.style.left = (wave._map.x(from + at) * 100).toFixed(3) + "%";
       head.style.opacity = 1;
       head._byLoop = true;
       shown.add(head);
@@ -1022,6 +1074,45 @@ async function downloadWav(id, n) {
   }
   if (!channels) return renderStatus("Nothing to download: the recordings couldn't be loaded.");
   saveFile(wavBlob(channels, rate), `${id}${n < 0 ? "" : `-layer${n + 1}`}.wav`);
+}
+
+// ---------- Normalize: the Volume that puts a layer's loudest sample at -1 dBFS ----------
+
+const NORMALIZE_TOLERANCE_DB = 0.05; // "reached": within this of the target (Volume is kept to a thousandth)
+const dbText = db => (db < 0 ? "−" : db > 0 ? "+" : "") + Math.abs(db).toFixed(1);
+// What Normalize makes of a layer from its current take as the layer plays it ('made': the take with its cut and effects,
+// and the recording's own evening-out): { volume, peakDb (where the loudest sample ends up at that volume), reached }, or
+// { silent }. A layer plays at volume x evening-out x master, at most 1 (startTake, Download WAV), so the volume that puts
+// the loudest sample on the target is target / (peak x evening-out x master). If that needs a level above 1 (a take too
+// quiet to get there) or a volume above 100% (the usual case: a plain take's evening-out aims at 0.9 and the master is 0.8,
+// so 100% is -2.9 dBFS), it's 100%, the most there is, and 'reached' is false.
+function normalizedVolume(made) {
+  const peak = loudest(made.buffer, 0);
+  if (!(peak > 1e-6)) return { silent: true };
+  const level = Math.pow(10, NORMALIZE_PEAK_DB / 20) / peak; // the gain that puts the loudest sample on the target
+  const wanted = level <= 1 ? level / (made.gain * MASTER) : Infinity;
+  const volume = Math.round(clamp(wanted, 0, 1) * 1000) / 1000;
+  const peakDb = 20 * Math.log10(Math.min(1, volume * made.gain * MASTER) * peak);
+  return { volume, peakDb, reached: peakDb > NORMALIZE_PEAK_DB - NORMALIZE_TOLERANCE_DB };
+}
+async function normalizeLayer(id, n) {
+  const first = soundById(id)?.layers[n];
+  if (!first?.takes.length) return;
+  const take = first.takes[takeIndex(id, n, first)];
+  try { await load(take); }
+  catch { return renderStatus(`Couldn't load “${takeName(take)}”, so Normalize can't tell how loud this layer is.`, true); }
+  const layer = soundById(id)?.layers[n]; // the page may have changed while the recording loaded
+  if (!layer || layer.takes[takeIndex(id, n, layer)] !== take) return;
+  const made = shapeNow(take, layer);
+  if (!made) return;
+  const r = normalizedVolume(made);
+  if (r.silent) return renderStatus(`Nothing to normalize: “${takeName(take)}” is silent the way this layer plays it.`, true);
+  const same = layer.volume === r.volume, pct = Math.round(r.volume * 100);
+  if (!same) change(() => { layer.volume = r.volume; }); // a change(): Undo, Redo and Save work as for the slider
+  const where = `${dbText(r.peakDb)} dBFS`;
+  renderStatus(r.reached
+    ? `Volume ${same ? "is already " : ""}${pct}%: this layer's loudest sample peaks at ${where}.`
+    : `Volume ${same ? "is already " : ""}${pct}%, as high as it goes: this layer's loudest sample peaks at ${where}, not ${dbText(NORMALIZE_PEAK_DB)}.`, true);
 }
 
 function play(id, el) {
@@ -1171,16 +1262,23 @@ const savedSound = id => JSON.parse(state.saved).sounds.find(s => s.id === id);
 
 // ---------- drawing the board and the mixer ----------
 
-function renderStatus(message) {
+// 'brief' marks a message about what just happened (Normalize): the next time the status is drawn it gives way to
+// "Unsaved changes" or "Everything is saved", so it never describes a state that's gone (after an undo, say).
+function renderStatus(message, brief = false) {
   const dirty = state.plan && snapshot() !== state.saved;
   $("save").disabled = !dirty;
   $("undo").disabled = !state.undo.length && !(state.pending && state.pending !== snapshot());
   $("redo").disabled = !state.redo.length;
   const status = $("save-status");
   status.classList.toggle("unsaved", !!dirty);
-  if (message) status.textContent = message;
-  else if (dirty) status.textContent = "Unsaved changes";
-  else if (!status.textContent || status.textContent === "Unsaved changes") status.textContent = "Everything is saved";
+  if (message) {
+    status.textContent = message;
+    status.dataset.brief = brief ? "1" : "";
+  } else {
+    if (dirty) status.textContent = "Unsaved changes";
+    else if (!status.textContent || status.textContent === "Unsaved changes" || status.dataset.brief) status.textContent = "Everything is saved";
+    status.dataset.brief = "";
+  }
   $("file-path").textContent = state.file;
 }
 
@@ -1359,10 +1457,12 @@ function renderMixer() {
       <div class="layer-head">
         <button type="button" class="mini-play" data-layer-play="${n}" data-key="lp-${n}" aria-label="Play only this layer" title="Play only this layer (at once, with its cut and effects)"></button>
         <button type="button" class="mini-loop" data-layer-loop="${n}" data-key="ll-${n}" aria-pressed="false" aria-label="Loop only this layer" title="Loop this layer: it plays over and over, and every change you make is heard at once. Press again to stop."></button>
+        <button type="button" class="ab" data-layer-ab="${n}" data-key="ab-${n}" aria-pressed="false" aria-label="A/B: hear this layer's original recording instead of your edit" disabled>${AB_LOOK}</button>
         <select class="select" data-field="family" data-layer="${n}" data-key="fam-${n}" aria-label="Recording">${opts}</select>
       </div>
       <label class="knob">Volume <input type="range" min="0" max="100" step="1" value="${Math.round(layer.volume * 100)}" data-field="volume" data-layer="${n}" data-key="vol-${n}">
         <output data-out="volume-${n}">${Math.round(layer.volume * 100)}%</output></label>
+      <div class="vol-tools"><button type="button" class="ghost small-ghost" data-normalize="${n}" data-key="norm-${n}" title="Sets Volume so the loudest sample of this layer's take (the highlighted one, when it has several), with its cut and effects, peaks at ${dbText(NORMALIZE_PEAK_DB)} dBFS as the layer plays (the game evens each recording out to 0.9 and plays at 80%, so a recording with no effects peaks at about −2.9 dBFS even at 100%). If 100% can't get there it sets 100% and says where it got to. Ctrl+Z undoes."${layer.takes.length ? "" : " disabled"}>Normalize</button></div>
       <label class="knob">Pitch <input type="range" min="30" max="250" step="1" value="${Math.round(center * 100)}" data-field="pitch" data-layer="${n}" data-key="pitch-${n}">
         <output data-out="pitch-${n}">×${center.toFixed(2)}</output></label>
       ${fx}
@@ -1383,9 +1483,12 @@ function renderMixer() {
     <div class="mixer-buttons">
       <button type="button" class="play-big" id="play-big">Play</button>
       <button type="button" class="ghost loop-big" id="loop-big" aria-pressed="false" title="Plays the sound over and over: every change you make (knobs, cuts, Backwards) is heard at once. Press again to stop.">Loop</button>
+      <button type="button" class="ab ab-big" id="ab-big" aria-pressed="false" aria-label="A/B: hear the original recordings instead of this sound's edit" disabled>${AB_LOOK}</button>
       <button type="button" class="ghost" id="download-big" title="Save the whole sound as a WAV file: every layer mixed as the game plays them (each layer's highlighted take, its volume and its delay)"${sound.layers.some(l => l.takes.length) ? "" : " disabled"}>Download WAV</button>
       ${changed ? `<button type="button" class="ghost" id="revert">Back to the saved version</button>` : ""}
     </div>
+    <p class="ab-note" id="ab-note" hidden><b>B: the original.</b> Each recording as it is, without its cut, effects or delay, at the same volume.
+      Press A/B (or the A key) to hear your edit again.</p>
     <h3 id="layers-title">${layersTitle(sound)}</h3>
     <datalist id="zero-db"><option value="0"></option></datalist>
     ${layers || `<p class="empty-mixer">Nothing: this sound is silent. Add a recording below.</p>`}
@@ -1398,9 +1501,10 @@ function renderMixer() {
     <p class="hint">To replace this sound, pick one in the library and press “Use for…” in the player bar, or
       drag it onto a play button (or onto a layer above, to replace just that layer). Changes play here
       right away; press Save to put them in the game.
-      <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes.</p>`;
+      <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes. While a Loop plays, <b>A/B</b> (or the <kbd>A</kbd> and <kbd>B</kbd> keys) swaps
+      your edit for the original recording and back, to compare them: it changes nothing.</p>`;
+  renderLoopButtons(); // before the focus goes back: a button that's off while no Loop plays can't take it
   if (focused) $("mixer").querySelector(`[data-key="${CSS.escape(focused)}"]`)?.focus({ preventScroll: true });
-  renderLoopButtons();
   drawWaves();
 }
 function layersTitle(sound) {
@@ -1719,6 +1823,7 @@ document.addEventListener("click", ev => {
   }
   if (t.closest("#play-big")) return play(state.selected, $("play-big"));
   if (t.closest("#loop-big")) return startLoop(state.selected, -1);
+  if (t.closest("#ab-big")) return loop?.n === -1 ? setOriginal() : undefined; // only while the whole sound loops
   if (t.closest("#download-big")) return downloadWav(state.selected, -1);
   if (t.closest("#revert")) return change(() => { Object.assign(soundById(state.selected), savedSound(state.selected)); });
   const layerPlay = t.closest("[data-layer-play]");
@@ -1729,6 +1834,10 @@ document.addEventListener("click", ev => {
   }
   const layerLoop = t.closest("[data-layer-loop]");
   if (layerLoop) return startLoop(state.selected, +layerLoop.dataset.layerLoop);
+  const layerAb = t.closest("[data-layer-ab]");
+  if (layerAb) return loop?.n === +layerAb.dataset.layerAb ? setOriginal() : undefined; // only while that layer loops
+  const normalize = t.closest("[data-normalize]");
+  if (normalize) return normalizeLayer(state.selected, +normalize.dataset.normalize);
   const layerWav = t.closest("[data-layer-wav]");
   if (layerWav) return downloadWav(state.selected, +layerWav.dataset.layerWav);
   const remove = t.closest("[data-remove]");
@@ -2083,6 +2192,18 @@ document.addEventListener("change", ev => {
   if (t.id === "lib-short") { state.lib.short = t.checked; searchFreesound(); }
   if (t.id === "lib-sort") { state.lib.sort = t.value; searchFreesound(); }
   if (t.id === "lib-pack") { state.lib.pack = t.value; renderLibrary(); }
+});
+
+// The A and B keys are A/B too (A: your edit, B: the original). They go by the key's letter, or, on a keyboard in another
+// language (Hebrew, say), by the key's place, so the key marked A and the key marked B work whatever the layout. Only while a
+// Loop plays, and never while you're typing in a text box, a number box or a drop-down.
+document.addEventListener("keydown", ev => {
+  if (!loop || ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat || ev.isComposing) return;
+  if (ev.target.matches?.("input:not([type=range]):not([type=checkbox]), textarea, select, [contenteditable]")) return;
+  const key = /^[a-z]$/i.test(ev.key) ? ev.key.toLowerCase() : ev.code === "KeyA" ? "a" : ev.code === "KeyB" ? "b" : "";
+  if (key !== "a" && key !== "b") return;
+  ev.preventDefault();
+  setOriginal(key === "b");
 });
 
 document.addEventListener("keydown", ev => {

@@ -403,6 +403,42 @@
 /* "backwards" sits in the corner, off the waveform's middle. */
 .wave-tag { top: 0.15rem; right: 0.3rem; bottom: auto; left: auto; transform: none; }
 
+/* ---------- A/B and Normalize (round 19) ---------- */
+/* A/B: while a Loop plays, hear the original (B) instead of your edit (A), and back. The lit letter is what plays: A green,
+   B white. Next to a layer's Loop button, and next to the sound's. Off (dim) while that Loop isn't playing. */
+.ab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 0.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--hover);
+  color: var(--text-2);
+  font-weight: 800;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+.ab-a, .ab-b { display: grid; place-items: center; min-width: 1.4rem; height: 1.5rem; border-radius: 999px; }
+.ab-slash { width: 0.3rem; color: var(--text-3); font-weight: 400; text-align: center; }
+.ab:not(:disabled):hover { background: #3a3a3a; }
+.ab:not(:disabled)[aria-pressed="false"] .ab-a { background: var(--accent); color: var(--accent-ink); }
+.ab[aria-pressed="true"] .ab-b { background: var(--text); color: #000; }
+.ab:disabled { opacity: 0.4; cursor: default; }
+/* The sound's own A/B sits with the big buttons: outlined like them, and as tall. */
+.ab-big { height: 2.32rem; padding: 0 0.25rem; border: 1px solid #727272; background: transparent; font-size: 0.9rem; }
+.ab-big .ab-a, .ab-big .ab-b { min-width: 1.7rem; height: 1.7rem; }
+.ab-big:not(:disabled):hover { border-color: var(--text); background: transparent; }
+@media (max-width: 700px) { .ab-big { height: 1.95rem; } .ab-big .ab-a, .ab-big .ab-b { min-width: 1.5rem; height: 1.45rem; } }
+.ab-note { margin: 0.7rem 0 0; padding: 0.45rem 0.7rem; border-radius: 6px; background: rgba(255, 255, 255, 0.08); color: var(--text-2); font-size: 0.82rem; }
+.ab-note b { color: var(--text); }
+/* While B plays, the green (your edit) steps back and the recording's grey (what you hear, and the line follows) stands out. */
+.mixer.hearing-original .wave-res { opacity: 0.25; }
+.mixer.hearing-original .wave-orig { filter: brightness(2.2); }
+/* Normalize, under the Volume slider. */
+.vol-tools { display: flex; justify-content: flex-end; margin-top: -0.3rem; }
+
 .drop-add { margin-top: 0.4rem; padding: 0.2rem; border-radius: 6px; }
 .add-layer { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; margin-top: 0.4rem; }
 .add-layer .select { width: 100%; min-width: 0; }
