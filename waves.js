@@ -5,8 +5,11 @@
 // The plan (what gets saved):
 //   waves[]: { wave, seconds, tag ("", "HORDE", "ELITE", "FINAL"), note,
 //              scene (a scenes.json id; "" = the same scene as the wave before),
-//              enemies[]: { type, count, packSize (1 = one by one), armor (% for helmet and shield) | plates (worms) },
-//              elites[]:  { type ("Giant", "Worm", "Archer"), atSecond, reward } }
+//              enemies[]: { type, count, packSize (1 = one by one), armor (% wearing armour) | plates (worms),
+//                           armorLevel (only 1 = a riot shield, 2 = a shield and a helmet; left out = as before 4.10:
+//                           a helmet and, rolled apart, a shield, each at armor %), spiky (only true: spiked helmets) },
+//              elites[]:  { type ("Giant", "Worm", "Archer", "MegaGiant" = THE COLOSSUS), atSecond, reward } }
+// The enemy and elite types come from enemies.json. Worms and drones wear no armour (worms carry plates instead).
 
 const TAGS = [["", "None"], ["HORDE", "Horde"], ["ELITE", "Elite"], ["FINAL", "Final"]];
 const TAG_WORD = { HORDE: "Horde", ELITE: "Elite", FINAL: "Final" };
@@ -15,6 +18,9 @@ const LIMITS = {
   atSecond: [0, 600], reward: [0, 9999],
 };
 const STEP = { seconds: 5, armor: 5, reward: 10 };
+// The armour levels (WavePlan.EnemyGroup.armorLevel): what each one puts on an armoured enemy.
+const LEVELS = [[0, "As before"], [1, "1: shield"], [2, "2: shield + helmet"]];
+const CHOICES = ["armorLevel", "spiky"]; // fields changed in one step, on "change" (a select, a checkbox)
 const BAR_PX = 165; // tallest column in the overview
 
 const ICON_ONE = `<svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 3l4 4M7 3l-4 4M21 2l4 4M25 2l-4 4M12 14l4 4M16 14l-4 4"/></svg>`;
@@ -46,6 +52,13 @@ const eliteInfo = type => state.info.elites.find(e => e.type === type) || { type
 const eliteTypes = () => state.info.elites.map(e => e.type);
 const stackOrder = () => state.info.enemies.map(e => e.type); // bottom to top in the overview
 const noun = (type, n) => n === 1 ? enemyInfo(type).name : enemyInfo(type).plural;
+// An elite that isn't a bigger, gold copy of an enemy: its own name, and the enemy it is made from (its picture and
+// colour). enemies.json may say so too ("name", "like" on its elite row).
+const ELITE_OWN = { MegaGiant: { name: "THE COLOSSUS", like: "Giant" } };
+const eliteLike = type => eliteInfo(type).like || ELITE_OWN[type]?.like || type;
+const eliteName = type => eliteInfo(type).name || ELITE_OWN[type]?.name || "elite " + enemyInfo(type).name;
+const eliteTitle = type => { const n = eliteName(type); return n === n.toUpperCase() ? n : cap(n); }; // "Elite giant"
+const wearsArmour = type => type !== "Worm" && type !== "Drone"; // the worm has plates; the drone nothing
 
 function countOf(w, type) {
   return w.enemies.filter(e => e.type === type).reduce((s, e) => s + (e.count || 0), 0);
@@ -129,7 +142,8 @@ function showProblem(text) {
 }
 
 // Keeps the plan in the shape the game expects: waves numbered in order, worms with plates,
-// everyone else with armour.
+// everyone else with armour, and the armour level and spikes only where they say something (armorLevel 1 or 2,
+// spiky true; a row without them saves exactly as it was).
 function tidy() {
   state.plan.waves.forEach((w, i) => {
     w.wave = i + 1;
@@ -141,7 +155,11 @@ function tidy() {
     w.enemies = w.enemies.map(e => {
       const row = { type: e.type, count: e.count || 0, packSize: Math.max(1, e.packSize || 1) };
       if (e.type === "Worm") row.plates = e.plates || 0;
-      else row.armor = e.armor || 0;
+      else {
+        row.armor = e.armor || 0;
+        if (e.armorLevel === 1 || e.armorLevel === 2) row.armorLevel = e.armorLevel;
+        if (e.spiky === true) row.spiky = true;
+      }
       return row;
     });
   });
@@ -375,23 +393,46 @@ function enemyRow(e, r) {
       ${packs ? `<span class="packs">of ${stepper({ k: `r${r}-pack`, field: "packSize", row: r, value: e.packSize, label: "Enemies per pack", small: true })}</span>` : ""}
       ${worm
         ? `<span class="armour">Armour plates each ${stepper({ k: `r${r}-plates`, field: "plates", row: r, value: e.plates, label: "Armour plates per worm", small: true })}</span>`
-        : `<label class="armour">Armour
-             <input type="range" min="0" max="100" step="${STEP.armor}" value="${e.armor}" data-field="armor" data-row="${r}" data-k="r${r}-armor"
-               aria-label="Chance of a helmet and of a shield, in percent">
-             <output data-out="r${r}-armor">${e.armor}%</output></label>`}
+        : wearsArmour(e.type) ? armourControls(e, r)
+        : `<span class="armour-none">${esc(cap(info.plural))} wear no armour</span>`}
     </div>
   </article>`;
 }
 
+const levelOf = e => e.armorLevel === 1 || e.armorLevel === 2 ? e.armorLevel : 0;
+const ARMOUR_CHANCE = { 0: "Chance of a helmet and of a shield", 1: "Chance of a riot shield", 2: "Chance of a shield and a helmet" };
+const LEVEL_ABOUT = "As before: a helmet and, rolled apart, a shield, each at this chance. " +
+  "1: a riot shield (a stomp still kills). 2: a shield and a helmet (the helmet takes the first stomp).";
+const SPIKY_ABOUT = "Spikes on the helmets: a stomp hurts you and leaves the helmet on (weapons break it).";
+
+// How much armour, which level, spiky or not (every row but the worms' and the drones').
+function armourControls(e, r) {
+  const level = levelOf(e);
+  const noHelmet = level === 1; // (left on when it is ticked, so it can be unticked)
+  return `<span class="armour-set">
+      <label class="armour">Armour
+        <input type="range" min="0" max="100" step="${STEP.armor}" value="${e.armor}" data-field="armor" data-row="${r}" data-k="r${r}-armor"
+          aria-label="${ARMOUR_CHANCE[level]}, in percent">
+        <output data-out="r${r}-armor">${e.armor}%</output></label>
+      <label class="armour-level">Level
+        <select class="select" data-field="armorLevel" data-row="${r}" data-k="r${r}-level" title="${esc(LEVEL_ABOUT)}" aria-label="Armour level">
+          ${LEVELS.map(([v, t]) => `<option value="${v}" ${level === v ? "selected" : ""}>${t}</option>`).join("")}
+        </select></label>
+      <label class="spiky${noHelmet ? " off" : ""}" title="${noHelmet ? "Level 1 has no helmet to put spikes on" : esc(SPIKY_ABOUT)}">
+        <input type="checkbox" data-field="spiky" data-row="${r}" data-k="r${r}-spiky" ${e.spiky ? "checked" : ""} ${noHelmet && !e.spiky ? "disabled" : ""}>
+        Spiky helmets</label>
+    </span>`;
+}
+
 function eliteRow(e, n) {
   const info = eliteInfo(e.type);
-  return `<article class="row elite" style="--piece:${enemyInfo(e.type).color}">
-    ${token(e.type)}
+  return `<article class="row elite" style="--piece:${enemyInfo(eliteLike(e.type)).color}">
+    ${token(eliteLike(e.type))}
     <div class="who">
       <label class="field">
         <span class="field-label">Elite</span>
         <select class="select" data-field="type" data-elite="${n}" data-k="e${n}-type">
-          ${eliteTypes().map(t => `<option value="${t}" ${e.type === t ? "selected" : ""}>Elite ${esc(enemyInfo(t).name)}</option>`).join("")}
+          ${eliteTypes().map(t => `<option value="${t}" ${e.type === t ? "selected" : ""}>${esc(eliteTitle(t))}</option>`).join("")}
         </select>
       </label>
       <p class="who-info">${info.lives} lives. ${esc(info.does)}</p>
@@ -459,21 +500,53 @@ function describe(w, i) {
     out.push(`${cap(listWords(singles.map(e => `${e.count} ${noun(e.type, e.count)}`)))} ${one ? "arrives" : "arrive"} one by one, each at its own random spot.`);
   }
 
-  const armoured = rows.filter(e => e.type !== "Worm" && e.armor > 0);
-  const bare = rows.filter(e => e.type !== "Worm" && !(e.armor > 0));
-  const values = [...new Set(armoured.map(e => e.armor))];
-  if (armoured.length && values.length === 1 && !bare.length)
-    out.push(`Armour: ${values[0]}% of them get a helmet and ${values[0]}% get a shield. Each piece is one more life.`);
-  else if (armoured.length)
-    out.push(`Armour: ${listWords(armoured.map(e => `${enemyInfo(e.type).plural} ${e.armor}%`))} chance of a helmet and of a shield. Each piece is one more life.`);
+  out.push(...armourWords(rows));
   for (const e of rows.filter(e => e.type === "Worm" && e.plates > 0))
     out.push(`Worms carry ${e.plates} armour plate${e.plates === 1 ? "" : "s"} each.`);
 
   for (const e of w.elites) {
     const when = e.atSecond > 0 ? `after ${e.atSecond} s` : "right at the start";
-    out.push(`An elite ${enemyInfo(e.type).name} (${eliteInfo(e.type).lives} lives) arrives ${when} and drops ${money(e.reward)}.`);
+    const name = eliteName(e.type);
+    out.push(`${name === name.toUpperCase() ? name : "An " + name} (${eliteInfo(e.type).lives} lives) arrives ${when} and drops ${money(e.reward)}.`);
   }
   return out;
+}
+
+// The armour in plain words, level by level: "Armour: 40% of them get a helmet and 40% get a shield ...".
+const ofThem = rows => listWords(rows.map(e => `${e.armor}% of the ${enemyInfo(e.type).plural}`)); // "40% of the basics"
+const ARMOUR_WORDS = {
+  0: { all: a => `${a}% of them get a helmet and ${a}% get a shield. Each piece is one more life.`,
+       some: rows => `${listWords(rows.map(e => `${enemyInfo(e.type).plural} ${e.armor}%`))} chance of a helmet and of a shield. Each piece is one more life.` },
+  1: { all: a => `${a}% of them carry a riot shield: one more life, but a stomp still kills.`,
+       some: rows => `a riot shield on ${ofThem(rows)}: one more life, but a stomp still kills.` },
+  2: { all: a => `${a}% of them wear a shield and a helmet: two more lives, and the helmet takes the first stomp.`,
+       some: rows => `a shield and a helmet on ${ofThem(rows)}: two more lives, and the helmet takes the first stomp.` },
+};
+function armourWords(rows) {
+  const wearing = rows.filter(e => wearsArmour(e.type));
+  const armoured = wearing.filter(e => e.armor > 0);
+  const levels = [...new Set(armoured.map(levelOf))].sort();
+  const out = levels.map(level => {
+    const these = armoured.filter(e => levelOf(e) === level);
+    const values = [...new Set(these.map(e => e.armor))];
+    const all = levels.length === 1 && values.length === 1 && these.length === wearing.length;
+    return "Armour: " + (all ? ARMOUR_WORDS[level].all(values[0]) : ARMOUR_WORDS[level].some(these));
+  });
+  const helmeted = armoured.filter(e => levelOf(e) !== 1);
+  const spiky = helmeted.filter(e => e.spiky);
+  if (spiky.length) out.push(`${spiky.length === helmeted.length ? "Every helmet is spiky" : `The ${listWords(spiky.map(e => enemyInfo(e.type).plural))}' helmets are spiky`}: ` +
+    "a stomp on one hurts you and leaves it on (weapons break it).");
+  return out;
+}
+
+// The same in a few words, for "Copy as text": "Armour 40%." / "Armour basics 40% (shield + helmet, spiky), ...".
+function armourShort(rows) {
+  const armoured = rows.filter(e => wearsArmour(e.type) && e.armor > 0);
+  const kind = e => [levelOf(e) ? LEVELS[levelOf(e)][1].slice(3) : "", e.spiky && levelOf(e) !== 1 ? "spiky" : ""].filter(Boolean).join(", ");
+  if (!armoured.length) return "";
+  if (new Set(armoured.map(e => `${e.armor}|${kind(e)}`)).size === 1)
+    return ` Armour ${armoured[0].armor}%${kind(armoured[0]) ? ` (${kind(armoured[0])})` : ""}.`;
+  return " Armour " + armoured.map(e => `${enemyInfo(e.type).plural} ${e.armor}%${kind(e) ? ` (${kind(e)})` : ""}`).join(", ") + ".";
 }
 
 function renderWords() {
@@ -508,11 +581,9 @@ function planAsText() {
     if (packed.length) parts.push(packed.join("; "));
     if (singles.length) parts.push(listWords(singles) + " one by one");
     let text = `${head}: ${parts.join("; ") || "no enemies"}.`;
-    const armour = [...new Set(rows.filter(e => e.type !== "Worm" && e.armor > 0).map(e => e.armor))];
-    if (armour.length === 1) text += ` Armour ${armour[0]}%.`;
-    else if (armour.length) text += " Armour " + rows.filter(e => e.type !== "Worm" && e.armor > 0).map(e => `${enemyInfo(e.type).plural} ${e.armor}%`).join(", ") + ".";
+    text += armourShort(rows);
     for (const e of rows.filter(e => e.type === "Worm" && e.plates > 0)) text += ` Worms ${e.plates} plate${e.plates === 1 ? "" : "s"}.`;
-    for (const e of w.elites) text += ` Elite ${enemyInfo(e.type).name} at ${e.atSecond} s, drops ${money(e.reward)}.`;
+    for (const e of w.elites) text += ` ${eliteTitle(e.type)} at ${e.atSecond} s, drops ${money(e.reward)}.`;
     if (w.note) text += ` (${w.note})`;
     lines.push(text);
   });
@@ -559,7 +630,11 @@ function onAction(btn, ev) {
     case "add-row": return change(() => {
       const type = btn.dataset.type;
       const row = { type, count: 1, packSize: 1 };
-      if (type === "Worm") row.plates = 0; else row.armor = Math.max(0, ...w.enemies.map(e => e.armor || 0));
+      // The armour of the most armoured row already here: its %, its level and its spikes.
+      const like = w.enemies.filter(e => wearsArmour(e.type)).reduce((a, e) => !a || (e.armor || 0) > (a.armor || 0) ? e : a, null);
+      if (type === "Worm") row.plates = 0;
+      else if (!wearsArmour(type)) row.armor = 0;
+      else Object.assign(row, { armor: like?.armor || 0, armorLevel: like?.armorLevel, spiky: like?.spiky }); // (tidy drops what says nothing)
       w.enemies.push(row);
     });
     case "add-elite": return change(() => {
@@ -639,6 +714,20 @@ function onField(el, commit) {
   renderLive();
 }
 
+// The armour level and the spikes: one undo step each, then the row is drawn again (level 1 has no helmet, so
+// picking it takes the spikes off and greys out their box).
+function onChoice(el) {
+  const row = targetOf(el);
+  if (!row) return;
+  change(() => {
+    if (el.dataset.field === "spiky") row.spiky = el.checked;
+    else {
+      row.armorLevel = Number(el.value);
+      if (row.armorLevel === 1) row.spiky = false;
+    }
+  });
+}
+
 document.addEventListener("click", ev => {
   const btn = ev.target.closest("[data-act]");
   if (btn && !btn.disabled && state.plan) onAction(btn, ev);
@@ -649,8 +738,16 @@ document.addEventListener("focusin", ev => {
   commitPending();
   state.pending = snapshot();
 });
-document.addEventListener("input", ev => { if (ev.target.dataset?.field && state.plan) onField(ev.target, false); });
-document.addEventListener("change", ev => { if (ev.target.dataset?.field && state.plan) onField(ev.target, true); });
+document.addEventListener("input", ev => {
+  const field = ev.target.dataset?.field;
+  if (field && !CHOICES.includes(field) && state.plan) onField(ev.target, false);
+});
+document.addEventListener("change", ev => {
+  const field = ev.target.dataset?.field;
+  if (!field || !state.plan) return;
+  if (CHOICES.includes(field)) onChoice(ev.target);
+  else onField(ev.target, true);
+});
 
 document.addEventListener("keydown", ev => {
   if (!state.plan) return;
@@ -682,7 +779,7 @@ function showTip(col) {
     const packs = w.enemies.filter(e => e.type === type && e.packSize > 1).map(e => e.packSize);
     return `<li><span class="swatch" style="background:${enemyInfo(type).color}"></span>${n} ${esc(noun(type, n))}${packs.length ? `, packs of ${packs.join("/")}` : ""}</li>`;
   }).join("");
-  const elites = w.elites.map(e => `<li><span class="swatch star">★</span>Elite ${esc(enemyInfo(e.type).name)} at ${e.atSecond} s</li>`).join("");
+  const elites = w.elites.map(e => `<li><span class="swatch star">★</span>${esc(eliteTitle(e.type))} at ${e.atSecond} s</li>`).join("");
   const at = sceneAt(i);
   const scene = at.id ? `<li><span class="swatch" style="background:${sceneInfo(at.id).color}"></span>Scene: ${esc(sceneInfo(at.id).name)}</li>` : "";
   tip.innerHTML = `<strong>Wave ${i + 1}</strong> ${w.seconds} seconds${w.tag ? ", " + TAG_WORD[w.tag] : ""}<ul>${items || "<li>No enemies</li>"}${elites}${scene}</ul>`;

@@ -310,6 +310,16 @@
 .armour input[type="range"] { width: 9rem; accent-color: #B9C2CF; }
 .armour output { min-width: 4.5ch; font-weight: 700; color: var(--text); }
 
+/* how much armour, its level and spikes: one group, which wraps as a whole onto its own line when the row is narrow */
+.armour-set { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.2rem; min-width: 0; }
+.armour-level { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-2); }
+.armour-level .select { min-height: 2.4rem; padding-block: 0.3rem; max-width: 100%; }
+.spiky { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--text-2); cursor: pointer; }
+.spiky input { width: 1.15rem; height: 1.15rem; margin: 0; accent-color: #B9C2CF; cursor: pointer; }
+.spiky.off { color: var(--text-3); opacity: 0.6; cursor: default; }
+.spiky input:disabled { cursor: default; }
+.armour-none { color: var(--text-3); font-size: var(--step--1); }
+
 .adders { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.9rem; }
 .adder {
   display: inline-flex;
