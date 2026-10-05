@@ -5,11 +5,15 @@
     { "type": "Worm", "name": "worm", "plural": "worms", "reward": 30, "lives": 1, "color": "#BC3A83", "does": "A mechanical drill worm. Tunnels under you and leaps up to catch you in the air." },
     { "type": "RockThrower", "name": "rock thrower", "plural": "rock throwers", "reward": 12, "lives": 1, "color": "#C77F3E", "does": "A squat robot with two claws. Keeps its distance and lobs scrap at random spots around you." },
     { "type": "Giant", "name": "giant", "plural": "giants", "reward": 25, "lives": 2, "color": "#886ACF", "does": "A 4 m combat robot with a steel girder. Needs a double jump to stomp." },
-    { "type": "Archer", "name": "archer", "plural": "archers", "reward": 15, "lives": 1, "color": "#50A064", "does": "A half-robot with a crossbow arm. Keeps its distance and shoots bolts where you're about to be." }
+    { "type": "Archer", "name": "archer", "plural": "archers", "reward": 15, "lives": 1, "color": "#50A064", "does": "A half-robot with a crossbow arm. Keeps its distance and shoots bolts where you're about to be." },
+    { "type": "Sniper", "name": "sniper", "plural": "snipers", "reward": 18, "lives": 1, "color": "#4C79C8", "does": "A soldier with a long rifle. Keeps its distance; its red laser follows you, then locks, and a moment later the shot flies along it." },
+    { "type": "ParryGuard", "name": "parry guard", "plural": "parry guards", "reward": 14, "lives": 2, "color": "#7A8F3A", "does": "A soldier with two bracers. Now and then it glows yellow: hit it with a melee weapon then and you are stunned." },
+    { "type": "Stalker", "name": "stalker", "plural": "stalkers", "reward": 16, "lives": 2, "color": "#6E6A86", "does": "A fast soldier you can hardly see: only its two eyes glow, and now and then its outline shimmers. It shows itself just before it hits you, and for a moment when you hit it." },
+    { "type": "Drone", "name": "suicide drone", "plural": "suicide drones", "reward": 10, "lives": 1, "color": "#D48A2C", "does": "A small flying bomb with two rotors. Flies at you at head height, beeps and flashes red, then dives and blows up. Stomp it and it bounces you high: a stepping stone up to a giant's head." }
   ],
   "elites": [
-    { "type": "Giant", "lives": 10, "does": "Bigger and gold, in helmet and shield, with a longer girder. Swings faster when enraged." },
-    { "type": "Worm", "lives": 13, "does": "Longer and gold, 10 armour plates, leaps higher." },
-    { "type": "Archer", "lives": 6, "does": "Bigger and gold, in helmet and shield. Shoots volleys of 3 bolts, 5 when enraged." }
+    { "type": "Giant", "lives": 20, "does": "Bigger and gold, in helmet and shield, with a longer girder. Swings faster when enraged." },
+    { "type": "Worm", "lives": 17, "does": "Longer and gold, 10 armour plates, leaps higher." },
+    { "type": "Archer", "lives": 11, "does": "Bigger and gold, in helmet and shield. Shoots volleys of 3 bolts, 5 when enraged." }
   ]
 }

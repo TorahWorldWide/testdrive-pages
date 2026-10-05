@@ -2,16 +2,27 @@
   "subjects": {
     "Archer": { "image": "images/sounds/Archer.png", "anchors": { "center": [0.499, 0.498], "top": [0.499, 0.07], "feet": [0.499, 0.868], "eyes": [0.562, 0.212], "bow": [0.36, 0.848] } },
     "Basic": { "image": "images/sounds/Basic.png", "anchors": { "center": [0.464, 0.485], "top": [0.463, 0.118], "feet": [0.465, 0.81], "eyes": [0.533, 0.256], "helmet": [0.463, 0.132], "shield": [0.676, 0.611] } },
-    "Giant": { "image": "images/sounds/Giant.png", "anchors": { "center": [0.733, 0.524], "top": [0.748, 0.069], "feet": [0.719, 0.924], "eyes": [0.779, 0.16], "club": [0.366, 0.773] } },
+    "Drone": { "image": "images/sounds/Drone.png", "anchors": { "center": [0.488, 0.464], "top": [0.488, 0.267], "feet": [0.488, 0.646], "eyes": [0.688, 0.581] } },
+    "Giant": { "image": "images/sounds/Giant.png", "anchors": { "center": [0.769, 0.521], "top": [0.786, 0.132], "feet": [0.754, 0.868], "eyes": [0.813, 0.21], "club": [0.37, 0.736] } },
+    "ParryGuard": { "image": "images/sounds/ParryGuard.png", "anchors": { "center": [0.505, 0.519], "top": [0.505, 0.07], "feet": [0.505, 0.911], "eyes": [0.592, 0.239] } },
     "RockThrower": { "image": "images/sounds/RockThrower.png", "anchors": { "center": [0.505, 0.602], "top": [0.505, 0.296], "feet": [0.505, 0.879], "eyes": [0.538, 0.381], "rock": [0.521, 0.069] } },
+    "Sniper": { "image": "images/sounds/Sniper.png", "anchors": { "center": [0.491, 0.514], "top": [0.485, 0.07], "feet": [0.497, 0.912], "eyes": [0.526, 0.247], "bow": [0.804, 0.712] } },
+    "Stalker": { "image": "images/sounds/Stalker.png", "anchors": { "center": [0.509, 0.518], "top": [0.509, 0.07], "feet": [0.509, 0.91], "eyes": [0.596, 0.238] } },
     "Worm": { "image": "images/sounds/Worm.png", "anchors": { "head": [0.128, 0.743], "middle": [0.604, 0.418], "tail": [0.914, 0.206] } },
-    "Player": { "image": "images/sounds/Player.png", "anchors": { "center": [0.506, 0.429], "feet": [0.505, 0.69], "top": [0.506, 0.13], "left": [0.642, 0.39], "right": [0.355, 0.473] } },
+    "Player": { "image": "images/sounds/Player.png", "anchors": { "center": [0.506, 0.429], "feet": [0.505, 0.69], "top": [0.506, 0.131], "left": [0.642, 0.39], "right": [0.355, 0.473] } },
     "Fist": { "image": "images/sounds/Fist.png", "anchors": { "center": [0.493, 0.501], "tip": [0.929, 0.501], "grip": [0.569, 0.501] } },
-    "Sword": { "image": "images/sounds/Sword.png", "anchors": { "center": [0.492, 0.496], "tip": [0.929, 0.494], "grip": [0.127, 0.494] } },
+    "Sword": { "image": "images/sounds/Sword.png", "anchors": { "center": [0.493, 0.496], "tip": [0.93, 0.495], "grip": [0.137, 0.495] } },
     "Spear": { "image": "images/sounds/Spear.png", "anchors": { "center": [0.489, 0.5], "tip": [0.93, 0.5], "grip": [0.186, 0.5] } },
     "Hammer": { "image": "images/sounds/Hammer.png", "anchors": { "center": [0.492, 0.503], "tip": [0.908, 0.503], "grip": [0.413, 0.503] } },
+    "Rifle": { "image": "images/sounds/Rifle.png", "anchors": { "center": [0.493, 0.503], "tip": [0.931, 0.488], "grip": [0.28, 0.514] } },
+    "Marksman": { "image": "images/sounds/Marksman.png", "anchors": { "center": [0.493, 0.499], "tip": [0.93, 0.498], "grip": [0.281, 0.525] } },
+    "Bazooka": { "image": "images/sounds/Bazooka.png", "anchors": { "center": [0.503, 0.5], "tip": [0.93, 0.5], "grip": [0.431, 0.538] } },
     "Arrow": { "image": "images/sounds/Arrow.png", "anchors": { "center": [0.509, 0.499], "tip": [0.818, 0.499], "tail": [0.071, 0.499] } },
+    "Bullet": { "image": "images/sounds/Bullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.641, 0.499], "tail": [0.235, 0.499] } },
+    "MarksmanBullet": { "image": "images/sounds/MarksmanBullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.641, 0.499], "tail": [0.235, 0.499] } },
     "Rock": { "image": "images/sounds/Rock.png", "anchors": { "center": [0.516, 0.5], "tip": [0.516, 0.5], "tail": [0.073, 0.5] } },
-    "ThrownKnife": { "image": "images/sounds/ThrownKnife.png", "anchors": { "center": [0.509, 0.499], "tip": [0.52, 0.499], "tail": [0.071, 0.499] } }
+    "Rocket": { "image": "images/sounds/Rocket.png", "anchors": { "center": [0.511, 0.5], "tip": [0.8, 0.5], "tail": [0.08, 0.5] } },
+    "SniperBullet": { "image": "images/sounds/SniperBullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.742, 0.499], "tail": [0.071, 0.499] } },
+    "ThrownKnife": { "image": "images/sounds/ThrownKnife.png", "anchors": { "center": [0.509, 0.499], "tip": [0.519, 0.499], "tail": [0.07, 0.499] } }
   }
 }
