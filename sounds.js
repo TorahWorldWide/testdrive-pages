@@ -56,6 +56,14 @@
 //    evening-out x master, at most 1 (normalizedVolume). It's a change(), so Undo and Save work. Where even 100% can't get
 //    there (a plain take tops out at 0.72 = -2.9 dBFS, because the evening-out aims at 0.9 and the master is 0.8) it sets
 //    100% and says where the loudest sample ended up.
+//
+// Phones (n1, Tomer 5.10: "on the phone I can't edit the sounds"): on a screen up to 800 px wide (PHONE) the mixer used to
+// sit under all the cards, five screens down, so pressing a play button showed no editor at all. There it is now a
+// sheet over the page (body.editing), opened by the green "Edit" button that shows once a sound is picked (#edit-fab)
+// and closed by its "Back" button or the phone's own Back (a history entry). Its head stays on top while it scrolls, with
+// Play and Loop. Every control in it is at least 40 px for a finger (sounds.css), and since a library sound can't be
+// dragged by touch, "Add ... from the library" adds the one playing in the player bar as a new layer.
+// pages_phone_edit_test.js drives it all by real touch.
 
 const MASTER = 0.8; // Sfx.masterVolume in the game
 const NORMALIZE_PEAK_DB = -1; // Normalize: where a layer's loudest sample should peak (dBFS)
@@ -973,6 +981,11 @@ function renderLoopButtons() {
     big.setAttribute("aria-pressed", on(-1));
     big.textContent = on(-1) ? "Stop loop" : "Loop";
   }
+  const head = $("sheet-loop"); // the same, in the phone editor's head
+  if (head) {
+    head.setAttribute("aria-pressed", on(-1));
+    head.textContent = on(-1) ? "Stop" : "Loop";
+  }
   for (const b of mixer.querySelectorAll("[data-layer-loop]")) b.setAttribute("aria-pressed", on(+b.dataset.layerLoop));
   // A/B works on the loop that plays: a layer's button while that layer's Loop plays, the sound's while the whole sound's does.
   const original = !!loop && loop.id === state.selected && loop.original;
@@ -1431,13 +1444,26 @@ function fxToggleHtml(layer) {
     (chips.length ? `<span class="fx-chips">${chips.map(c => `<span class="fx-chip">${esc(c)}</span>`).join("")}</span>` : "");
 }
 
+// Phones: the editor sheet's head, which stays on top while the editor scrolls: Back to the cards, the sound's name, and
+// Play and Loop for the whole sound, so a knob far down is heard without scrolling back up. (Hidden on a wider screen.)
+function sheetHead(id) {
+  return `<div class="sheet-head">
+    <button type="button" class="ghost sheet-back" id="editor-close" aria-label="Back to the sounds">‹ Back</button>
+    <span class="sheet-name">${id ? esc(nameOf(id)) : "Mixer"}</span>
+    ${id ? `<button type="button" class="play-big sheet-play" id="sheet-play" aria-label="Play the whole sound">Play</button>
+      <button type="button" class="ghost loop-big sheet-loop" id="sheet-loop" aria-pressed="false" aria-label="Loop the whole sound">Loop</button>` : ""}
+  </div>`;
+}
+// The button that adds the library sound in the player bar as a new layer (a phone can't drag it there).
+const addPreviewText = () => previewItem ? `+ Add “${esc(previewItem.title)}” from the library` : "";
+
 function renderMixer() {
   // Keep the keyboard where it was when the mixer is drawn again.
   const focused = document.activeElement?.closest?.("#mixer [data-key]")?.dataset.key;
   const id = state.selected;
   const sound = id && soundById(id);
   if (!sound) {
-    $("mixer").innerHTML = `<h2>Mixer</h2><p class="empty-mixer">Press any play button: you'll hear it, and see here what it's made of.
+    $("mixer").innerHTML = sheetHead(null) + `<h2>Mixer</h2><p class="empty-mixer">Press any play button: you'll hear it, and see here what it's made of.
       To change it, play a sound from the library and press “Use for…” at the bottom.</p>`;
     return;
   }
@@ -1476,7 +1502,7 @@ function renderMixer() {
     </div>`;
   }).join("");
   const changed = JSON.stringify(sound) !== JSON.stringify(savedSound(id));
-  $("mixer").innerHTML = `
+  $("mixer").innerHTML = sheetHead(id) + `
     <h2>${esc(nameOf(id))}</h2>
     <p class="about">${esc(sound.about || "")}</p>
     <p class="where">On this page: ${esc(placesOf(id).join(", ") || "nowhere")}. In the game it's called <code>${esc(id)}</code>.</p>
@@ -1496,12 +1522,15 @@ function renderMixer() {
       <label class="add-layer"><span class="field-label">Add a recording to this sound</span>
         <select class="select" id="add-layer"><option value="">Choose one already in the game…</option>
           ${options.map(k => `<option value="${esc(k)}">${esc(recordingName(k))}</option>`).join("")}</select></label>
-      <p class="drop-hint">…or drag one here from the library.</p>
+      <button type="button" class="ghost add-preview" id="add-preview" ${previewItem ? "" : "hidden"}>${addPreviewText()}</button>
+      <p class="drop-hint"><span class="mouse-only">…or drag one here from the library.</span><span class="touch-only">…or play
+        one in the Sound library (at the bottom): then a button here adds it.</span></p>
     </div>
-    <p class="hint">To replace this sound, pick one in the library and press “Use for…” in the player bar, or
-      drag it onto a play button (or onto a layer above, to replace just that layer). Changes play here
+    <p class="hint">To replace this sound, pick one in the library and press “Use for…” in the player bar<span class="mouse-only">, or
+      drag it onto a play button (or onto a layer above, to replace just that layer)</span>. Changes play here
       right away; press Save to put them in the game.
-      <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes. While a Loop plays, <b>A/B</b> (or the <kbd>A</kbd> and <kbd>B</kbd> keys) swaps
+      <span class="mouse-only"><kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes.</span><span class="touch-only">Undo, at the top, takes a change back.</span>
+      While a Loop plays, <b>A/B</b><span class="mouse-only"> (or the <kbd>A</kbd> and <kbd>B</kbd> keys)</span> swaps
       your edit for the original recording and back, to compare them: it changes nothing.</p>`;
   renderLoopButtons(); // before the focus goes back: a button that's off while no Loop plays can't take it
   if (focused) $("mixer").querySelector(`[data-key="${CSS.escape(focused)}"]`)?.focus({ preventScroll: true });
@@ -1702,6 +1731,12 @@ function renderPlayer() {
   use.disabled = !state.selected || !previewItem;
   use.textContent = state.selected ? `Use for “${nameOf(state.selected)}”` : "Press ▶ on a part first";
   use.title = state.selected ? `Put this sound in place of “${nameOf(state.selected)}” (Enter)` : "First press a play button on a character, to choose which sound to replace.";
+  const add = $("add-preview"); // the mixer's "Add ... from the library" (phones)
+  if (add) {
+    add.hidden = !previewItem;
+    add.innerHTML = addPreviewText();
+  }
+  renderEditButton();
 }
 // Playing or not: the bar's button and the row's pause icon.
 let frame = 0, seeking = false;
@@ -1826,6 +1861,12 @@ document.addEventListener("click", ev => {
   if (t.closest("#ab-big")) return loop?.n === -1 ? setOriginal() : undefined; // only while the whole sound loops
   if (t.closest("#download-big")) return downloadWav(state.selected, -1);
   if (t.closest("#revert")) return change(() => { Object.assign(soundById(state.selected), savedSound(state.selected)); });
+  // Phones: the editor sheet
+  if (t.closest("#edit-fab")) return openEditor();
+  if (t.closest("#editor-close")) return closeEditor();
+  if (t.closest("#sheet-play")) return play(state.selected, $("sheet-play"));
+  if (t.closest("#sheet-loop")) return startLoop(state.selected, -1);
+  if (t.closest("#add-preview")) return previewItem && state.selected ? useOn(state.selected, previewItem, { add: true }) : undefined;
   const layerPlay = t.closest("[data-layer-play]");
   if (layerPlay) {
     const layer = soundById(state.selected).layers[+layerPlay.dataset.layerPlay];
@@ -1924,8 +1965,52 @@ function setSheet(closed) {
   $("library").classList.toggle("collapsed", closed);
   $("sheet-toggle").textContent = closed ? "Open" : "Hide";
   $("sheet-toggle").setAttribute("aria-expanded", !closed);
+  renderEditButton(); // hidden while the drawer is open
 }
-if (matchMedia("(max-width: 800px)").matches) setSheet(true);
+const PHONE = matchMedia("(max-width: 800px)"); // the same width as sounds.css's phone layout
+if (PHONE.matches) setSheet(true);
+
+// Phones: the editor (the mixer) as a sheet over the page, between the header (Save) and the library drawer and player
+// bar along the bottom (the drawer still opens over it). The phone's Back closes it too: opening it adds a history entry.
+const editing = () => document.body.classList.contains("editing");
+function openEditor() {
+  if (!state.selected || editing()) return;
+  setSheet(true);
+  document.body.classList.add("editing");
+  $("mixer").scrollTop = 0;
+  try { history.pushState({ soundsEditor: true }, ""); } catch { /* no history here: the Back button still closes it */ }
+  renderEditButton();
+  liveChanged(); // the waveforms and the EQ curve, drawn at their real size now that they show
+  $("editor-close")?.focus({ preventScroll: true });
+}
+function closeEditor({ fromHistory = false } = {}) {
+  if (!editing()) return;
+  if (!fromHistory && history.state?.soundsEditor) { history.back(); return; } // its popstate closes it
+  document.body.classList.remove("editing");
+  stopLoop(); // a loop playing on behind the cards couldn't be stopped there
+  renderEditButton();
+  const spot = document.querySelector(`.spot[data-sound="${state.selected}"] .spot-button`);
+  spot?.focus({ preventScroll: true });
+}
+window.addEventListener("popstate", () => closeEditor({ fromHistory: true }));
+// The green "Edit “Jump”" button: once a sound is picked, while the editor and the library drawer are closed (phones only:
+// sounds.css never shows it on a wider screen).
+function renderEditButton() {
+  const fab = $("edit-fab");
+  if (!fab) return;
+  fab.hidden = !state.selected || editing() || !$("library").classList.contains("collapsed");
+  if (state.selected) {
+    fab.textContent = `Edit “${nameOf(state.selected)}”`;
+    fab.setAttribute("aria-label", `Edit “${nameOf(state.selected)}”: cut it, play it backwards, reverb, echo and the rest`);
+  }
+}
+// How much of the bottom the closed library drawer and the player bar take: the editor sheet ends above them (--dock).
+const dockObserver = new ResizeObserver(() => {
+  if (!$("library").classList.contains("collapsed")) return; // the open drawer goes over the sheet instead
+  document.documentElement.style.setProperty("--dock", $("library").offsetHeight + $("player").offsetHeight + "px");
+});
+dockObserver.observe($("library"));
+dockObserver.observe($("player"));
 
 // Dragging a library sound onto a play button or a mixer layer.
 let dragged = null;

@@ -54,11 +54,16 @@
     <div class="middle">
       <p class="intro">Press <span class="intro-play" aria-hidden="true"></span> on any part to hear the sound it makes in the game.
         Dashed circles are places that have no sound yet. To change a sound, play one from the library and press
-        “Use for…” at the bottom, or drag it onto the play button.</p>
+        “Use for…” at the bottom<span class="mouse-only">, or drag it onto the play button</span>.<span class="touch-only">
+        To cut it, play it backwards or add reverb, echo and the rest, press <span class="intro-play" aria-hidden="true"></span>
+        on it, then <b>Edit</b>.</span></p>
       <div class="board" id="board"></div>
     </div>
     <aside class="mixer" id="mixer" aria-live="polite"></aside>
   </main>
+
+  <!-- Phones: the editor (the mixer) opens over the page from this button, once a sound is picked. -->
+  <button type="button" class="edit-fab" id="edit-fab" hidden></button>
 
   <!-- The library's player: one sound at a time, streamed, so it starts at once. -->
   <footer class="player idle" id="player" aria-label="Player">

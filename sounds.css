@@ -1,6 +1,8 @@
 /* The Sounds page, laid out like a music player: the sound library on the left (a list of tracks),
    every character as a card with play buttons on the parts that make a sound, the mixer for the
-   selected sound on the right, and a player bar along the bottom for the sound you're listening to. */
+   selected sound on the right, and a player bar along the bottom for the sound you're listening to.
+   On a phone (up to 800 px) the library is a drawer over the player bar and the mixer a sheet over the page (the
+   last section). */
 
 .hall {
   display: grid;
@@ -665,4 +667,116 @@ body.dragging-sound .layer, body.dragging-sound .drop-add { outline: 2px dashed 
   .np-bar .np-time { display: none; }
   .np-seek { display: block; }
   .use { max-width: 9.5rem; padding: 0.45rem 0.9rem; }
+}
+
+/* ---------- phones (n1, Tomer 5.10: "on the phone I can't edit the sounds") ----------
+   The mixer sat under every card, five screens down: pressing ▶ showed no editor. On a phone it's now a sheet over the
+   page (body.editing, sounds.js openEditor), opened by the green Edit button, between the header (Save) and the library
+   drawer with the player bar (--dock: their height); its head (Back, the name, Play, Loop) stays on top while it scrolls.
+   Every control a finger uses there is at least 40 px (2.6rem at a phone's 16 px). None of this shows on a wider screen. */
+.sheet-head, .edit-fab, .add-preview, .touch-only { display: none; }
+
+@media (max-width: 800px) {
+  .mouse-only { display: none; }
+  .touch-only { display: inline; }
+
+  /* The editor sheet. */
+  .mixer { display: none; }
+  body.editing .mixer {
+    display: block;
+    position: fixed;
+    top: calc(var(--below-top, 7rem) - 8px); /* right under the header */
+    right: 0;
+    bottom: var(--dock, 8rem);
+    left: 0;
+    z-index: 25; /* under the library drawer (30), so it still opens over the editor */
+    max-height: none;
+    padding: 0 0.8rem 1.5rem;
+    border-radius: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain; /* its end doesn't scroll the cards behind it */
+  }
+  body.editing .middle { visibility: hidden; }
+  body.editing .mixer > h2, body.editing #play-big, body.editing #loop-big { display: none; } /* the head has them */
+  .sheet-head {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 -0.8rem 0.9rem;
+    padding: 0.55rem 0.8rem;
+    background: #1f1f1f;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+  }
+  .sheet-name { flex: 1; min-width: 0; overflow: hidden; font-weight: 800; font-size: 1.05rem; text-overflow: ellipsis; white-space: nowrap; }
+  .sheet-head .play-big { min-height: 2.6rem; padding: 0 1rem 0 0.8rem; }
+  .sheet-head .ghost { flex: none; }
+
+  /* The Edit button: once a sound is picked, over the cards' bottom right. */
+  .edit-fab {
+    position: fixed;
+    right: 0.8rem;
+    bottom: calc(var(--dock, 8rem) + 0.8rem);
+    z-index: 35;
+    display: block;
+    max-width: calc(100% - 1.6rem);
+    height: 3rem;
+    padding: 0 1.3rem 0 1rem;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 800;
+    font-size: 1rem;
+    line-height: 3rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  }
+  /* Three sliders: the editor's knobs. */
+  .edit-fab::before {
+    content: "";
+    display: inline-block;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin-right: 0.45rem;
+    vertical-align: -0.2rem;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 3v6M6 15v6M12 3v2M12 11v10M18 3v10M18 19v2' stroke='black' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='12' cy='8' r='3'/%3E%3Ccircle cx='18' cy='16' r='3'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .add-preview { display: block; width: 100%; margin-top: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* Finger-sized: the header's buttons, the editor's, and the library's. */
+  .top .ghost, .top .save { min-height: 2.6rem; }
+  #mixer .ghost { min-height: 2.6rem; padding-block: 0; }
+  .mini-play, .mini-loop, .mini-play.cut-play { width: 2.6rem; height: 2.6rem; }
+  .ab, .ab-big { height: 2.6rem; }
+  .ab-a, .ab-b, .ab-big .ab-a, .ab-big .ab-b { min-width: 1.7rem; height: 1.9rem; }
+  .layer-head .select, .add-layer .select { min-height: 2.75rem; }
+  .knob input[type="range"] { height: 2.6rem; margin: 0; }
+  .num { min-height: 2.6rem; font-size: 1rem; } /* 16 px: a phone doesn't zoom in when you type in it */
+  .fx-toggle { min-height: 2.75rem; }
+  .remove { min-height: 2.6rem; padding: 0 0.55rem; }
+  .layer-foot { flex-wrap: wrap; }
+  .layer-actions { flex-wrap: wrap; justify-content: flex-end; margin-left: auto; }
+  .switch { min-height: 2.75rem; }
+  .switch-track { width: 3rem; height: 1.75rem; }
+  .switch-track::after { width: 1.45rem; height: 1.45rem; }
+  .switch input:checked + .switch-track::after { transform: translateX(1.25rem); }
+  .wave { height: 4.4rem; }
+  .wave-handle { width: 2.75rem; margin-left: -1.375rem; }
+  .wave-handle::after { width: 0.65rem; height: 1.8rem; }
+
+  .np-toggle { width: 2.6rem; height: 2.6rem; }
+  .use, .sheet-toggle, .sources button, .chip, .small-select, .check { min-height: 2.6rem; }
+  .lib-search { min-height: 2.75rem; }
+  .track { grid-template-columns: 2.6rem minmax(0, 1fr) auto auto; }
+  .track-play { width: 2.6rem; height: 2.6rem; }
+  .like { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; }
+}
+@media (max-width: 800px) and (prefers-reduced-motion: no-preference) {
+  .edit-fab { animation: fab-in 0.25s ease-out; }
+  @keyframes fab-in { from { opacity: 0; transform: translateY(1rem); } }
 }
