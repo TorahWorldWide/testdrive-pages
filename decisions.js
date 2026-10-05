@@ -12,7 +12,7 @@
 // decisions.html#<card id> opens and highlights that card (chat messages and the Art page link to cards that way).
 // Tested by docs/claude-tools/pages_decisions_test.js (cdp.mjs, desktop and phone).
 
-const GROUPS = { story: "הסיפור", r16: "דמויות ופגיעות", scenery: "תפאורה", tech: "טכני", upcoming: "בהמשך", closed: "הוחלט" }; // in this order
+const GROUPS = { story: "הסיפור", pipeline: "המראה החדש", r16: "דמויות ופגיעות", scenery: "תפאורה", tech: "טכני", upcoming: "בהמשך", closed: "הוחלט" }; // in this order
 const STAGES = [ // where a card stands (stageOf), the filters' order; "all" shows every card
   ["waiting", "מחכות לך"], ["chosen", "בחרת"], ["applied", "הוחלו במשחק"], ["upcoming", "בהמשך"], ["closed", "נסגרו"], ["all", "הכול"],
 ];
