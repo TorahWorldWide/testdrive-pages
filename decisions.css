@@ -1,14 +1,15 @@
-/* The Decisions page (Hebrew, right to left): a line saying how many decisions wait for Tomer and the filters, then
-   one card per decision: the question, why, and its options side by side (stacked on a phone), each with its
-   pictures and a "בחירה" button; a compare view (a line to drag, or a tap to flip) and a note box. A picture opens
-   full size with zoom, as on the Art page (the same view, copied here: .zoom). */
+/* The Decisions page (Hebrew, right to left): a line saying how many decisions wait for Tomer and only those cards,
+   then everything else folded (.fold: one line and a count each, a tap opens it). One card per decision: the question,
+   why, and its options side by side (stacked on a phone), each with its pictures and a "בחירה" button; a compare view
+   (a line to drag, or a tap to flip) and a note box. A picture opens full size with zoom, as on the Art page (the same
+   view, copied here: .zoom). */
 
 :root {
   --gameplay: #ffb547;  /* "משנה את המשחק": an option that changes how the game plays */
   --live: #8fb8ff;      /* "נבחר לעכשיו": what the game has now */
 }
 
-.summary, .cards, .empty { width: min(100%, 80rem); margin-inline: auto; }
+.summary, .cards { width: min(100%, 80rem); margin-inline: auto; }
 .summary { padding: 1.4rem 1.6rem 0; }
 .headline {
   margin: 0;
@@ -18,13 +19,23 @@
   line-height: 1.05;
   letter-spacing: -0.01em;
 }
+.headline .count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35em;
+  height: 1.35em;
+  margin-inline-start: 0.2em;
+  padding: 0 0.3em;
+  border-radius: 999px;
+  background: var(--text);
+  color: #000;
+  font-size: 0.72em;
+  vertical-align: 0.12em;
+}
 .headline small { margin-inline-start: 0.5rem; color: var(--text-2); font-family: var(--body); font-weight: 500; font-size: var(--step-0); letter-spacing: 0; }
 .how { margin: 0.6rem 0 0; max-width: 85ch; color: var(--text-2); font-size: var(--step--1); }
 .how b { color: var(--text); }
 
-.filters { display: grid; gap: 0.5rem; margin-top: 1rem; }
-.filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
-.filter-label { min-width: 3.2rem; color: var(--text-3); font-size: var(--step--1); }
 .pill {
   padding: 0.38rem 0.95rem;
   border: 0;
@@ -51,7 +62,7 @@
   text-underline-offset: 0.2em;
 }
 .link:disabled { opacity: 0.45; cursor: default; }
-.empty { padding: 2rem 1.6rem; color: var(--text-2); }
+.empty { margin: 0; padding: 1rem 1.2rem; border-radius: 12px; background: var(--surface); color: var(--text-2); }
 
 /* A command or a menu path in a problem: on one line, so a phone doesn't break it in two. */
 .problem code, .problem bdi { white-space: nowrap; }
@@ -63,8 +74,68 @@
   font-size: 0.88em;
 }
 
-/* ---------- the cards ---------- */
+/* ---------- the cards: those that wait for him, then the folds ---------- */
 .cards { display: grid; gap: 1.2rem; padding: 1.2rem 1.6rem 4rem; }
+.now { display: grid; gap: 1.2rem; min-width: 0; }
+.now:empty { display: none; }
+
+/* ---------- the folds: one line each, its name and how many cards; a tap opens it ---------- */
+.folds { display: grid; gap: 0.6rem; min-width: 0; margin-top: 0.8rem; }
+.folds-title { margin: 0; color: var(--text-3); font-size: var(--step--1); font-weight: 600; }
+.fold { min-width: 0; }
+.fold-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3.4rem;
+  padding: 0.7rem 1.2rem;
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  list-style: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.fold-head::-webkit-details-marker { display: none; }
+.fold-head:hover { background: #1f1f1f; }
+.fold-text { min-width: 0; line-height: 1.3; }
+.fold-title { font-weight: 700; font-size: 1.1rem; overflow-wrap: anywhere; }
+.fold-small { margin-inline-start: 0.3rem; color: var(--text-3); font-weight: 500; font-size: 0.86rem; white-space: nowrap; }
+.fold-n {
+  display: inline-block;
+  min-width: 2rem;
+  margin-inline-start: 0.35rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  background: var(--raise);
+  color: var(--text-2);
+  font-weight: 700;
+  font-size: 0.86rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+/* A chevron at the line's end: down while closed, up while open. */
+.fold-chev {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-inline: auto 0.2rem;
+  border-right: 2px solid var(--text-2);
+  border-bottom: 2px solid var(--text-2);
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.15s;
+}
+.fold[open] > .fold-head .fold-chev { transform: translateY(25%) rotate(225deg); }
+@media (prefers-reduced-motion: reduce) { .fold-chev { transition: none; } }
+.fold-body { display: grid; gap: 1.2rem; min-width: 0; padding-top: 0.9rem; }
+/* The decisions taken: a fold per topic inside, lighter and closer together. */
+.fold.topics > .fold-body { gap: 0.5rem; padding-top: 0.6rem; }
+.fold.sub > .fold-head { min-height: 3rem; padding: 0.55rem 1rem; border: 1px solid var(--line); background: transparent; }
+.fold.sub > .fold-head:hover { background: var(--surface); }
+.fold.sub .fold-title { font-size: 1rem; font-weight: 600; }
+.fold.sub[open] { margin-bottom: 0.8rem; }
+.fold.sub > .fold-body { padding-top: 0.7rem; }
 .card {
   display: grid;
   gap: 1rem;
@@ -458,23 +529,17 @@ html.zooming { overflow: hidden; }
   .headline { font-size: var(--step-2); }
   .headline small { display: block; margin: 0.2rem 0 0; font-size: var(--step--1); }
   .how { font-size: 0.82rem; }
-  .filters { gap: 0.4rem; margin-top: 0.8rem; }
-  .filter-label { display: none; }
   .pill { padding: 0.32rem 0.75rem; font-size: 0.84rem; }
-  /* Each filter row on one line that scrolls sideways inside itself (no scrollbar), fading out at its end. */
-  .filter-row {
-    flex-wrap: nowrap;
-    margin: -4px;
-    padding: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 1.6rem); /* (the row's end is on the left) */
-    mask-image: linear-gradient(to right, transparent 0, #000 1.6rem);
-  }
-  .filter-row::-webkit-scrollbar { display: none; }
-  .filter-row .pill { flex: none; }
-  .filter-row .pill:last-child { margin-inline-end: 1.4rem; }
   .cards { gap: 0.9rem; padding: 0.9rem 0.8rem 3rem; }
+  .now { gap: 0.9rem; }
+  .folds { margin-top: 0.6rem; }
+  .fold-head { gap: 0.55rem; min-height: 3.3rem; padding: 0.65rem 0.95rem; border-radius: 10px; }
+  .fold-title { font-size: 1.02rem; }
+  .fold-small { display: block; margin: 0.1rem 0 0; font-size: 0.8rem; }
+  .fold-body { gap: 0.9rem; }
+  .fold.sub > .fold-head { min-height: 2.9rem; padding: 0.5rem 0.85rem; }
+  .fold.sub .fold-title { font-size: 0.95rem; }
+  .empty { padding: 0.9rem 1rem; border-radius: 10px; }
   .card { gap: 0.8rem; padding: 1rem 0.9rem; border-radius: 10px; }
   .card-title { font-size: 1.4rem; }
   .question { font-size: 1.02rem; }
@@ -498,5 +563,4 @@ html.zooming { overflow: hidden; }
   .note-save { justify-self: end; }
   .zoom-bar { padding: 0.5rem 0.7rem; }
   .zoom-title { flex: 1 0 100%; font-size: 0.9rem; }
-  .empty { padding: 1.5rem 0.8rem; }
 }

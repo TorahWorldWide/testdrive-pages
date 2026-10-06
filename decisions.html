@@ -32,14 +32,10 @@
     <h1 class="headline" id="headline"></h1>
     <p class="how">לכל החלטה: הסתכל בתמונות, לחץ <b>בחירה</b> על האפשרות שאתה רוצה, ואם תרצה כתוב הערה.
       <bdi>Claude</bdi> קורא את הבחירות בתחילת כל סשן ומכניס אותן למשחק.</p>
-    <div class="filters">
-      <div class="filter-row" role="group" aria-label="לפי מצב" id="by-stage"></div>
-      <div class="filter-row" role="group" aria-label="לפי נושא" id="by-group"></div>
-    </div>
   </section>
 
+  <!-- On top the cards that wait for him; below, everything else in folds (decisions.js: renderCards). -->
   <main class="cards" id="cards" aria-live="off"></main>
-  <p class="empty" id="empty" hidden></p>
 
   <!-- A picture at full size: zoom with the wheel, + and −, a pinch or a double tap; drag to move it (as on the Art page). -->
   <dialog class="zoom" id="zoom" aria-labelledby="zoom-title">

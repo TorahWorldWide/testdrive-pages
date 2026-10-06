@@ -9,13 +9,20 @@
 // Pictures and clips come from the media site (Store.media), or from this site itself when one says site: "pages".
 // The approval card of the characters links each row to the Art page (art.html#<item>) and shows the Art page's own
 // Approve / Change for it, read from feedback.json (one place to answer).
-// decisions.html#<card id> opens and highlights that card (chat messages and the Art page link to cards that way).
+// The page is short at first sight (his ask of 6.10: "full of junk I don't have the energy to look at"): on top only
+// the cards that wait for him ("רק אלה מחכים לך"); everything else is folded below, one line and a count per fold, a tap
+// opens it: the decisions already taken (a default taken for now, or his own choice; he may change any), by topic, each
+// topic folded too; what comes later; the closed ones. This device remembers which folds he opened (localStorage).
+// decisions.html#<card id> opens and highlights that card, opening its folds for this visit only (chat messages and the
+// Art page link to cards that way).
 // Tested by docs/claude-tools/pages_decisions_test.js (cdp.mjs, desktop and phone).
 
 const GROUPS = { story: "הסיפור", pipeline: "המראה החדש", r16: "דמויות ופגיעות", scenery: "תפאורה", tech: "טכני", upcoming: "בהמשך", closed: "הוחלט" }; // in this order
-const STAGES = [ // where a card stands (stageOf), the filters' order; "all" shows every card
-  ["waiting", "מחכות לך"], ["chosen", "בחרת"], ["applied", "הוחלו במשחק"], ["upcoming", "בהמשך"], ["closed", "נסגרו"], ["all", "הכול"],
+const FOLDS = [ // the folded sections below the cards that wait for him (sectionOf), in this order: [key, title, its small words]
+  ["taken", "החלטות שכבר נלקחו", "(אפשר לשנות)"], ["upcoming", "בהמשך", ""], ["closed", "סגורות", ""],
 ];
+const TOPIC_IN_FOLD = { upcoming: "מה שעוד ייבנה" }; // a topic's name inside the fold of decisions taken, where "בהמשך" would read as the next fold
+const FOLDS_KEY = "testdrive.decisions.folds";      // localStorage: the folds open on this device, { "taken": true, "taken/r19": true }
 const LOOKS = { foundry: "בית יציקה", coldrain: "גשם קר", scrapyard: "מגרש גרוטאות", military: "צבאי", hazard: "מכונות כבדות",
   bunker: "אזעקה אדומה", gothic: "ברזל גותי", toxic: "רעיל", spotlight: "מופע גלדיאטורים", diesel: "דיזלפאנק" }; // as on the Art page
 const PICTURES = ["image", "chart", "diagram"]; // media shown as a picture, which opens full size
@@ -29,9 +36,10 @@ const state = {
   data: null,       // decisions.json
   file: "",         // where it was read from
   feedback: null,   // feedback.json's items (the Art page's Approve / Change), or null when it couldn't be read
-  stage: "waiting", // the filters
-  group: "all",
-  keep: new Set(),  // cards changed since the filter was set: they stay in sight even when they no longer match it
+  open: readFolds(),// the folds open now: the ones this device remembers, and those an address opened for this visit
+  where: {},        // per card: the section it was drawn in ("now" or a fold's key)
+  keep: new Set(),  // cards changed since the page read the file: they stay where they were drawn (a choice made on top
+                    // doesn't jump into a fold under his finger; the next visit shows it in its fold)
   highlight: null,  // the card the address names
   ui: {},           // per card: the look shown, the compare view (open, sides, way, line), the row whose note box is open
   drafts: {},       // the note boxes' words not saved yet: per card (its id), per row (card id + "\n" + row id)
@@ -99,13 +107,42 @@ function stageOf(c) {
   if (rows) return c.status === "applied" ? "applied" : rows.every(answered) ? "chosen" : "waiting";
   return c.status === "applied" ? "applied" : "waiting";
 }
-const STAGE_ORDER = Object.fromEntries(STAGES.map(([k], i) => [k, i]));
 const priority = c => Number.isFinite(+c.priority) && c.priority !== null ? +c.priority : 9;
-// The cards the filters let through (and the ones just changed), the most important first, then in the file's order.
-function shownCards() {
-  const all = allCards(), place = new Map(all.map((c, i) => [c, i]));
-  return all.filter(c => state.keep.has(c.id) || ((state.stage === "all" || stageOf(c) === state.stage) && (state.group === "all" || c.group === state.group)))
-    .sort((a, b) => (state.stage === "all" ? STAGE_ORDER[stageOf(a)] - STAGE_ORDER[stageOf(b)] : 0) || priority(a) - priority(b) || place.get(a) - place.get(b));
+// The most important first, then in the file's order.
+function byImportance(list) {
+  const place = new Map(allCards().map((c, i) => [c, i]));
+  return [...list].sort((a, b) => priority(a) - priority(b) || place.get(a) - place.get(b));
+}
+
+// ---------- the sections: on top what waits for him, everything else folded ----------
+// "now": on top, it waits for him (a pending card he hasn't answered). Folded: "taken" (a default taken for now, or his
+// own choice, in the game or not yet: he may change any), "upcoming", "closed" (closed or superseded).
+function sectionOf(c) {
+  if (c.status === "closed" || c.status === "superseded") return "closed";
+  if (c.status === "upcoming") return "upcoming";
+  return stageOf(c) === "waiting" && c.status !== "taken-for-now" ? "now" : "taken";
+}
+// Where a card is drawn: its section, or where it was drawn when he changed it during this visit.
+const placeOf = c => state.keep.has(c.id) && state.where[c.id] ? state.where[c.id] : sectionOf(c);
+
+// The folds this device remembers open (never throws: private windows and blocked storage just remember nothing).
+function readFolds() {
+  try {
+    const v = JSON.parse(localStorage.getItem(FOLDS_KEY) || "{}");
+    return v && typeof v === "object" && !Array.isArray(v) ? v : {};
+  } catch { return {}; }
+}
+function keepFold(key, open) {
+  const kept = readFolds();
+  if (open) kept[key] = true; else delete kept[key];
+  try { localStorage.setItem(FOLDS_KEY, JSON.stringify(kept)); } catch { /* this visit only */ }
+}
+// Opens the folds a card is in, for this visit only (an address or a "קשור ל" link; the device doesn't remember it).
+function openFoldsOf(id) {
+  for (let d = cardEl(id)?.parentElement?.closest("details[data-fold]"); d; d = d.parentElement?.closest("details[data-fold]")) {
+    state.open[d.dataset.fold] = true; // (first, so the toggle that follows isn't taken for his tap)
+    d.open = true;
+  }
 }
 
 // The live option: what the game has now (applied), or the default taken for now.
@@ -113,7 +150,8 @@ const liveOption = c => c.applied != null ? c.applied : c.status === "taken-for-
 
 function stageWords(c, stage) {
   const rows = rowsOf(c);
-  if (stage === "waiting") return c.status === "pending" ? "מחכה לך: העבודה מחכה לבחירה" : "מחכה לך";
+  if (stage === "waiting") return c.status === "pending" ? "מחכה לך: העבודה מחכה לבחירה"
+    : c.status === "taken-for-now" ? "נבחר לעכשיו · אפשר לשנות" : "מחכה לך";
   if (stage === "chosen") return rows && c.chosen == null ? "ענית על הכול" : "בחרת · עוד לא במשחק";
   if (stage === "applied") return "הוחל במשחק";
   if (stage === "upcoming") return "בהמשך";
@@ -147,6 +185,8 @@ async function load() {
   if (plan.format !== 1) return failed(`קובץ ההחלטות כתוב בגרסה ${ltr(String(plan.format))}, שהדף הזה לא מכיר. רענן את הדף: אולי יש לו גרסה חדשה.`);
   state.data = plan;
   state.file = body.file || "";
+  state.keep.clear(); // read afresh: every card goes where it belongs now
+  state.where = {};
   try {
     const fb = await Store.load("feedback", { askForKey: false });
     state.feedback = fb && fb.plan && Array.isArray(fb.plan.items) ? fb.plan.items : null;
@@ -166,7 +206,6 @@ function failed(html) {
   state.data = null;
   $("summary").hidden = true;
   $("cards").innerHTML = "";
-  $("empty").hidden = true;
   $("copy-text").disabled = true;
   $("file-path").textContent = "אין החלטות";
   showProblem(html);
@@ -178,46 +217,59 @@ function showProblem(html) {
   p.innerHTML = html || "";
 }
 
-// ---------- the header line and the filters ----------
+// ---------- the header line, the cards on top, the folds ----------
 function renderAll() {
   renderSummary();
   renderCards();
 }
 
+// "רק אלה מחכים לך" and how many (the cards on top that still wait for him).
 function renderSummary() {
-  const all = allCards(), count = {};
-  for (const c of all) count[stageOf(c)] = (count[stageOf(c)] || 0) + 1;
-  count.all = all.length;
-  const waiting = all.filter(c => stageOf(c) === "waiting"), urgent = waiting.filter(c => priority(c) === 1).length;
-  $("headline").innerHTML = !waiting.length ? "אין החלטות שמחכות לך"
-    : (waiting.length === 1 ? "החלטה אחת מחכה לך" : `${waiting.length} החלטות מחכות לך`) +
+  const waiting = allCards().filter(c => sectionOf(c) === "now"), urgent = waiting.filter(c => priority(c) === 1).length;
+  $("headline").innerHTML = !waiting.length ? "שום החלטה לא מחכה לך עכשיו"
+    : `רק אלה מחכים לך <span class="count">${waiting.length}</span>` +
       (urgent ? ` <small>${urgent === waiting.length ? (urgent === 1 ? "והיא חשובה" : "וכולן חשובות") : urgent === 1 ? "אחת מהן חשובה" : `${urgent} מהן חשובות`}</small>` : "");
-  $("by-stage").innerHTML = `<span class="filter-label" aria-hidden="true">מצב</span>` + STAGES.map(([k, words]) =>
-    `<button type="button" class="pill" data-stage="${k}" aria-pressed="${state.stage === k}">${words} <span class="n">${count[k] || 0}</span></button>`).join("");
-  const inStage = all.filter(c => state.stage === "all" || stageOf(c) === state.stage);
-  const groups = [...new Set([...Object.keys(GROUPS), ...all.map(c => c.group)])] // those with cards here (and the one chosen)
-    .filter(g => g === state.group || inStage.some(c => c.group === g));
-  $("by-group").innerHTML = `<span class="filter-label" aria-hidden="true">נושא</span>` +
-    `<button type="button" class="pill" data-group="all" aria-pressed="${state.group === "all"}">כל הנושאים <span class="n">${inStage.length}</span></button>` +
-    groups.map(g => `<button type="button" class="pill" data-group="${esc(g)}" aria-pressed="${state.group === g}">${esc(groupName(g))}` +
-      ` <span class="n">${inStage.filter(c => c.group === g).length}</span></button>`).join("");
 }
 
-function setFilter(stage, group) {
-  state.stage = stage;
-  state.group = group;
-  state.keep.clear();
-  renderAll();
-}
-
+// Every card is on the page (so a card's address and the browser's find always reach it): those that wait for him on
+// top, the rest inside the folds, each fold open or closed as this visit has it.
 function renderCards() {
-  const list = shownCards();
-  $("cards").innerHTML = list.map(cardHtml).join("");
-  const e = $("empty");
-  e.hidden = list.length > 0;
-  if (!list.length) e.innerHTML = state.stage === "waiting" && state.group === "all"
-    ? `אין כרגע החלטות שמחכות לך. כשיהיו חדשות, ${ltr("Claude")} יכתוב לך בצ'אט כמה יש. <button type="button" class="link" data-stage="all">להצגת כל ההחלטות</button>`
-    : `אין כאן החלטות. <button type="button" class="link" data-stage="all" data-group="all">להצגת כל ההחלטות</button>`;
+  const placed = { now: [], taken: [], upcoming: [], closed: [] };
+  for (const c of allCards()) {
+    const s = placeOf(c);
+    state.where[c.id] = s;
+    placed[s].push(c);
+  }
+  const folds = FOLDS.filter(([k]) => placed[k].length).map(([k, title, small]) => foldHtml(k, title, small, placed[k])).join("");
+  $("cards").innerHTML = `<div class="now">${byImportance(placed.now).map(cardHtml).join("")}</div>` +
+    (placed.now.length ? "" : `<p class="empty">כשיהיו החלטות חדשות, ${ltr("Claude")} יכתוב לך בצ'אט כמה יש.` +
+      (folds ? " כל השאר כאן למטה, מקופל: הקשה פותחת." : "") + "</p>") +
+    (folds ? `<section class="folds" aria-labelledby="folds-title"><h2 class="folds-title" id="folds-title">כל השאר</h2>${folds}</section>` : "");
+}
+
+// One fold: a line with its name and how many cards, a tap opens it. The decisions taken are folded again by topic.
+function foldHtml(key, title, small, list) {
+  const urgent = key === "taken" ? list.filter(c => priority(c) === 1).length : 0;
+  let body;
+  if (key === "taken") {
+    const topics = [...new Set([...Object.keys(GROUPS).filter(g => g !== "upcoming" && g !== "closed"), ...list.map(c => c.group), "upcoming", "closed"])]
+      .filter(g => list.some(c => c.group === g));
+    body = topics.map(g => {
+      const these = list.filter(c => c.group === g);
+      return detailsHtml(`taken/${g == null ? "" : g}`, " sub", esc(TOPIC_IN_FOLD[g] || groupName(g)), these.length, "", byImportance(these).map(cardHtml).join(""));
+    }).join("");
+  } else body = byImportance(list).map(cardHtml).join("");
+  const words = [small ? esc(small) : "", urgent ? (urgent === 1 ? "אחת חשובה" : `${urgent} חשובות`) : ""].filter(Boolean).join(" · ");
+  return detailsHtml(key, key === "taken" ? " topics" : "", esc(title), list.length, words, body);
+}
+
+// (The count right after the name; the small words after it, on a line of their own on a phone.)
+function detailsHtml(key, kind, title, n, small, body) {
+  return `<details class="fold${kind}" data-fold="${esc(key)}"${state.open[key] ? " open" : ""}>
+      <summary class="fold-head"><span class="fold-text"><span class="fold-title">${title}</span> <span class="fold-n">${n}</span>` +
+        `${small ? ` <small class="fold-small">${small}</small>` : ""}</span><span class="fold-chev" aria-hidden="true"></span></summary>
+      <div class="fold-body">${body}</div>
+    </details>`;
 }
 
 const cardEl = id => document.querySelector(`.card[data-card="${CSS.escape(id)}"]`);
@@ -242,10 +294,10 @@ function renderCard(id) {
 function cardHtml(c) {
   const stage = stageOf(c), ui = uiOf(c.id), rows = rowsOf(c), n = allCards().indexOf(c), busy = state.busy[c.id] ? " disabled" : "";
   const kind = c.kind === "approval" ? "אישור" : c.kind === "technical" ? `ההצעה של ${ltr("Claude")}, לידיעה` : "";
-  const chips = [ // (no topic chip for the topics "upcoming" and "closed": the stage chip says it)
+  const chips = [ // (no topic chip for the topics "upcoming" and "closed": the stage chip says it; nor inside a topic's fold)
     priority(c) === 1 && stage === "waiting" ? `<span class="chip chip-urgent">חשוב</span>` : "",
     `<span class="chip chip-stage stage-${stage}">${esc(stageWords(c, stage))}</span>`,
-    c.group === "upcoming" || c.group === "closed" ? "" : `<span class="chip">${esc(groupName(c.group))}</span>`,
+    c.group === "upcoming" || c.group === "closed" || placeOf(c) === "taken" ? "" : `<span class="chip">${esc(groupName(c.group))}</span>`,
     kind ? `<span class="chip">${kind}</span>` : "",
   ].join("");
   const looks = looksOf(c), look = looks.includes(ui.look) ? ui.look : looks[0] || null, cmp = compareOf(c, look);
@@ -526,14 +578,14 @@ async function save(id, change, message, done) {
   return ok;
 }
 
-// After a save brought in the newest file: the header line, then every card that changed (another device's choices too).
+// After a save brought in the newest file: the header line, then every card that changed (another device's choices too);
+// everything again when a card came, went or moved to another section (the folds stay as they are).
 function refresh(before, id) {
   renderSummary();
   const old = new Map((before && Array.isArray(before.decisions) ? before.decisions : []).map(c => [c && c.id, JSON.stringify(c)]));
-  const ids = allCards().map(c => c.id), shown = [...document.querySelectorAll(".card[data-card]")].map(el => el.dataset.card);
-  const listed = new Set(shownCards().map(c => c.id));
-  if (ids.length !== old.size || shown.some(s => !listed.has(s)) || [...listed].some(s => !shown.includes(s))) return renderCards();
-  for (const c of allCards()) if (c.id === id || old.get(c.id) !== JSON.stringify(c)) renderCard(c.id);
+  const all = allCards();
+  if (all.length !== old.size || all.some(c => !old.has(c.id) || !cardEl(c.id) || placeOf(c) !== state.where[c.id])) return renderCards();
+  for (const c of all) if (c.id === id || old.get(c.id) !== JSON.stringify(c)) renderCard(c.id);
 }
 
 function choose(id, optionId) {
@@ -596,20 +648,21 @@ function goToHash(first = false) {
   showProblem(null);
   const old = state.highlight;
   state.highlight = id;
-  if (!cardEl(id)) setFilter(stageOf(c), "all");
+  if (!cardEl(id)) renderCards();
   else {
     if (old && old !== id) renderCard(old);
     renderCard(id);
   }
+  openFoldsOf(id);
   const reveal = () => cardEl(id)?.scrollIntoView({ block: "start", behavior: first || calm.matches ? "auto" : "smooth" });
   reveal();
   if (first) document.fonts.ready.then(() => setTimeout(reveal, 60)); // once the fonts have set every card's height
 }
 
 // ---------- copy as text ----------
-// Every card that waits for him, in plain words, to paste to Claude in a chat (like the Waves page's).
+// Every card that waits for him (the ones on top), in plain words, to paste to Claude in a chat (like the Waves page's).
 function asText() {
-  const list = allCards().filter(c => stageOf(c) === "waiting").sort((a, b) => priority(a) - priority(b) || allCards().indexOf(a) - allCards().indexOf(b));
+  const list = byImportance(allCards().filter(c => sectionOf(c) === "now"));
   const lines = [`החלטות שמחכות לי: ${list.length} (מדף ההחלטות). מה שבחרתי כתוב ליד כל אחת.`, ""];
   list.forEach((c, i) => {
     lines.push(`${i + 1}. ${c.title || c.id} [${c.id}]${priority(c) === 1 ? " (חשוב)" : ""}`);
@@ -795,13 +848,19 @@ function wheel(e) {
 const cardOf = el => el.closest(".card")?.dataset.card;
 
 document.addEventListener("click", e => {
-  const f = e.target.closest("[data-stage], [data-group]");
-  if (f && (f.closest(".filters") || f.closest("#empty"))) {
-    setFilter(f.dataset.stage || state.stage, f.dataset.group || (f.dataset.stage ? state.group : "all"));
-    return;
-  }
   if (e.target.closest("[data-reload]")) { load(); return; }
 });
+
+// A fold he opened or closed: this device remembers it. (A fold drawn open, or opened by an address, matches state.open
+// already: nothing to remember. The toggle event doesn't bubble: caught on its way down.)
+$("cards").addEventListener("toggle", e => {
+  const d = e.target;
+  if (!(d instanceof HTMLDetailsElement) || !d.dataset.fold || !d.isConnected) return;
+  const key = d.dataset.fold;
+  if (!!state.open[key] === d.open) return;
+  state.open[key] = d.open;
+  keepFold(key, d.open);
+}, true);
 
 $("cards").addEventListener("click", e => {
   const b = e.target.closest("button, [data-compare-stage]");
