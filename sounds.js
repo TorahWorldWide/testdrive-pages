@@ -64,6 +64,17 @@
 // Play and Loop. Every control in it is at least 40 px for a finger (sounds.css), and since a library sound can't be
 // dragged by touch, "Add ... from the library" adds the one playing in the player bar as a new layer.
 // pages_phone_edit_test.js drives it all by real touch.
+//
+// Weapon hits (5.10, Tomer: "a sound for the fist when it hits someone, flesh or robot ... combo hit 1, combo hit 2 ...
+// and the same for all the other weapons; and the third hit, high in the air, hold F: one when you start it up there and
+// one when you hit the floor"): sounds whose id has dots are the game's NAMED sounds (Sfx.cs, "Named sounds"):
+//   Hit.<Weapon>[.<step>].<Flesh|Metal>   a weapon hitting an enemy (step 1, 2, 3 or Dive; the guns have none)
+//   Dive[.<Weapon>].Start / .Land         the air attack starting, and hitting the floor
+// The game plays the most specific one Sounds.json has: Hit.Sword.2.Metal -> Hit.Sword.Metal -> Hit.Metal -> Enemy is hit
+// (chainOf here, Sfx.Chain in the game: the part before the last is dropped until two are left). The "Weapon hits" card
+// shows them under each weapon's picture; "+ On flesh" gives a weapon its own sound and "+ a sound for one combo step"
+// adds a more specific one, each starting as a copy of what the game plays for it now; Remove (in the mixer) takes one
+// out again, and the game falls back along the chain. pages_hitsounds_test.js checks the card (and on a phone).
 
 const MASTER = 0.8; // Sfx.masterVolume in the game
 const NORMALIZE_PEAK_DB = -1; // Normalize: where a layer's loudest sample should peak (dBFS)
@@ -90,6 +101,13 @@ const RECORDINGS = {
   arrowFlyBy: "Arrow fly-by", arrowHitBody: "Arrow into flesh", arrowHitGround: "Arrow into ground",
   "~whoosh": "Whoosh (made in code)", "~wind": "Wind (made in code)", "~gore": "Gore splat (made in code)",
   "~thud": "Thud (made in code)", "~boom": "Deep boom (made in code)", "~drums": "War drums (made in code)",
+  // Kenney recordings brought in for the weapon hits (5.10)
+  "lib/kenney-impact-sounds-impactmetal-light": "Light metal clank", "lib/kenney-impact-sounds-impactmetal-medium": "Metal clank",
+  "lib/kenney-impact-sounds-impactplate-light": "Light metal plate", "lib/kenney-impact-sounds-impactplate-medium": "Metal plate",
+  "lib/kenney-impact-sounds-impacttin-medium": "Tin knock", "lib/kenney-rpg-audio-chop": "Blade chop",
+  "lib/kenney-rpg-audio-dropleather": "Leather slap", "lib/kenney-rpg-audio-metalpot1": "Metal pot 1",
+  "lib/kenney-rpg-audio-metalpot2": "Metal pot 2", "lib/kenney-rpg-audio-metalpot3": "Metal pot 3",
+  "lib/kenney-rpg-audio-clothbelt": "Belt and cloth rattle", "lib/kenney-rpg-audio-clothbelt2": "Belt and cloth rattle 2",
 };
 
 // Quick searches in the library.
@@ -132,6 +150,7 @@ const CARDS = [
       { sound: "KnifeThrow", label: "Throw", at: "tip", below: true },
       { sound: "Empty", label: "None left", at: "tail", below: true }] },
   ] },
+  { kind: "hits", title: "Weapon hits", color: "#B5543C", note: "What each weapon sounds like when it hits a soldier (flesh) or a robot (metal). The game plays the most specific sound there is: a combo step's own, else the weapon's, else “Every weapon”. The archer is both: it gets both, a little quieter." },
   { kind: "portrait", title: "Basic", type: "Basic", subject: "Basic", note: "The brainwashed soldier. Hit, dies and armour sound the same on every enemy.", spots: [
     { sound: "ArmorBreak", label: "Armour breaks", at: "helmet" },
     { ...SHARED[0], at: "center", dx: 0.1 },
@@ -177,8 +196,76 @@ const CARDS = [
   ] },
 ];
 
+// ---------- the named sounds: weapon hits and the air attack (5.10; the table at the top) ----------
+
+// The weapons, as the game names them (Weapon in PlayerWeapons.cs), their pictures (portraits.json) and the steps their
+// hits can have their own sound for (the guns have no combo).
+const MELEE_STEPS = ["1", "2", "3", "Dive"];
+const HIT_WEAPONS = [
+  { key: "Fists", name: "Fists", subject: "Fist", steps: MELEE_STEPS, dives: true },
+  { key: "Sword", name: "Sword", subject: "Sword", steps: MELEE_STEPS, dives: true },
+  { key: "Spear", name: "Spear", subject: "Spear", steps: MELEE_STEPS, dives: true },
+  { key: "Hammer", name: "War hammer", subject: "Hammer", steps: MELEE_STEPS, dives: true },
+  { key: "Knives", name: "Throwing knives", subject: "ThrownKnife", steps: MELEE_STEPS },
+  { key: "Rifle", name: "Assault rifle", subject: "Rifle", steps: [] },
+  { key: "Marksman", name: "Marksman rifle", subject: "Marksman", steps: [] },
+  { key: "Bazooka", name: "Bazooka", subject: "Bazooka", steps: [] },
+];
+const weaponOf = key => HIT_WEAPONS.find(w => w.key === key);
+const MATERIALS = { Flesh: "on flesh", Metal: "on metal" };
+const MATERIAL_WHAT = { Flesh: "a soldier or other flesh", Metal: "a robot or other metal" };
+const DIVE_PARTS = { Start: "starts", Land: "hits the floor" };
+// What each step is called, by weapon (the knives throw instead of swinging; the hammer's combo is its smash).
+function stepName(weapon, step) {
+  if (weapon === "Knives") return { "1": "one knife", "2": "the fan of knives", "3": "the volley", Dive: "thrown down in the air" }[step] || `step ${step}`;
+  if (weapon === "Hammer" && step === "2") return "the smash (hit 2)";
+  return { "1": "hit 1", "2": "combo hit 2", "3": "the finisher (hit 3)", Dive: "the air attack" }[step] || `step ${step}`;
+}
+const isNamed = id => id.includes(".");
+// The chain the game follows (Sfx.Chain): the part before the last is dropped until two parts are left.
+function chainOf(id) {
+  const parts = id.split("."), chain = [id];
+  while (parts.length > 2) { parts.splice(parts.length - 2, 1); chain.push(parts.join(".")); }
+  return chain;
+}
+// What the game plays when the chain has nothing: the sound it always played there.
+const SWINGS = { Fists: "Punch", Sword: "Sword", Spear: "Spear", Hammer: "Hammer" };
+function lastResortOf(id) {
+  const p = id.split(".");
+  if (p[0] === "Dive") return p[p.length - 1] === "Land" ? "HammerHit" : SWINGS[p[1]] || "Sword";
+  return "EnemyHit";
+}
+// The sound the game plays for 'id' when 'id' itself isn't there: the next one along its chain, or the old one.
+const fallbackOf = id => chainOf(id).slice(1).find(c => soundById(c)) || lastResortOf(id);
+// The sound the game plays for 'id' right now: itself, the next along its chain, or the old one.
+const playedFor = id => chainOf(id).find(c => soundById(c)) || lastResortOf(id);
+
+// A named sound's name on this page ("Sword, combo hit 2, on metal"), or null for an id this page can't read.
+function namedTitle(id) {
+  const p = id.split("."), w = weaponOf(p[1]);
+  if (p[0] === "Hit" && p.length === 2 && MATERIALS[p[1]]) return `Every weapon ${MATERIALS[p[1]]}`;
+  if (p[0] === "Hit" && w && p.length === 3 && MATERIALS[p[2]]) return `${w.name} ${MATERIALS[p[2]]}`;
+  if (p[0] === "Hit" && w && p.length === 4 && MATERIALS[p[3]]) return `${w.name}, ${stepName(w.key, p[2])}, ${MATERIALS[p[3]]}`;
+  if (p[0] === "Dive" && p.length === 2 && DIVE_PARTS[p[1]]) return `Air attack ${DIVE_PARTS[p[1]]}`;
+  if (p[0] === "Dive" && w && p.length === 3 && DIVE_PARTS[p[2]]) return `${w.name}: air attack ${DIVE_PARTS[p[2]]}`;
+  return null;
+}
+// Its "about" line in Sounds.json, for one made on this page.
+function namedAbout(id) {
+  const p = id.split("."), w = weaponOf(p[1]), instead = ` Without it the game plays ${fallbackOf(id)}.`;
+  if (p[0] === "Hit" && w && p.length === 4 && MATERIALS[p[3]])
+    return `${w.name}, ${stepName(w.key, p[2])}, hitting ${MATERIAL_WHAT[p[3]]}.` + instead;
+  if (p[0] === "Hit" && w && p.length === 3 && MATERIALS[p[2]])
+    return `${w.name} hitting ${MATERIAL_WHAT[p[2]]} (any step; Hit.${w.key}.2.${p[2]} and the like override it).` + instead;
+  if (p[0] === "Hit" && p.length === 2 && MATERIALS[p[1]])
+    return `Any weapon hitting ${MATERIAL_WHAT[p[1]]}, when that weapon has no sound of its own for it.` + instead;
+  if (p[0] === "Dive") return `The air attack${w ? " with the " + w.name.toLowerCase() : ""} ${DIVE_PARTS[p[p.length - 1]] || p[p.length - 1]}.` + instead;
+  return "Made on the Sounds page." + instead;
+}
+
 const state = {
   plan: null, recordings: [], credits: {}, portraits: {}, enemies: {}, file: "", hasFreesound: false,
+  hitForm: null,  // the Weapon hits card: the row whose "+ a sound for one ..." form is open (a weapon key, or "Dive")
   selected: null, saved: "", undo: [], redo: [], pending: null,
   meta: {},       // take or library ref -> { title, author, source, link, seconds }
   lib: { source: "freesound", query: "", sort: "best", short: true, pack: "", items: [], sel: -1,
@@ -195,7 +282,7 @@ const ICONS = {
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const snapshot = () => JSON.stringify(state.plan);
 const soundById = id => state.plan.sounds.find(s => s.id === id);
-const nameOf = id => NAMES[id] || id;
+const nameOf = id => NAMES[id] || (isNamed(id) && namedTitle(id)) || id;
 const isNew = take => take.startsWith("kenney:") || take.startsWith("freesound:"); // not in the game yet
 const seconds = s => s == null ? "" : s < 10 ? s.toFixed(1) + " s" : Math.round(s) + " s";
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -352,8 +439,11 @@ function moveCut(c, trimStart) {
 // ---------- recordings and their families ----------
 
 // "footstep_grass_003" and "cloth2" belong to the families "footstep_grass" and "cloth". Library
-// sounds are each their own family.
-const familyOf = take => take.startsWith("lib/") || isNew(take) ? take : take.replace(/_?\d+$/, "");
+// sounds are each their own family, except the numbered takes of one Kenney set brought in together
+// ("lib/kenney-impact-sounds-impactmetal-light-000" ... "-004": the family "lib/kenney-impact-sounds-impactmetal-light").
+const KENNEY_SET = /^(lib\/kenney-.+)-\d{3}$/;
+const familyOf = take => KENNEY_SET.test(take) ? KENNEY_SET.exec(take)[1]
+  : take.startsWith("lib/") || isNew(take) ? take : take.replace(/_?\d+$/, "");
 function families() {
   const map = new Map();
   for (const r of state.recordings) {
@@ -364,8 +454,10 @@ function families() {
   return map;
 }
 function recordingName(key) {
-  if (state.meta[key]) return state.meta[key].title;
   if (RECORDINGS[key]) return RECORDINGS[key];
+  if (state.meta[key]) return state.meta[key].title;
+  const member = state.meta[key + "-000"]; // a Kenney set: its first take's title without the number
+  if (member?.title) return member.title.replace(/\s*\d+$/, "");
   return key.replace(/^~|^lib\//, "").replace(/_/g, " ").replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase();
 }
 // The family a layer uses, or null if it picks only some of a family's takes.
@@ -1247,6 +1339,7 @@ function change(mutate) {
     state.undo.push(before);
     state.redo = [];
   }
+  renderHits();
   renderMixer();
   renderStatus();
 }
@@ -1262,12 +1355,23 @@ function undo() {
   if (!state.undo.length) return;
   state.redo.push(snapshot());
   state.plan = JSON.parse(state.undo.pop());
-  renderMixer(); renderStatus();
+  afterTimeTravel();
 }
 function redo() {
   if (!state.redo.length) return;
   state.undo.push(snapshot());
   state.plan = JSON.parse(state.redo.pop());
+  afterTimeTravel();
+}
+// After an undo or a redo: a named sound may have come or gone (the Weapon hits card), even the one picked.
+function afterTimeTravel() {
+  if (state.selected && !soundById(state.selected)) {
+    if (loop?.id === state.selected) stopLoop();
+    closeEditor();
+    state.selected = null;
+    renderEditButton();
+  }
+  renderHits();
   renderMixer(); renderStatus();
 }
 // The sound as it was last saved (for "Back to the saved version").
@@ -1330,6 +1434,8 @@ function renderBoard() {
         : "";
       return `<article class="card" style="--piece:${color}">${head}${stageHtml(card.subject, card.spots, { size: card.size })}${side}</article>`;
     }
+    if (card.kind === "hits")
+      return `<article class="card hits-card" id="hits-card" style="--piece:${color}">${hitsInner(card)}</article>`;
     if (card.kind === "strip")
       return `<article class="card" style="--piece:${color}">${head}<div class="strip">${card.items.map(item =>
         `<div class="strip-item">${stageHtml(item.subject, item.spots, { small: true, aspect: item.aspect || 2.4 })}<span class="strip-name">${esc(item.name)}</span></div>`).join("")}</div></article>`;
@@ -1339,12 +1445,114 @@ function renderBoard() {
   }).join("");
 }
 
+// ---------- the Weapon hits card ----------
+
+// One named sound's play button (it selects it, like a play button on a portrait).
+function namedSpotHtml(id, label) {
+  return `<span class="spot${id === state.selected ? " selected" : ""}" data-sound="${esc(id)}" data-drop="sound">
+    <button type="button" class="spot-button" data-play="${esc(id)}" aria-label="Play: ${esc(nameOf(id))}"></button>
+    <span class="spot-label">${esc(label)}</span></span>`;
+}
+// A sound the game would look for, which isn't there: the button that adds it (a copy of what plays instead).
+function addNamedHtml(id, label) {
+  return `<button type="button" class="hit-add" data-add-named="${esc(id)}" title="No sound of its own: the game plays “${esc(nameOf(fallbackOf(id)))}”. Press to give it its own (it starts as a copy).">+ ${esc(label)}</button>`;
+}
+const MATERIAL_ORDER = ["Flesh", "Metal"];
+const stepOrder = s => { const i = MELEE_STEPS.indexOf(s); return i < 0 ? 99 : i; };
+// The named sounds of the plan whose id starts with 'prefix' and has 'parts' parts, sorted by step and material.
+function namedUnder(prefix, parts) {
+  return state.plan.sounds.map(s => s.id).filter(id => id.startsWith(prefix) && id.split(".").length === parts)
+    .sort((a, b) => {
+      const [pa, pb] = [a.split("."), b.split(".")];
+      return stepOrder(pa[parts - 2]) - stepOrder(pb[parts - 2]) || pa[parts - 2].localeCompare(pb[parts - 2])
+        || MATERIAL_ORDER.indexOf(pa[parts - 1]) - MATERIAL_ORDER.indexOf(pb[parts - 1]);
+    });
+}
+// The "+ a sound for one ..." form of a row.
+function hitFormHtml(row) {
+  const select = (id, label, options) => `<label class="field-label">${label}<select class="select" id="${id}">${options
+    .map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join("")}</select></label>`;
+  const fields = row === "Dive"
+    ? select("hit-form-weapon", "Weapon", HIT_WEAPONS.filter(w => w.dives).map(w => [w.key, w.name])) +
+      select("hit-form-part", "When", Object.entries(DIVE_PARTS).map(([k, t]) => [k, "It " + t]))
+    : select("hit-form-step", "Which hit", weaponOf(row).steps.map(s => [s, stepName(row, s)])) +
+      select("hit-form-material", "On", MATERIAL_ORDER.map(m => [m, MATERIALS[m].replace("on ", "")]));
+  return `<div class="hit-form" data-hit-form="${esc(row)}">${fields}
+    <button type="button" class="ghost" data-hit-form-add="${esc(row)}">Add</button>
+    <button type="button" class="ghost" data-hit-form-cancel>Cancel</button></div>`;
+}
+function hitRowHtml(row, who, cells, addLabel) {
+  return `<div class="hit-row" data-hit-row="${esc(row)}">${who}<div class="hit-list">${cells}${addLabel
+    ? `<button type="button" class="ghost hit-step" data-add-step="${esc(row)}" aria-expanded="${state.hitForm === row}">${esc(addLabel)}</button>` : ""}</div>
+    ${state.hitForm === row ? hitFormHtml(row) : ""}</div>`;
+}
+const pictureHtml = (subject, name) => `<div class="hit-who"><img src="${esc(state.portraits[subject]?.image || "")}" alt=""><span>${esc(name)}</span></div>`;
+// The card's inside: a row per weapon (its own flesh and metal sounds, then any for one step), one for every weapon, one
+// for the air attack, and one for any other named sound in Sounds.json.
+function hitsInner(card) {
+  const cell = (id, label) => soundById(id) ? namedSpotHtml(id, label) : addNamedHtml(id, label);
+  const rows = [];
+  rows.push(hitRowHtml("Every", `<div class="hit-who"><span class="hit-badge">ALL</span><span>Every weapon</span></div>`,
+    MATERIAL_ORDER.map(m => cell(`Hit.${m}`, MATERIALS[m][0].toUpperCase() + MATERIALS[m].slice(1))).join(""), ""));
+  for (const w of HIT_WEAPONS) {
+    const base = MATERIAL_ORDER.map(m => cell(`Hit.${w.key}.${m}`, MATERIALS[m][0].toUpperCase() + MATERIALS[m].slice(1)));
+    const steps = namedUnder(`Hit.${w.key}.`, 4).map(id => {
+      const p = id.split(".");
+      return namedSpotHtml(id, `${stepName(w.key, p[2])}, ${MATERIALS[p[3]] || p[3]}`);
+    });
+    rows.push(hitRowHtml(w.key, pictureHtml(w.subject, w.name), base.join("") + steps.join(""),
+      w.steps.length ? (w.key === "Knives" ? "+ a sound for one throw" : "+ a sound for one combo step") : ""));
+  }
+  const dives = namedUnder("Dive.", 3).map(id => namedSpotHtml(id, `${weaponOf(id.split(".")[1])?.name || id.split(".")[1]}: ${DIVE_PARTS[id.split(".")[2]] || id.split(".")[2]}`));
+  rows.push(hitRowHtml("Dive", pictureHtml("Player", "Air attack (hold F in the air)"),
+    Object.entries(DIVE_PARTS).map(([k, t]) => cell(`Dive.${k}`, t[0].toUpperCase() + t.slice(1))).join("") + dives.join(""), "+ a sound for one weapon"));
+  const shown = new Set([...rows.join("").matchAll(/data-(?:sound|add-named)="([^"]+)"/g)].map(m => m[1]));
+  const others = state.plan.sounds.map(s => s.id).filter(id => isNamed(id) && !shown.has(id));
+  if (others.length) rows.push(hitRowHtml("Other", `<div class="hit-who"><span class="hit-badge">?</span><span>Other named sounds</span></div>`,
+    others.map(id => namedSpotHtml(id, nameOf(id))).join(""), ""));
+  return `<h2 class="card-title">${esc(card.title)}</h2><p class="card-note">${esc(card.note || "")}</p><div class="hit-rows">${rows.join("")}</div>`;
+}
+// Draws the card again when its sounds (or its open form) changed: after an add, a remove, an undo...
+let hitsDrawn = "";
+function renderHits(force = false) {
+  const el = $("hits-card"), card = CARDS.find(c => c.kind === "hits");
+  if (!el || !card || !state.plan) return;
+  const key = state.plan.sounds.map(s => s.id).filter(isNamed).join("|") + "#" + state.hitForm;
+  if (!force && key === hitsDrawn) return;
+  hitsDrawn = key;
+  el.innerHTML = hitsInner(card);
+}
+// Adds the named sound 'id' (a copy of what the game plays for it now), then picks it and plays it.
+function addNamed(id) {
+  if (!soundById(id)) {
+    const from = soundById(playedFor(id));
+    change(() => state.plan.sounds.push({ id, about: namedAbout(id), layers: JSON.parse(JSON.stringify(from?.layers || [])) }));
+  }
+  state.hitForm = null;
+  renderHits(true);
+  select(id);
+  play(id, document.querySelector(`.spot[data-sound="${CSS.escape(id)}"] .spot-button`));
+}
+// Takes a named sound out of the plan: the game falls back along its chain.
+function removeNamed(id) {
+  const i = state.plan.sounds.findIndex(s => s.id === id);
+  if (i < 0 || !isNamed(id)) return;
+  if (loop?.id === id) stopLoop();
+  closeEditor();
+  change(() => state.plan.sounds.splice(i, 1));
+  state.selected = null;
+  renderHits(true);
+  renderMixer();
+  renderEditButton();
+}
+
 // Where a sound can be heard, for the mixer: "You", "Archer", ...
 function placesOf(id) {
+  if (isNamed(id)) return [CARDS.find(c => c.kind === "hits")?.title || "Weapon hits"];
   const places = [];
   for (const card of CARDS) {
     const spots = card.kind === "portrait" ? [...card.spots, ...(card.sidekick?.spots || [])]
-      : card.kind === "strip" ? card.items.flatMap(i => i.spots) : card.signs;
+      : card.kind === "strip" ? card.items.flatMap(i => i.spots) : card.signs || []; // (the hits card: named sounds only)
     if (spots.some(s => s.sound === id)) places.push(card.title);
   }
   return places;
@@ -1506,12 +1714,14 @@ function renderMixer() {
     <h2>${esc(nameOf(id))}</h2>
     <p class="about">${esc(sound.about || "")}</p>
     <p class="where">On this page: ${esc(placesOf(id).join(", ") || "nowhere")}. In the game it's called <code>${esc(id)}</code>.</p>
+    ${isNamed(id) ? chainNoteHtml(id) : ""}
     <div class="mixer-buttons">
       <button type="button" class="play-big" id="play-big">Play</button>
       <button type="button" class="ghost loop-big" id="loop-big" aria-pressed="false" title="Plays the sound over and over: every change you make (knobs, cuts, Backwards) is heard at once. Press again to stop.">Loop</button>
       <button type="button" class="ab ab-big" id="ab-big" aria-pressed="false" aria-label="A/B: hear the original recordings instead of this sound's edit" disabled>${AB_LOOK}</button>
       <button type="button" class="ghost" id="download-big" title="Save the whole sound as a WAV file: every layer mixed as the game plays them (each layer's highlighted take, its volume and its delay)"${sound.layers.some(l => l.takes.length) ? "" : " disabled"}>Download WAV</button>
-      ${changed ? `<button type="button" class="ghost" id="revert">Back to the saved version</button>` : ""}
+      ${changed && savedSound(id) ? `<button type="button" class="ghost" id="revert">Back to the saved version</button>` : ""}
+      ${isNamed(id) ? `<button type="button" class="ghost" id="remove-named" title="Takes this sound out: the game then plays “${esc(nameOf(fallbackOf(id)))}” here. Undo brings it back.">Remove this sound</button>` : ""}
     </div>
     <p class="ab-note" id="ab-note" hidden><b>B: the original.</b> Each recording as it is, without its cut, effects or delay, at the same volume.
       Press A/B (or the A key) to hear your edit again.</p>
@@ -1535,6 +1745,15 @@ function renderMixer() {
   renderLoopButtons(); // before the focus goes back: a button that's off while no Loop plays can't take it
   if (focused) $("mixer").querySelector(`[data-key="${CSS.escape(focused)}"]`)?.focus({ preventScroll: true });
   drawWaves();
+}
+// A named sound's chain, in the mixer: what the game looks for, most specific first, and what plays without this one.
+function chainNoteHtml(id) {
+  const steps = [...chainOf(id), lastResortOf(id)].map(c => {
+    const name = esc(nameOf(c));
+    return c === id ? `<b>${name}</b>` : soundById(c) || !isNamed(c) ? name : `<s title="Not in the game">${name}</s>`;
+  });
+  return `<p class="where chain-note">The game plays the most specific sound there is: ${steps.join(" → ")}.
+    Without this one it plays “${esc(nameOf(fallbackOf(id)))}”.</p>`;
 }
 function layersTitle(sound) {
   const later = fxByName.delay && sound.layers.some(l => fxOn(l, fxByName.delay));
@@ -1856,6 +2075,22 @@ document.addEventListener("click", ev => {
     play(id, spot.closest(".spot") || spot);
     return;
   }
+  // The Weapon hits card (named sounds)
+  const addNamedButton = t.closest("[data-add-named]");
+  if (addNamedButton) return addNamed(addNamedButton.dataset.addNamed);
+  const addStep = t.closest("[data-add-step]");
+  if (addStep) {
+    state.hitForm = state.hitForm === addStep.dataset.addStep ? null : addStep.dataset.addStep;
+    renderHits(true);
+    return document.querySelector(".hit-form select")?.focus({ preventScroll: true });
+  }
+  const formAdd = t.closest("[data-hit-form-add]");
+  if (formAdd) {
+    const row = formAdd.dataset.hitFormAdd, v = name => $(name)?.value;
+    return addNamed(row === "Dive" ? `Dive.${v("hit-form-weapon")}.${v("hit-form-part")}` : `Hit.${row}.${v("hit-form-step")}.${v("hit-form-material")}`);
+  }
+  if (t.closest("[data-hit-form-cancel]")) { state.hitForm = null; return renderHits(true); }
+  if (t.closest("#remove-named")) return removeNamed(state.selected);
   if (t.closest("#play-big")) return play(state.selected, $("play-big"));
   if (t.closest("#loop-big")) return startLoop(state.selected, -1);
   if (t.closest("#ab-big")) return loop?.n === -1 ? setOriginal() : undefined; // only while the whole sound loops

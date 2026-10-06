@@ -131,6 +131,51 @@
 .sign-big { font-weight: 800; font-size: var(--step-1); line-height: 1.1; letter-spacing: -0.01em; }
 .sign-small { color: var(--text-2); font-size: var(--step--1); }
 
+/* The weapon hits card (5.10): a row per weapon, its picture on the left and its hit sounds as play buttons with their
+   names beside them; a dashed "+" where a weapon has no sound of its own yet. It takes the board's whole width. */
+.hits-card { grid-column: 1 / -1; }
+.hit-rows { display: grid; gap: 0.45rem; margin-top: 0.9rem; }
+.hit-row {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem 0.9rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+}
+.hit-who { display: grid; justify-items: center; gap: 0.1rem; min-width: 0; color: var(--text-2); font-size: 0.8rem; line-height: 1.2; text-align: center; }
+.hit-who img {
+  width: 100%;
+  max-width: 7rem;
+  height: 3rem;
+  object-fit: contain;
+  border-radius: 6px;
+  background: radial-gradient(closest-side, rgba(226, 230, 234, 0.85), rgba(150, 158, 167, 0.35) 80%, rgba(150, 158, 167, 0));
+}
+.hit-badge { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 50%; background: rgba(255, 255, 255, 0.1); color: var(--text); font-weight: 800; font-size: 0.85rem; letter-spacing: 0.05em; }
+.hit-list { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; min-width: 0; }
+.hit-list .spot { position: static; display: inline-flex; align-items: center; gap: 0.45rem; min-width: 0; transform: none; }
+.hit-list .spot-button { flex: none; }
+.hit-list .spot-label { position: static; padding: 0; background: none; font-size: 0.85rem; white-space: normal; transform: none; }
+.hit-add {
+  min-height: 2.5rem;
+  padding: 0 0.9rem;
+  border: 2px dashed var(--text-3);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.82rem;
+}
+.hit-add:hover { border-color: var(--text); color: var(--text); }
+.hit-step { font-size: 0.82rem; }
+.hit-step[aria-expanded="true"] { border-color: var(--accent); color: var(--accent); }
+.hit-form { display: flex; flex-wrap: wrap; grid-column: 1 / -1; align-items: end; gap: 0.5rem 0.8rem; padding-top: 0.2rem; }
+.hit-form label { display: grid; gap: 0.2rem; min-width: 0; }
+.hit-form .select { min-height: 2.5rem; max-width: 100%; }
+.chain-note b { color: var(--text); }
+.chain-note s { opacity: 0.7; }
+
 /* ---------- the mixer: what the selected sound is made of ---------- */
 .mixer {
   position: sticky;
@@ -658,6 +703,12 @@ body.dragging-sound .layer, body.dragging-sound .drop-add { outline: 2px dashed 
   .mixer { grid-column: auto; position: static; max-height: none; }
   .stage { width: min(100% - 6rem, 19rem); }
   .spot.silent .spot-label { width: max-content; max-width: 7.5rem; white-space: normal; line-height: 1.2; }
+  /* The weapon hits card: the picture above its sounds, every button finger-sized. */
+  .hit-row { grid-template-columns: minmax(0, 1fr); padding: 0.5rem; }
+  .hit-who { grid-auto-flow: column; justify-content: start; align-items: center; gap: 0.6rem; text-align: left; }
+  .hit-who img { width: 5.5rem; height: 2.6rem; }
+  .hit-badge { width: 2.6rem; height: 2.6rem; }
+  .hit-add, .hit-step, .hit-form .select, .hit-form .ghost { min-height: 2.6rem; }
 
   .player { grid-template-columns: minmax(0, 1fr) auto auto; gap: 0.6rem; height: 4.2rem; padding: 0 0.7rem; }
   .np-center { display: contents; }
