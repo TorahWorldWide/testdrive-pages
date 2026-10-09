@@ -17,7 +17,7 @@
 // Art page link to cards that way).
 // Tested by docs/claude-tools/pages_decisions_test.js (cdp.mjs, desktop and phone).
 
-const GROUPS = { story: "הסיפור", pipeline: "המראה החדש", r16: "דמויות ופגיעות", scenery: "תפאורה", tech: "טכני", upcoming: "בהמשך", closed: "הוחלט" }; // in this order
+const GROUPS = { design: "עיצוב המשחק", story: "הסיפור", pipeline: "המראה החדש", r16: "דמויות ופגיעות", scenery: "תפאורה", tech: "טכני", upcoming: "בהמשך", closed: "הוחלט" }; // in this order
 const FOLDS = [ // the folded sections below the cards that wait for him (sectionOf), in this order: [key, title, its small words]
   ["taken", "החלטות שכבר נלקחו", "(אפשר לשנות)"], ["upcoming", "בהמשך", ""], ["closed", "סגורות", ""],
 ];
