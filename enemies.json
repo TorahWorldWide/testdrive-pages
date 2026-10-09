@@ -15,6 +15,6 @@
     { "type": "Giant", "lives": 20, "does": "Bigger and gold, in helmet and shield, with a longer girder. Swings faster when enraged." },
     { "type": "Worm", "lives": 17, "does": "Longer and gold, 10 armour plates, leaps higher." },
     { "type": "Archer", "lives": 11, "does": "Bigger and gold, in helmet and shield. Shoots volleys of 3 bolts, 5 when enraged." },
-    { "type": "MegaGiant", "lives": 62, "does": "THE COLOSSUS, the last boss (a first version): the giant 2.4 times as big. Its body barely feels hits; stomp its HEAD 3 times to kill it (it kneels every 12 s, its head down at 5 m), and each time it throws you off." }
+    { "type": "MegaGiant", "lives": 300, "does": "THE COLOSSUS, the last boss (a first version): the giant 2.4 times as big, 300 HP at wave 1 (3,000 at wave 20) under body armour that halves what hits it. Stomp its HEAD when it kneels (every 12 s, its head down at 5 m): three head stomps in a row, each your weapon's hit times 3 past the armour, and then it throws you off." }
   ]
 }

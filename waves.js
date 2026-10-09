@@ -374,7 +374,7 @@ function enemyRow(e, r) {
   const info = enemyInfo(e.type);
   const packs = e.packSize > 1;
   const worm = e.type === "Worm";
-  const lives = `${info.lives} ${info.lives === 1 ? "life" : "lives"}`;
+  const lives = `${info.lives} HP at wave 1`;
   return `<article class="row" style="--piece:${info.color}">
     ${token(e.type)}
     <div class="who">
@@ -435,7 +435,7 @@ function eliteRow(e, n) {
           ${eliteTypes().map(t => `<option value="${t}" ${e.type === t ? "selected" : ""}>${esc(eliteTitle(t))}</option>`).join("")}
         </select>
       </label>
-      <p class="who-info">${info.lives} lives. ${esc(info.does)}</p>
+      <p class="who-info">${info.lives} HP at wave 1. ${esc(info.does)}</p>
     </div>
     <div class="count">
       <button type="button" class="remove" data-act="remove-elite" data-elite="${n}" data-k="e${n}-remove">Remove</button>
@@ -507,7 +507,7 @@ function describe(w, i) {
   for (const e of w.elites) {
     const when = e.atSecond > 0 ? `after ${e.atSecond} s` : "right at the start";
     const name = eliteName(e.type);
-    out.push(`${name === name.toUpperCase() ? name : "An " + name} (${eliteInfo(e.type).lives} lives) arrives ${when} and drops ${money(e.reward)}.`);
+    out.push(`${name === name.toUpperCase() ? name : "An " + name} (${eliteInfo(e.type).lives} HP at wave 1) arrives ${when} and drops ${money(e.reward)}.`);
   }
   return out;
 }
@@ -519,8 +519,8 @@ const ARMOUR_WORDS = {
        some: rows => `${listWords(rows.map(e => `${enemyInfo(e.type).plural} ${e.armor}%`))} chance of a helmet and of a shield. Each piece is one more life.` },
   1: { all: a => `${a}% of them carry a riot shield: one more life, but a stomp still kills.`,
        some: rows => `a riot shield on ${ofThem(rows)}: one more life, but a stomp still kills.` },
-  2: { all: a => `${a}% of them wear a shield and a helmet: two more lives, and the helmet takes the first stomp.`,
-       some: rows => `a shield and a helmet on ${ofThem(rows)}: two more lives, and the helmet takes the first stomp.` },
+  2: { all: a => `${a}% of them wear a shield and a helmet: two armour pieces of 10 HP each, and the helmet takes the first stomp.`,
+       some: rows => `a shield and a helmet on ${ofThem(rows)}: two armour pieces of 10 HP each, and the helmet takes the first stomp.` },
 };
 function armourWords(rows) {
   const wearing = rows.filter(e => wearsArmour(e.type));
