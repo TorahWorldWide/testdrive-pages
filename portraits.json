@@ -15,6 +15,7 @@
     "Spear": { "image": "images/sounds/Spear.png", "anchors": { "center": [0.488, 0.499], "tip": [0.93, 0.499], "grip": [0.185, 0.499] } },
     "Hammer": { "image": "images/sounds/Hammer.png", "anchors": { "center": [0.492, 0.503], "tip": [0.908, 0.503], "grip": [0.413, 0.503] } },
     "Chainsaw": { "image": "images/sounds/Chainsaw.png", "anchors": { "center": [0.498, 0.501], "tip": [0.93, 0.501], "grip": [0.232, 0.501] } },
+    "Jackhammer": { "image": "images/sounds/Jackhammer.png", "anchors": { "center": [0.492, 0.492], "tip": [0.694, 0.492], "grip": [0.392, 0.492] } },
     "Rifle": { "image": "images/sounds/Rifle.png", "anchors": { "center": [0.493, 0.504], "tip": [0.931, 0.489], "grip": [0.28, 0.515] } },
     "Marksman": { "image": "images/sounds/Marksman.png", "anchors": { "center": [0.493, 0.501], "tip": [0.93, 0.5], "grip": [0.281, 0.526] } },
     "Bazooka": { "image": "images/sounds/Bazooka.png", "anchors": { "center": [0.502, 0.501], "tip": [0.929, 0.501], "grip": [0.43, 0.538] } },
