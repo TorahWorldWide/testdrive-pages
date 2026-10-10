@@ -209,6 +209,7 @@ const HIT_WEAPONS = [
   { key: "Chainsaw", name: "Chainsaw", subject: "Chainsaw", steps: MELEE_STEPS, dives: true },
   { key: "Jackhammer", name: "Jackhammer", subject: "Jackhammer", steps: MELEE_STEPS, dives: true },
   { key: "PistonArm", name: "Piston arm", subject: "PistonArm", steps: MELEE_STEPS, dives: true },
+  { key: "Shovel", name: "Shovel", subject: "Shovel", steps: MELEE_STEPS, dives: true },
   { key: "Knives", name: "Throwing knives", subject: "ThrownKnife", steps: MELEE_STEPS },
   { key: "Rifle", name: "Assault rifle", subject: "Rifle", steps: [] },
   { key: "Marksman", name: "Marksman rifle", subject: "Marksman", steps: [] },
