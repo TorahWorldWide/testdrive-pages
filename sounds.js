@@ -221,6 +221,7 @@ const HIT_WEAPONS = [
   { key: "Co2Extinguisher", name: "CO2 extinguisher", subject: "Co2Extinguisher", steps: [] },
   { key: "QuarryCharges", name: "Quarry charges", subject: "QuarryCharges", steps: [] },
   { key: "TyreLauncher", name: "Tyre launcher", subject: "TyreLauncher", steps: [] },
+  { key: "BlackoutCoil", name: "Blackout coil", subject: "BlackoutCoil", steps: [] },
 ];
 const weaponOf = key => HIT_WEAPONS.find(w => w.key === key);
 const MATERIALS = { Flesh: "on flesh", Metal: "on metal" };

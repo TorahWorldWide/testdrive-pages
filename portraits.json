@@ -28,6 +28,7 @@
     "Co2Extinguisher": { "image": "images/sounds/Co2Extinguisher.png", "anchors": { "center": [0.486, 0.501], "tip": [0.931, 0.491], "grip": [0.254, 0.518] } },
     "QuarryCharges": { "image": "images/sounds/QuarryCharges.png", "anchors": { "center": [0.495, 0.498], "tip": [0.931, 0.496], "grip": [0.166, 0.527] } },
     "TyreLauncher": { "image": "images/sounds/TyreLauncher.png", "anchors": { "center": [0.49, 0.501], "tip": [0.928, 0.501], "grip": [0.282, 0.527] } },
+    "BlackoutCoil": { "image": "images/sounds/BlackoutCoil.png", "anchors": { "center": [0.489, 0.501], "tip": [0.922, 0.501], "grip": [0.267, 0.527] } },
     "Arrow": { "image": "images/sounds/Arrow.png", "anchors": { "center": [0.509, 0.499], "tip": [0.818, 0.499], "tail": [0.071, 0.499] } },
     "Bullet": { "image": "images/sounds/Bullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.641, 0.499], "tail": [0.235, 0.499] } },
     "MarksmanBullet": { "image": "images/sounds/MarksmanBullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.641, 0.499], "tail": [0.235, 0.499] } },
