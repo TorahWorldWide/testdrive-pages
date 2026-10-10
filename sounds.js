@@ -211,6 +211,7 @@ const HIT_WEAPONS = [
   { key: "Marksman", name: "Marksman rifle", subject: "Marksman", steps: [] },
   { key: "Bazooka", name: "Bazooka", subject: "Bazooka", steps: [] },
   { key: "Shotgun", name: "Shotgun", subject: "Shotgun", steps: [] },
+  { key: "Flamethrower", name: "Flamethrower", subject: "Flamethrower", steps: [] },
 ];
 const weaponOf = key => HIT_WEAPONS.find(w => w.key === key);
 const MATERIALS = { Flesh: "on flesh", Metal: "on metal" };
