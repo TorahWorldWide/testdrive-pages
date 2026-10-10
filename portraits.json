@@ -26,6 +26,7 @@
     "SawLauncher": { "image": "images/sounds/SawLauncher.png", "anchors": { "center": [0.491, 0.499], "tip": [0.93, 0.504], "grip": [0.269, 0.53] } },
     "Co2Extinguisher": { "image": "images/sounds/Co2Extinguisher.png", "anchors": { "center": [0.486, 0.501], "tip": [0.931, 0.491], "grip": [0.254, 0.518] } },
     "QuarryCharges": { "image": "images/sounds/QuarryCharges.png", "anchors": { "center": [0.495, 0.498], "tip": [0.931, 0.496], "grip": [0.166, 0.527] } },
+    "TyreLauncher": { "image": "images/sounds/TyreLauncher.png", "anchors": { "center": [0.49, 0.501], "tip": [0.928, 0.501], "grip": [0.282, 0.527] } },
     "Arrow": { "image": "images/sounds/Arrow.png", "anchors": { "center": [0.509, 0.499], "tip": [0.818, 0.499], "tail": [0.071, 0.499] } },
     "Bullet": { "image": "images/sounds/Bullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.641, 0.499], "tail": [0.235, 0.499] } },
     "MarksmanBullet": { "image": "images/sounds/MarksmanBullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.641, 0.499], "tail": [0.235, 0.499] } },
@@ -34,6 +35,7 @@
     "Rocket": { "image": "images/sounds/Rocket.png", "anchors": { "center": [0.512, 0.499], "tip": [0.802, 0.499], "tail": [0.079, 0.499] } },
     "SawBlade": { "image": "images/sounds/SawBlade.png", "anchors": { "center": [0.516, 0.501], "tip": [0.516, 0.501], "tail": [0.234, 0.501] } },
     "SniperBullet": { "image": "images/sounds/SniperBullet.png", "anchors": { "center": [0.509, 0.499], "tip": [0.742, 0.499], "tail": [0.071, 0.499] } },
-    "ThrownKnife": { "image": "images/sounds/ThrownKnife.png", "anchors": { "center": [0.509, 0.499], "tip": [0.52, 0.499], "tail": [0.07, 0.499] } }
+    "ThrownKnife": { "image": "images/sounds/ThrownKnife.png", "anchors": { "center": [0.509, 0.499], "tip": [0.52, 0.499], "tail": [0.07, 0.499] } },
+    "Tyre": { "image": "images/sounds/Tyre.png", "anchors": { "center": [0.513, 0.501], "tip": [0.513, 0.501], "tail": [0.23, 0.501] } }
   }
 }
