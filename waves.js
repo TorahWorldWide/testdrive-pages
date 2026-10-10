@@ -15,12 +15,18 @@ const TAGS = [["", "None"], ["HORDE", "Horde"], ["ELITE", "Elite"], ["FINAL", "F
 const TAG_WORD = { HORDE: "Horde", ELITE: "Elite", FINAL: "Final" };
 const LIMITS = {
   seconds: [5, 600], count: [0, 999], packSize: [2, 30], armor: [0, 100], plates: [0, 10],
-  atSecond: [0, 600], reward: [0, 9999],
+  atSecond: [0, 600], reward: [0, 9999], buffPercent: [0, 100],
 };
-const STEP = { seconds: 5, armor: 5, reward: 10 };
+const STEP = { seconds: 5, armor: 5, reward: 10, buffPercent: 5 };
+// The buffs (WavePlan.EnemyGroup.buff, Tomer's item 11, 10.10): some of a row's enemies come stronger in one way.
+const BUFFS = [["", "None"], ["tank", "Tank: x3 hit points, bigger"], ["fast", "Fast: x1.6 speed"], ["brute", "Brute: x2.5 hits, red"],
+  ["spawner", "Spawner: makes more, gold"], ["bounty", "Bounty: x5 bolts, gold"]];
+const BUFF_ABOUT = "Some of this row come buffed (the share below): a tank has x3 hit points and stands bigger; fast runs x1.6; " +
+  "a brute hits x2.5 and glows red; a spawner makes one more of its kind beside it every 6 s (up to 4), gold; a bounty pays x5 bolts, gold. " +
+  "The numbers are on WaveDirector (Buffed enemies).";
 // The armour levels (WavePlan.EnemyGroup.armorLevel): what each one puts on an armoured enemy.
 const LEVELS = [[0, "As before"], [1, "1: shield"], [2, "2: shield + helmet"]];
-const CHOICES = ["armorLevel", "spiky"]; // fields changed in one step, on "change" (a select, a checkbox)
+const CHOICES = ["armorLevel", "spiky", "buff"]; // fields changed in one step, on "change" (a select, a checkbox)
 const BAR_PX = 165; // tallest column in the overview
 
 const ICON_ONE = `<svg viewBox="0 0 30 22" aria-hidden="true"><path d="M3 3l4 4M7 3l-4 4M21 2l4 4M25 2l-4 4M12 14l4 4M16 14l-4 4"/></svg>`;
@@ -160,6 +166,7 @@ function tidy() {
         if (e.armorLevel === 1 || e.armorLevel === 2) row.armorLevel = e.armorLevel;
         if (e.spiky === true) row.spiky = true;
       }
+      if (e.buff && (e.buffPercent || 0) > 0) { row.buff = e.buff; row.buffPercent = e.buffPercent; } // (item 11: a buff says something only with a share)
       return row;
     });
   });
@@ -395,6 +402,7 @@ function enemyRow(e, r) {
         ? `<span class="armour">Armour plates each ${stepper({ k: `r${r}-plates`, field: "plates", row: r, value: e.plates, label: "Armour plates per worm", small: true })}</span>`
         : wearsArmour(e.type) ? armourControls(e, r)
         : `<span class="armour-none">${esc(cap(info.plural))} wear no armour</span>`}
+      ${worm || e.type === "Drone" ? "" : buffControls(e, r)}
     </div>
   </article>`;
 }
@@ -421,6 +429,22 @@ function armourControls(e, r) {
       <label class="spiky${noHelmet ? " off" : ""}" title="${noHelmet ? "Level 1 has no helmet to put spikes on" : esc(SPIKY_ABOUT)}">
         <input type="checkbox" data-field="spiky" data-row="${r}" data-k="r${r}-spiky" ${e.spiky ? "checked" : ""} ${noHelmet && !e.spiky ? "disabled" : ""}>
         Spiky helmets</label>
+    </span>`;
+}
+
+// Which buff some of the row come with, and how many of them (every row but the worms' and the drones'; item 11, 10.10).
+function buffControls(e, r) {
+  const buff = BUFFS.some(([v]) => v === e.buff) ? e.buff || "" : "";
+  const pct = buff ? (e.buffPercent || 0) : 0;
+  return `<span class="buff-set">
+      <label class="buff-kind">Buff
+        <select class="select" data-field="buff" data-row="${r}" data-k="r${r}-buff" title="${esc(BUFF_ABOUT)}" aria-label="Buff">
+          ${BUFFS.map(([v, t]) => `<option value="${v}" ${buff === v ? "selected" : ""}>${t}</option>`).join("")}
+        </select></label>
+      <label class="buff-share${buff ? "" : " off"}">Of them
+        <input type="range" min="0" max="100" step="${STEP.buffPercent}" value="${pct}" data-field="buffPercent" data-row="${r}" data-k="r${r}-buffpct"
+          aria-label="How many of this row are buffed, in percent" ${buff ? "" : "disabled"}>
+        <output data-out="r${r}-buffpct">${pct}%</output></label>
     </span>`;
 }
 
@@ -721,6 +745,11 @@ function onChoice(el) {
   if (!row) return;
   change(() => {
     if (el.dataset.field === "spiky") row.spiky = el.checked;
+    else if (el.dataset.field === "buff") { // (item 11) a buff with a share; none drops the share
+      row.buff = el.value;
+      if (!row.buff) row.buffPercent = 0;
+      else if (!(row.buffPercent > 0)) row.buffPercent = 20;
+    }
     else {
       row.armorLevel = Number(el.value);
       if (row.armorLevel === 1) row.spiky = false;

@@ -318,6 +318,13 @@
 .spiky input { width: 1.15rem; height: 1.15rem; margin: 0; accent-color: #B9C2CF; cursor: pointer; }
 .spiky.off { color: var(--text-3); opacity: 0.6; cursor: default; }
 .spiky input:disabled { cursor: default; }
+/* The buff (item 11, 10.10): which, and how many of the row. */
+.buff-set { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.2rem; min-width: 0; }
+.buff-kind { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-2); }
+.buff-kind .select { min-height: 2.4rem; padding-block: 0.3rem; max-width: 100%; }
+.buff-share { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-2); }
+.buff-share input[type=range] { width: 7rem; }
+.buff-share.off { color: var(--text-3); opacity: 0.6; }
 .armour-none { color: var(--text-3); font-size: var(--step--1); }
 
 .adders { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.9rem; }
